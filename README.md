@@ -1,31 +1,29 @@
-🏀 PrimeScore
-Community Sports Facility Management System
+# 🏀 PrimeScore - Community Sports Facility Management System
 
-⚙️ Tech Stack
-Frontend: JavaScript (React)
+A robust web application built to manage community sports facilities with ease and efficiency.  
+This project is developed under the **ItCanCode** organization.
 
-Backend: Node.js (Express)
+---
 
-Database: Firestore (Firebase)
+## 📦 Tech Stack
 
-Authentication: OAuth 2.0 with Google (Firebase Authentication)
+- **Frontend**: React.js (JavaScript)
+- **Backend**: Node.js (Express.js)
+- **Database**: Firestore (Firebase)
+- **Authentication**: OAuth 2.0 with Google (Firebase Auth)
+- **CI/CD**: GitHub Actions
+- **Testing**: Jest (Unit Testing)
+- **Deployment**: Microsoft Azure
 
-CI/CD: GitHub Actions
+---
 
-Testing: Jest (Unit Tests)
+## 🚀 How to Set Up and Run the Application Locally
 
-Deployment: Microsoft Azure
+### 1️⃣ Clone the Repository
 
-🚀 How to Set Up and Run Locally
-1️⃣ Clone the Repository
-bash
-Copy
-Edit
+```bash
 git clone https://github.com/ItCanCode/PrimeScore.git
 cd PrimeScore
-2️⃣ Install Dependencies
-bash
-Copy
-Edit
+
+###2️⃣ Install Dependencies
 npm install
-.
