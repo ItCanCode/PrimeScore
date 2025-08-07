@@ -1,13 +1,24 @@
 import { defineConfig } from 'vite'
 import eslint from 'vite-plugin-eslint'
 import react from '@vitejs/plugin-react-swc'
+import { codecovVitePlugin } from "@codecov/vite-plugin";
 
 export default defineConfig({
+  define: {
+    'process.env': process.env,
+  },
+  
   plugins: [
     react(),
     eslint({
       include: ['src/**/*.js', 'src/**/*.jsx', 'src/**/*.ts', 'src/**/*.tsx'],
       exclude: ['node_modules', 'dist'],
+    }),
+    
+    codecovVitePlugin({
+      enableBundleAnalysis: process.env.CODECOV_TOKEN !== undefined,
+      bundleName: "prime-score",
+      uploadToken: process.env.CODECOV_TOKEN,
     }),
   ],
   build: {
