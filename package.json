@@ -1,0 +1,6 @@
+{
+  "devDependencies": {
+    "@codecov/vite-plugin": "^1.9.1",
+    "jest": "^30.0.5"
+  }
+}
