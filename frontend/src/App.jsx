@@ -10,10 +10,13 @@ function App() {
   const inputref=useRef(null)
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
+console.log('Fetching from:', `${backendUrl}/api/hello`);
   useEffect(() => {
   fetch(`${backendUrl}/api/hello`)
     .then(res => res.json())
     .then(data => {
+      
+
       console.log('Data from backend:', data);
       setmsg(data.message)
       setCount(0)
