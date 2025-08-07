@@ -1,9 +1,8 @@
 import { defineConfig } from 'vite'
-import eslint from 'vite-plugin-eslint';
+import eslint from 'vite-plugin-eslint'
 import react from '@vitejs/plugin-react-swc'
 import { codecovVitePlugin } from "@codecov/vite-plugin";
 
-// https://vite.dev/config/
 export default defineConfig({
   plugins: [
     react(),
@@ -18,4 +17,12 @@ export default defineConfig({
       uploadToken: process.env.CODECOV_TOKEN,
     }),
   ],
+  build: {
+    outDir: 'dist',
+  },
+  server: {
+    proxy: {
+      '/api': 'http://localhost:3000', // proxy backend during dev
+    },
+  },
 })
