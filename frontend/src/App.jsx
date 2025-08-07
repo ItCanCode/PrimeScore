@@ -1,11 +1,23 @@
-import { useState } from 'react'
+
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
+import { useState, useEffect } from 'react';
 
 function App() {
   const [count, setCount] = useState(0)
   
+
+  useEffect(() => {
+  fetch(`${process.env.REACT_APP_API_URL}/api/hello`)
+    .then(res => res.json())
+    .then(data => {
+      console.log('Data from backend:', data);
+    })
+    .catch(err => {
+      console.error('Error fetching:', err);
+    });
+}, []);
   return (
     <>
       <div>
