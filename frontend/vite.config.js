@@ -4,6 +4,10 @@ import react from '@vitejs/plugin-react-swc'
 import { codecovVitePlugin } from "@codecov/vite-plugin";
 
 export default defineConfig({
+  define: {
+    'process.env': process.env,
+  },
+  
   plugins: [
     react(),
     eslint({
@@ -13,7 +17,7 @@ export default defineConfig({
     
     codecovVitePlugin({
       enableBundleAnalysis: process.env.CODECOV_TOKEN !== undefined,
-      bundleName: "<bundle project name>",
+      bundleName: "prime-score",
       uploadToken: process.env.CODECOV_TOKEN,
     }),
   ],
