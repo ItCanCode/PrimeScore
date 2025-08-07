@@ -22,7 +22,6 @@ function App() {
     <>
       <div>
 
-
       </div>
       <h1>Amigo the scrumaster</h1>
       <div className="card">
