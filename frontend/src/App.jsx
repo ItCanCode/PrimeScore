@@ -12,7 +12,7 @@ function App() {
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 console.log('Fetching from:', `${backendUrl}/api/hello`);
   useEffect(() => {
-  fetch(`${backendUrl}/api/hello`)
+  fetch(`https://prime-backend.azurewebsites.net/api/hello`)
     .then(res => res.json())
     .then(data => {
       
