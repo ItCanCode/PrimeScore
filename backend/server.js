@@ -7,7 +7,7 @@ const PORT = process.env.PORT || 3000;
 const allowedOrigins = [
   'https://prime-score.vercel.app', 
   
-  'http://localhost:5173'            
+  'http://localhost:5173'       
 ];
 
 app.use(cors({
