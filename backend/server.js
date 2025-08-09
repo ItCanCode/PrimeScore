@@ -3,7 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const app = express();
 const PORT = process.env.PORT || 3000;
-const authRoutes = require('./routes/authRoutes'); // Import the route
+const authRoutes = require('./src/routes/authRoutes.js'); // Import the route
 
 const allowedOrigins = [
   'https://prime-score.vercel.app', 
@@ -27,7 +27,7 @@ app.get('/api/hello', (req, res) => {
   res.json({ message: 'Hello from backend!' });
 });
 
-// Mount your auth routes under /api/auth 
+
 app.use('/api/auth', authRoutes);
 
 app.listen(PORT, () => {
