@@ -1,0 +1,98 @@
+/* Container */
+.app-container {
+  min-height: 100vh;
+  background: linear-gradient(to bottom right, #0f172a, #1e3a8a, #0f172a);
+  color: white;
+  font-family: 'Arial', sans-serif;
+}
+.app-container .header {
+  background-color: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  padding: 0.5rem 1rem;
+}
+
+.app-container .header-content {
+  max-width: 1120px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 4rem;
+}
+
+.app-container .logo-section {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.app-container .icon {
+  color: #fb923c; /* orange-400 */
+}
+
+.app-container .trophy-icon {
+  height: 2rem;
+  width: 2rem;
+}
+.app-container .header-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.app-container .notification-btn {
+  position: relative;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #d1d5db; /* gray-300 */
+  transition: color 0.3s;
+}
+
+.notification-btn:hover {
+  color: white;
+}
+
+.notification-badge {
+  position: absolute;
+  top: -0.25rem;
+  right: -0.25rem;
+  background-color: #ef4444; /* red-500 */
+  color: white;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  height: 1.25rem;
+  width: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.profile-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: rgba(255 255 255 / 0.1);
+  border-radius: 9999px;
+  padding: 0.25rem 0.75rem;
+  color: #d1d5db;
+  cursor: pointer;
+  border: none;
+  transition: background-color 0.3s;
+  font-size: 0.875rem;
+}
+
+.profile-btn:hover {
+  background-color: rgba(255 255 255 / 0.2);
+  color: white;
+}
+
+.profile-icon {
+  height: 1.25rem;
+  width: 1.25rem;
+}
