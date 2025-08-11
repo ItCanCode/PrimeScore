@@ -1,10 +1,35 @@
-import React, { useState } from 'react';
+import React, { useEffect,useState } from 'react';
+
 import '../Styles/WelcomePage.css';
+import { auth, provider ,signInWithRedirect,getRedirectResult} from '../firebase.js';
 
 function WelcomePage() {
   // Modal state: 'none', 'login', or 'signup'
   const [modalType, setModalType] = useState('none');
+    const [user, setUser] = useState(null);
+  const [_error, setError] = useState(null);
+    useEffect(() => {
+    getRedirectResult(auth)
+      .then((result) => {
+        if (result) {
+          // User signed in!
+          setUser(result.user);
+          console.log("User info:", result.user);
+          // Optionally get ID token to send to backend
+          result.user.getIdToken().then((token) => {
+            console.log("ID token to send backend:", token);
+          });
+        }
+      })
+      .catch((err) => {
+        setError(err.message);
+        console.error("Redirect sign-in error:", err);
+      });
+  }, []);
 
+  const handleGoogleLogin = async () => {
+        signInWithRedirect(auth, provider);
+    };
   const openModal = (type) => {
     setModalType(type);
   };
@@ -64,7 +89,7 @@ function WelcomePage() {
         </div>
 
         <div className="social-login">
-          <button className="social-btn" type="button" onClick={() => alert('Google login')}>
+          <button className="social-btn" type="button" onClick={handleGoogleLogin}>
             <span>🌐</span> Continue with Google
           </button>
           <button className="social-btn" type="button" onClick={() => alert('Facebook login')}>
@@ -157,6 +182,19 @@ const SignupModal = () => (
   </div>
 );
 
+  if (user) {
+    
+    return (
+      <div>
+        <h2>Welcome, {user.displayName}!</h2>
+        <p>Email: {user.email}</p>
+        <img src={user.photoURL} alt="profile" />
+      </div>
+    );
+  }
+  else{
+    console.log("What the hell")
+  }
   return (
     <div className="body">
       <nav>
