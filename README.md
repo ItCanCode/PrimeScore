@@ -1,9 +1,10 @@
+[![codecov](https://codecov.io/github/ItCanCode/PrimeScore/branch/main/graph/badge.svg?token=94CH9QO4XA)](https://codecov.io/github/ItCanCode/PrimeScore)
+
+
 # PrimeScore 
 
 > A real-time sports broadcasting and viewer experience tool built with **React**, **Express.js**, and **Firebase**.  
 > Developed by the **ItCanCode** organization as part of the 2.7 Project 6 deliverable.
-
-[![codecov](https://codecov.io/github/ItCanCode/PrimeScore/branch/main/graph/badge.svg?token=94CH9QO4XA)](https://codecov.io/github/ItCanCode/PrimeScore)
 
 ##  Overview
 
