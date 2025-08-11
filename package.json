@@ -7,9 +7,5 @@
   "devDependencies": {
     "@codecov/vite-plugin": "^1.9.1",
     "jest": "^30.0.5"
-  },
-  "dependencies": {
-    "lucide-react": "^0.539.0",
-    "react-router-dom": "^7.8.0"
   }
 }
