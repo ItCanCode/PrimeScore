@@ -1,0 +1,48 @@
+name: Run frontend tests and upload to Codecov
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  test:
+    name: Run Jest tests with coverage
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./frontend # only run inside frontend folder
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests with JUnit output
+        run: npx cross-env JEST_JUNIT_CLASSNAME=frontend jest --coverage --reporters=default --reporters=jest-junit
+        env:
+          JEST_JUNIT_OUTPUT: ./junit.xml
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          directory: ./frontend/coverage
+          slug: ItCanCode/PrimeScore
+
+      - name: Upload test results to Codecov
+        if: ${{ !cancelled() }}
+        uses: codecov/test-results-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./frontend/junit.xml
