@@ -1,4 +1,3 @@
-# /docs/_config.yml
-theme: jekyll-theme-cayman
-title: Sports Live Feed
-description: Lightweight docs for the Sports Live Feed project
+theme: jekyll-theme-primer
+title: Project Documentation
+description: Public documentation for the sports live feed project
