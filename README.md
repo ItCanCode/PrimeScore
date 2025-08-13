@@ -12,6 +12,9 @@
 
 ##  Features
 
+## Documentation
+- Documentation site is live at https://itcancode.github.io/PrimeScore/
+
 ###  Match Viewer
 - Displays current **score**, **game clock**, **possession**, and **key events** (goals, fouls, etc.).
 - Visual data accessible for fans, commentators, or organizers.
