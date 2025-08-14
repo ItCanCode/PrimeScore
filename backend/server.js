@@ -1,4 +1,5 @@
 
+
 import express from 'express';
 
 import corsMiddleware from './src/middleware/cors.js';
@@ -13,7 +14,6 @@ app.use(corsMiddleware);
 app.use(express.json());
 
 // Routes
-
 app.use('/api/users', userRoutes);
 
 
