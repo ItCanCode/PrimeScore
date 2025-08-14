@@ -1,3 +1,5 @@
+
+// controllers/userController.js
 let users = [{ id: 1, name: 'John Doe' }];
 
 exports.getAllUsers = (req, res) => {

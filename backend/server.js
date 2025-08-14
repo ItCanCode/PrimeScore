@@ -1,4 +1,4 @@
-// backend/index.js
+// backend/server.js
 const express = require('express');
 const cors = require('cors');
 const app = express();
@@ -11,6 +11,9 @@ const allowedOrigins = [
   'http://localhost:5173'       
 ];
 
+
+const logger = require('./src/middleware/logger');
+app.use(logger);
 app.use(cors({
   origin: function(origin, callback) {
  
@@ -22,8 +25,9 @@ app.use(cors({
     }
   }
 }));
+app.use(express.json());
 
-const userRoutes = require('./routes/userRoutes'); 
+const userRoutes = require('./src/routes/userRoutes'); 
 app.use('/api/users', userRoutes);
 
 app.get('/api/hello', (req, res) => {
