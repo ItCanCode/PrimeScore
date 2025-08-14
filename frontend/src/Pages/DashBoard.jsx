@@ -1,5 +1,5 @@
 // import React, { useState } from 'react';
-import '../styles/Dashboard.css';
+import '../Styles/Dashboard.css';
 
 
 const Dashboard = () => { 
