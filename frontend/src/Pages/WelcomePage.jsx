@@ -1,28 +1,22 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import '../Styles/WelcomePage.css';
-import { auth, provider, signInWithRedirect, getRedirectResult } from '../firebase.js';
 import LoginModal from '../Components/LoginModal.jsx';
 import SignupModal from '../Components/SignupModal.jsx';
 
 function WelcomePage() {
-  // Modal state: 'none', 'login', or 'signup'
+
   const [modalType, setModalType] = useState('none');
-  const [user, setUser] = useState(null);
-  const [_error, setError] = useState(null);
+  const [user, _setUser] = useState(null);
+  const [_error, _setError] = useState(null);
   const [loading, setLoading] = useState(true);
+    // Simulate loading
   useEffect(() => {
-    getRedirectResult(auth)
-      .then((result) => {
-        if (result) {
-          setUser(result.user);
-        }
-      })
-      .catch((err) => {
-        setError(err.message);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+    // Replace with actual loading logic (e.g., fetch user)
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 1500); // 1.5 seconds delay for demo
+
+    return () => clearTimeout(timer);
   }, []);
 
   if (loading) {
@@ -48,9 +42,7 @@ function WelcomePage() {
       </div>
     );
   }
-  const handleGoogleLogin = async () => {
-    signInWithRedirect(auth, provider);
-  };
+ 
 
   const openModal = (type) => {
     setModalType(type);
@@ -59,9 +51,6 @@ function WelcomePage() {
   const closeModal = () => {
     setModalType('none');
   };
-
-  const handleGoogleSignup = () => alert('Google signup clicked!');
-  const handleFacebookSignup = () => alert('Facebook signup clicked!');
 
   if (user) {
     return (
@@ -175,7 +164,6 @@ function WelcomePage() {
       {modalType === 'login' && (
         <LoginModal
           closeModal={closeModal}
-          handleGoogleLogin={handleGoogleLogin}
           setModalType={setModalType}
         />
       )}
@@ -183,8 +171,6 @@ function WelcomePage() {
         <SignupModal
           closeModal={closeModal}
           setModalType={setModalType}
-          handleGoogleSignup={handleGoogleSignup}
-          handleFacebookSignup={handleFacebookSignup}
         />
       )}
     </div>

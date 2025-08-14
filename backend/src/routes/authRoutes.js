@@ -1,11 +1,9 @@
-// src/routes/authRoutes.js
-const express = require('express');
+// backend/src/routes/authRoutes.js
+import express from "express";
+import { googleAuth } from "../controllers/authController.js";
+
 const router = express.Router();
-const authController = require('../controllers/authController');
 
-router.post('/verify', authController.verifyUser);
-// router.post('/register', authController.register);
-router.post('/login', authController.login);
+router.post("/google", googleAuth);
 
-
-module.exports = router;
+export default router;
