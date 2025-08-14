@@ -1,35 +1,59 @@
-import React, { useEffect,useState } from 'react';
-
+import React, { useEffect, useState } from 'react';
+import { FcGoogle } from 'react-icons/fc';
+import { FaFacebookF } from 'react-icons/fa';
 import '../Styles/WelcomePage.css';
-import { auth, provider ,signInWithRedirect,getRedirectResult} from '../firebase.js';
+import { auth, provider, signInWithRedirect, getRedirectResult } from '../firebase.js';
+import LoginModal from '../Components/LoginModal.jsx';
+import SignupModal from '../Components/SignupModal.jsx';
 
 function WelcomePage() {
   // Modal state: 'none', 'login', or 'signup'
   const [modalType, setModalType] = useState('none');
-    const [user, setUser] = useState(null);
+  const [user, setUser] = useState(null);
   const [_error, setError] = useState(null);
-    useEffect(() => {
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
     getRedirectResult(auth)
       .then((result) => {
         if (result) {
-          // User signed in!
           setUser(result.user);
-          console.log("User info:", result.user);
-          // Optionally get ID token to send to backend
-          result.user.getIdToken().then((token) => {
-            console.log("ID token to send backend:", token);
-          });
         }
       })
       .catch((err) => {
         setError(err.message);
-        console.error("Redirect sign-in error:", err);
+      })
+      .finally(() => {
+        setLoading(false);
       });
   }, []);
 
+  if (loading) {
+    return (
+      <div className="loading-screen">
+        <div className="loading-container">
+          {/* Spinning loader */}
+          <div className="loader-wrapper">
+            <div className="loader main"></div>
+            <div className="loader overlay"></div>
+          </div>
+
+          {/* Loading text */}
+          <div className="loading-text">Loading ...</div>
+
+          {/* Animated dots */}
+          <div className="dots">
+            <div className="dot blue"></div>
+            <div className="dot purple"></div>
+            <div className="dot indigo"></div>
+          </div>
+        </div>
+      </div>
+    );
+  }
   const handleGoogleLogin = async () => {
-        signInWithRedirect(auth, provider);
-    };
+    signInWithRedirect(auth, provider);
+  };
+
   const openModal = (type) => {
     setModalType(type);
   };
@@ -38,152 +62,10 @@ function WelcomePage() {
     setModalType('none');
   };
 
-  // Modal content components
-
-  const LoginModal = () => (
-    <div className="modal" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
-      <div className="modal-content">
-        <button
-          className="close"
-          aria-label="Close login modal"
-          onClick={closeModal}
-          type="button"
-        >
-          &times;
-        </button>
-
-        <div className="modal-header">
-          <h2 id="loginTitle" className="modal-title">Welcome Back!</h2>
-          <p className="modal-subtitle">Sign in to your PrimeScore account</p>
-        </div>
-
-        <form id="loginForm" onSubmit={(e) => { e.preventDefault(); alert('Login submitted!'); }}>
-          <div className="form-group">
-            <label htmlFor="loginEmail">Email</label>
-            <input
-              type="email"
-              id="loginEmail"
-              name="email"
-              placeholder="Enter your Email"
-              required
-              autoComplete="email"
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor="loginPassword">Password</label>
-            <input
-              type="password"
-              id="loginPassword"
-              name="password"
-              placeholder="Enter your Password"
-              required
-              autoComplete="current-password"
-            />
-          </div>
-
-          <button type="submit" className="submit-btn">Sign In</button>
-        </form>
-
-        <div className="divider">
-          <span>or continue with</span>
-        </div>
-
-        <div className="social-login">
-          <button className="social-btn" type="button" onClick={handleGoogleLogin}>
-            <span>🌐</span> Continue with Google
-          </button>
-          <button className="social-btn" type="button" onClick={() => alert('Facebook login')}>
-            <span>📘</span> Continue with Facebook
-          </button>
-        </div>
-
-        <div className="modal-footer">
-          Don't have an account?{' '}
-          <button
-            type="button"
-            className="link-button"
-            onClick={() => setModalType('signup')}
-          >
-            Sign up here
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-const SignupModal = () => (
-  <div className="modal" role="dialog" aria-modal="true" aria-labelledby="signupTitle">
-    <div className="modal-content">
-      <button
-        className="close"
-        aria-label="Close signup modal"
-        onClick={closeModal}
-        type="button"
-      >
-        &times;
-      </button>
-
-      <div className="modal-header">
-        <h2 id="signupTitle" className="modal-title">Join PrimeScore!</h2>
-        <p className="modal-subtitle">Create your account to get started</p>
-      </div>
-
-      <form id="signupForm" onSubmit={(e) => { e.preventDefault(); alert('Sign up submitted!'); }}>
-        <div className="form-group">
-          <label htmlFor="signupEmail">Email</label>
-          <input
-            type="email"
-            id="signupEmail"
-            name="email"
-            placeholder="Enter your Email"
-            required
-            autoComplete="email"
-          />
-        </div>
-        <div className="form-group">
-          <label htmlFor="signupPassword">Password</label>
-          <input
-            type="password"
-            id="signupPassword"
-            name="password"
-            placeholder="Create a Password"
-            required
-            autoComplete="new-password"
-          />
-        </div>
-
-        <button type="submit" className="submit-btn">Sign Up</button>
-      </form>
-
-      <div className="divider">
-        <span>or continue with</span>
-      </div>
-
-      {/* Social login buttons for Sign Up */}
-      <div className="social-login">
-        <button className="social-btn" type="button" onClick={() => alert('Google sign up')}>
-          <span>🌐</span> Continue with Google
-        </button>
-        <button className="social-btn" type="button" onClick={() => alert('Facebook sign up')}>
-          <span>📘</span> Continue with Facebook
-        </button>
-      </div>
-
-      <div className="modal-footer">
-        Already have an account?{' '}
-        <button
-          type="button"
-          className="link-button"
-          onClick={() => setModalType('login')}
-        >
-          Sign in here
-        </button>
-      </div>
-    </div>
-  </div>
-);
+  const handleGoogleSignup = () => alert('Google signup clicked!');
+  const handleFacebookSignup = () => alert('Facebook signup clicked!');
 
   if (user) {
-    
     return (
       <div>
         <h2>Welcome, {user.displayName}!</h2>
@@ -192,9 +74,7 @@ const SignupModal = () => (
       </div>
     );
   }
-  else{
-    console.log("What the hell")
-  }
+
   return (
     <div className="body">
       <nav>
@@ -202,12 +82,24 @@ const SignupModal = () => (
           <div className="logo">PrimeScore</div>
 
           <ul className="nav-links">
-            <li><a href="#home">Home</a></li>
-            <li><a href="#sports">Sports</a></li>
-            <li><a href="#news">News</a></li>
-            <li><a href="#events">Events</a></li>
-            <li><a href="#about">About</a></li>
-            <li><a href="#contact">Contact</a></li>
+            <li>
+              <a href="#home">Home</a>
+            </li>
+            <li>
+              <a href="#sports">Sports</a>
+            </li>
+            <li>
+              <a href="#news">News</a>
+            </li>
+            <li>
+              <a href="#events">Events</a>
+            </li>
+            <li>
+              <a href="#about">About</a>
+            </li>
+            <li>
+              <a href="#contact">Contact</a>
+            </li>
           </ul>
 
           <div className="auth-buttons">
@@ -240,7 +132,9 @@ const SignupModal = () => (
         <div className="hero-content">
           <h1>PRIME SCORE</h1>
           <p>Where Champions rise and Legends Are Born</p>
-          <a href="#sports" className="cta-button">Enjoy Sports</a>
+          <a href="#sports" className="cta-button">
+            Enjoy Sports
+          </a>
         </div>
       </section>
 
@@ -280,8 +174,21 @@ const SignupModal = () => (
       </footer>
 
       {/* Conditionally render modals */}
-      {modalType === 'login' && <LoginModal />}
-      {modalType === 'signup' && <SignupModal />}
+      {modalType === 'login' && (
+        <LoginModal
+          closeModal={closeModal}
+          handleGoogleLogin={handleGoogleLogin}
+          setModalType={setModalType}
+        />
+      )}
+      {modalType === 'signup' && (
+        <SignupModal
+          closeModal={closeModal}
+          setModalType={setModalType}
+          handleGoogleSignup={handleGoogleSignup}
+          handleFacebookSignup={handleFacebookSignup}
+        />
+      )}
     </div>
   );
 }
