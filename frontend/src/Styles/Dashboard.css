@@ -1,0 +1,16 @@
+.prime-score-dashboard {
+  min-height: 100vh;
+  background: linear-gradient(to bottom right, #0f172a, #1e293b, #0f172a);
+  color: white;
+  padding: 20px;
+}
+
+.welcome-section {
+  display: flex;
+  justify-content: space-between;
+  background: linear-gradient(to right, #ea580c, #f59e0b);
+  padding: 20px;
+  border-radius: 12px;
+  color: white;
+}
+

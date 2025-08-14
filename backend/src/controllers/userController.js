@@ -1,10 +1,11 @@
+// controllers/userController.js
 let users = [{ id: 1, name: 'John Doe' }];
 
-exports.getAllUsers = (req, res) => {
+export const getAllUsers = (req, res) => {
   res.json(users);
 };
 
-exports.createUser = (req, res) => {
+export const createUser = (req, res) => {
   const newUser = {
     id: users.length + 1,
     name: req.body.name

@@ -1,13 +1,12 @@
-// src/services/authService.js
-const admin = require('../config/firebaseAdmin');
+// services/authService.js
+import admin from "../config/firebaseAdmin.js";
 
-exports.verifyIdToken = async (idToken) => {
+// Named export for ESM
+export async function verifyGoogleToken(idToken) {
   try {
     const decodedToken = await admin.auth().verifyIdToken(idToken);
-    return decodedToken;  // contains user info like uid, email, etc.
+    return decodedToken;
   } catch (error) {
-    throw new Error('Invalid token');
+    throw new Error("Invalid Google token");
   }
-};
-
-
+}
