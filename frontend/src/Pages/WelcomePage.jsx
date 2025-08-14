@@ -1,6 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { FcGoogle } from 'react-icons/fc';
-import { FaFacebookF } from 'react-icons/fa';
 import '../Styles/WelcomePage.css';
 import { auth, provider, signInWithRedirect, getRedirectResult } from '../firebase.js';
 import LoginModal from '../Components/LoginModal.jsx';
