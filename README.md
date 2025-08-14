@@ -1,3 +1,6 @@
+[![codecov](https://codecov.io/github/ItCanCode/PrimeScore/branch/main/graph/badge.svg?token=94CH9QO4XA)](https://codecov.io/github/ItCanCode/PrimeScore)
+
+
 # PrimeScore 
 
 > A real-time sports broadcasting and viewer experience tool built with **React**, **Express.js**, and **Firebase**.  
@@ -8,6 +11,9 @@
 **PrimeScore** allows users to follow live sports games with up-to-date scores, animated event timelines, and a full match setup system for organizers. Whether you're a fan, commentator, or admin, PrimeScore keeps the match accessible, interactive, and organized.
 
 ##  Features
+
+## Documentation
+- Documentation site is live at https://itcancode.github.io/PrimeScore/
 
 ###  Match Viewer
 - Displays current **score**, **game clock**, **possession**, and **key events** (goals, fouls, etc.).
