@@ -3,7 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const app = express();
 const PORT = process.env.PORT || 3000;
-const authRoutes = require('./src/routes/authRoutes.js'); // Import the route
+const authRoutes = require('./src/routes/authRoutes.js'); 
 
 const allowedOrigins = [
   'https://prime-score.vercel.app', 
@@ -13,7 +13,7 @@ const allowedOrigins = [
 
 app.use(cors({
   origin: function(origin, callback) {
-    // Allow requests with no origin (like Postman, curl)
+ 
     if (!origin) return callback(null, true);
     if (allowedOrigins.indexOf(origin) !== -1) {
       callback(null, true);
@@ -23,13 +23,24 @@ app.use(cors({
   }
 }));
 
+const userRoutes = require('./routes/userRoutes'); 
+app.use('/api/users', userRoutes);
+
 app.get('/api/hello', (req, res) => {
   res.json({ message: 'Hello from backend!' });
 });
 
+app.get('/',(req,res)=>{
+  res.json({ message: 'Landing page !' });
+})
 
-app.use('/api/auth', authRoutes);
 
+app.use((err, req, res, next) => {
+  if (err.message === 'Not allowed by CORS') {
+    return res.status(403).json({ error: err.message });
+  }
+  res.status(500).json({ error: 'Internal Server Error' });
+});
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
