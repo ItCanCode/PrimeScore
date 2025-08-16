@@ -26,7 +26,7 @@ async function handleGoogleLogin() {
     const data = await res.json();
     console.log(data);
     if(data.message=="Login successful"){
-      navigate("/dashboard");
+      navigate("/admin");
     }
     else{
       alert("Login failed, sign up instead.");

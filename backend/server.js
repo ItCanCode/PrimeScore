@@ -1,38 +1,24 @@
-
-
 import express from 'express';
-
 import corsMiddleware from './src/middleware/cors.js';
 import userRoutes from './src/routes/userRoutes.js';
 import authRoutes from "./src/routes/authRoutes.js";
-
+import adminRoutes from "./src/routes/adminRoutes.js";
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middlewares
 app.use(corsMiddleware);
-const authRoutes = require('./src/routes/authRoutes.js'); 
-const adminRoutes=require('./src/routes/adminRoutes.js')
-const allowedOrigins = [
-  'https://prime-score.vercel.app', 
-  
-  'http://localhost:5173'       
-];
+// const authRoutes = require('./src/routes/authRoutes.js'); 
+// const adminRoutes=require('./src/routes/adminRoutes.js')
+// const allowedOrigins = [
+//   'https://prime-score.vercel.app', 
+//   'http://localhost:5173'       
+// ];
 
 
-const logger = require('./src/middleware/logger');
-app.use(logger);
-app.use(cors({
-  origin: function(origin, callback) {
- 
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  }
-}));
+// const logger = require('./src/middleware/logger');
+// app.use(logger);
+
 app.use(express.json());
 
 // Routes
