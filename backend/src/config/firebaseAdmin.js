@@ -18,6 +18,6 @@ admin.initializeApp({
     client_x509_cert_url: process.env.FIREBASE_CLIENT_CERT_URL
   })
 });
+console.log(process.env.FIREBASE_PRIVATE_KEY?.slice(0, 50));
 
-// console.log( process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, "\n"))
 export default admin;

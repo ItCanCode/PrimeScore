@@ -3,8 +3,10 @@ import corsMiddleware from './src/middleware/cors.js';
 import userRoutes from './src/routes/userRoutes.js';
 import authRoutes from "./src/routes/authRoutes.js";
 import adminRoutes from "./src/routes/adminRoutes.js";
+import dotenv from "dotenv";
+dotenv.config();
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT;
 
 // Middlewares
 app.use(corsMiddleware);

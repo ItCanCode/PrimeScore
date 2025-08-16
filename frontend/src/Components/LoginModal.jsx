@@ -22,7 +22,7 @@ async function handleGoogleLogin() {
         action: "login"
       }),
     });
-
+    console.log(idToken);
     const data = await res.json();
     console.log(data);
     if(data.message=="Login successful"){
