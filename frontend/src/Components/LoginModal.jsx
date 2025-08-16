@@ -1,8 +1,43 @@
 import React from 'react';
 import { FcGoogle } from 'react-icons/fc';        // Google icon (colorful)
- import { FaFacebookF } from 'react-icons/fa';
+import { FaFacebookF } from 'react-icons/fa';
+import { auth, provider } from "../firebase";
+import { signInWithPopup } from "firebase/auth";
+import { useNavigate } from 'react-router-dom';
 
-const LoginModal = ({ closeModal, handleGoogleLogin, setModalType }) => (
+function LoginModal ({ closeModal,setModalType }){
+    const navigate = useNavigate();
+  
+async function handleGoogleLogin() {
+  try {
+    
+    const result = await signInWithPopup(auth, provider);
+    const idToken = await result.user.getIdToken();
+
+    const res = await fetch("http://localhost:3000/auth/google", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        idToken,
+        action: "login"
+      }),
+    });
+
+    const data = await res.json();
+    console.log(data);
+    if(data.message=="Login successful"){
+      navigate("/dashboard");
+    }
+    else{
+      alert("Login failed, sign up instead.");
+    }
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+  return(
+      
   <div className="modal" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
     <div className="modal-content">
       <button
@@ -57,7 +92,7 @@ const LoginModal = ({ closeModal, handleGoogleLogin, setModalType }) => (
       </div>
 
       <div className="social-login">
-        <button className="social-btn" type="button" onClick={handleGoogleLogin}>
+        <button className="social-btn" type="button" onClick={handleGoogleLogin} >
           <span> <FcGoogle size={20} style={{ marginRight: 8 }} /></span> Continue with Google
         </button>
         <button
@@ -82,6 +117,8 @@ const LoginModal = ({ closeModal, handleGoogleLogin, setModalType }) => (
       </div>
     </div>
   </div>
-);
+  )
+
+}
 
 export default LoginModal;
