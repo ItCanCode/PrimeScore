@@ -15,7 +15,7 @@ export default function AdminHome() {
   const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState(null);
 
-const backendUrl = import.meta.env.VITE_BACKEND_URL; //  https://prime-backend.azurewebsites.net
+// const backendUrl = import.meta.env.VITE_BACKEND_URL; //  https://prime-backend.azurewebsites.net
 // http://localhost:3000/api/admin/createMatch
 
   const onChange = (e) => {
