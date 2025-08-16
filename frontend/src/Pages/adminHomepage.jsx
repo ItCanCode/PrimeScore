@@ -48,7 +48,9 @@ const backendUrl = import.meta.env.VITE_BACKEND_URL; //  https://prime-backend.a
     }
 
     try {
-      const res = await fetch(`${backendUrl}/api/admin/createMatch`, {
+    //   const res = await fetch(`${backendUrl}/api/admin/createMatch`, {
+        const res = await fetch(`https://prime-backend.azurewebsites.net/api/admin/createMatch`, {
+        
         method: "POST",
         headers: { "Content-Type": "application/json" },
    
