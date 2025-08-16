@@ -1,7 +1,7 @@
-const express=require('express')
+import express from 'express';
 
 const router=express.Router()
-const adminController=require('../controllers/adminController')
+import adminController from '../controllers/adminController.js';
 
 router.post('/createMatch',adminController.createMatch)
-module.exports = router;
+export default router;
