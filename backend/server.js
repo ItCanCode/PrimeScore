@@ -1,22 +1,29 @@
-
-
 import express from 'express';
-
 import corsMiddleware from './src/middleware/cors.js';
 import userRoutes from './src/routes/userRoutes.js';
 import authRoutes from "./src/routes/authRoutes.js";
-
+import adminRoutes from "./src/routes/adminRoutes.js";
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middlewares
 app.use(corsMiddleware);
+// const authRoutes = require('./src/routes/authRoutes.js'); 
+// const adminRoutes=require('./src/routes/adminRoutes.js')
+// const allowedOrigins = [
+//   'https://prime-score.vercel.app', 
+//   'http://localhost:5173'       
+// ];
+
+
+// const logger = require('./src/middleware/logger');
+// app.use(logger);
+
 app.use(express.json());
 
 // Routes
 app.use('/api/users', userRoutes);
-
-
+app.use('/api/admin',adminRoutes);
 app.get('/api/hello', (req, res) => {
   res.json({ message: 'Hello from backend!' });
 });

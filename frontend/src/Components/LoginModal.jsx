@@ -27,7 +27,7 @@ async function handleGoogleLogin() {
     console.log(data);
     if(data.message=="Login successful"){
       localStorage.setItem("token", idToken);
-      navigate("/dashboard");
+      navigate("/admin");
     }
     else{
       alert("Login failed, sign up instead.");
