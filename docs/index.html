@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PrimeScore Documentation</title>
+  <style>
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      margin: 0;
+      padding: 0;
+      line-height: 1.6;
+      background-color: #f9f9f9;
+      color: #333;
+    }
+    header {
+      background: #006644;
+      color: white;
+      padding: 1.2rem;
+      text-align: center;
+    }
+    nav {
+      background: #004d33;
+      padding: 0.6rem;
+      text-align: center;
+    }
+    nav a {
+      color: white;
+      margin: 0 1rem;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    nav a:hover {
+      text-decoration: underline;
+    }
+    main {
+      max-width: 900px;
+      margin: 2rem auto;
+      padding: 1rem;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    h2 {
+      border-bottom: 2px solid #006644;
+      padding-bottom: 0.3rem;
+      margin-top: 2rem;
+    }
+    pre {
+      background: #f4f4f4;
+      padding: 1rem;
+      overflow-x: auto;
+      border-radius: 4px;
+    }
+    footer {
+      text-align: center;
+      padding: 1rem;
+      margin-top: 2rem;
+      font-size: 0.9rem;
+      background: #eee;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>PrimeScore Documentation</h1>
+  </header>
+
+  <nav>
+    <a href="#overview">Overview</a>
+    <a href="#architecture">Architecture</a>
+    <a href="#api">API</a>
+    <a href="#backlog">Sprint Backlog</a>
+    <a href="#setup">Setup Guide</a>
+    <a href="#git">Git Workflow</a>
+  </nav>
+
+  <main>
+    <section id="overview">
+      <h2>Project Overview</h2>
+      <p>PrimeScore is a real-time sports broadcasting and viewer experience tool that provides live updates, visualizations, and commentary feeds for ongoing games.</p>
+    </section>
+
+    <section id="architecture">
+      <h2>High-Level Architecture</h2>
+      <p>PrimeScore uses a client-server architecture:</p>
+      <ul>
+        <li><strong>Frontend (Client):</strong> React-based UI for fans, commentators, and organizers.</li>
+        <li><strong>Backend (Server):</strong> Node.js/Express APIs for game data and events.</li>
+        <li><strong>Database:</strong> Firebase for real-time updates.</li>
+      </ul>
+      <img src="architecture.png" alt="High-level Architecture Diagram" style="max-width:100%; border:1px solid #ccc; border-radius:4px;">
+    </section>
+
+    <section id="api">
+      <h2>API List</h2>
+      <ul>
+        <li><code>GET /api/match/:id</code> – Fetch match details.</li>
+        <li><code>GET /api/events/:matchId</code> – Retrieve timeline of events.</li>
+        <li><code>POST /api/event</code> – Add a new game event.</li>
+      </ul>
+    </section>
+
+    <section id="backlog">
+      <h2>Current Sprint Backlog</h2>
+      <ul>
+        <li>Implement user authentication</li>
+        <li>Create match viewer UI</li>
+        <li>Build event feed with real-time updates</li>
+        <li>Deploy initial version to staging</li>
+      </ul>
+    </section>
+
+    <section id="setup">
+      <h2>Developer Setup Guide</h2>
+      <pre>
+git clone https://github.com/your-repo/primescore.git
+cd primescore
+npm install
+npm start
+      </pre>
+      <p>Ensure you have Node.js and npm installed before running the commands above.</p>
+    </section>
+
+    <section id="git">
+      <h2>Git Workflow Overview</h2>
+      <ul>
+        <li><strong>Branching Strategy:</strong> Use <code>main</code> for stable code, feature branches for new work.</li>
+        <li><strong>Pull Requests:</strong> All code changes must be reviewed before merging.</li>
+        <li><strong>Commit Messages:</strong> Follow the format <code>type(scope): description</code>.</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 PrimeScore Team</p>
+  </footer>
+
+</body>
+</html>
