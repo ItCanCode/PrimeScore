@@ -1,0 +1,73 @@
+.profile-card {
+  max-width: 400px;
+  margin: 20px auto;
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  background-color: #fff;
+  font-family: sans-serif;
+}
+
+.profile-card header {
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+.profile-picture {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.profile-picture .picture {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 10px;
+}
+
+.profile-picture input[type="file"] {
+  margin-bottom: 10px;
+}
+
+.edit-btn, .save-btn {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 8px;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+  margin-top: 5px;
+}
+
+.edit-btn:hover, .save-btn:hover {
+  background-color: #0056b3;
+}
+
+.profile-info {
+  text-align: center;
+}
+
+.display-name {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.bio {
+  font-size: 1rem;
+  color: #555;
+}
+
+.input-field {
+  width: 80%;
+  margin: 5px auto;
+  display: block;
+  padding: 6px 8px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}

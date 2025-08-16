@@ -26,6 +26,7 @@ async function handleGoogleLogin() {
     const data = await res.json();
     console.log(data);
     if(data.message=="Login successful"){
+      localStorage.setItem("token", idToken);
       navigate("/dashboard");
     }
     else{
