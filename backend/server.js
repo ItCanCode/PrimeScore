@@ -4,7 +4,7 @@ const cors = require('cors');
 const app = express();
 const PORT = process.env.PORT || 3000;
 const authRoutes = require('./src/routes/authRoutes.js'); 
-
+const adminRoutes=require('./src/routes/adminRoutes.js')
 const allowedOrigins = [
   'https://prime-score.vercel.app', 
   
@@ -29,7 +29,7 @@ app.use(express.json());
 
 const userRoutes = require('./src/routes/userRoutes'); 
 app.use('/api/users', userRoutes);
-
+app.use('/api/admin',adminRoutes);
 app.get('/api/hello', (req, res) => {
   res.json({ message: 'Hello from backend!' });
 });
