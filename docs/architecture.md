@@ -2,14 +2,25 @@
 
 ![Architecture Diagram](img/architecture.png)
 
-## Components
-- **Frontend (React on Vercel):** Match Viewer, Timeline, Admin Screens.
-- **Backend (Node.js/Express on Azure):** APIs for Match Setup, Live Update, Feed, Display.
-- **Firestore:** Matches, Events, Teams/Players, Display State.
-- **Firebase Auth:** Roles (admin, commentator, viewer).
+##PrimeScore is built with:
+- **Client (Frontend)**: React + Tailwind - Handles UI and calls APIs from the backend
 
-## Data Flow (simplified)
-1. Admin creates a match (Match Setup API) → Firestore.
-2. Events arrive (Live Update API) → Firestore update.
-3. Frontend listens to changes (Firestore) or calls Feed API.
-4. Display API formats overlays/scoreboards for clients.
+- **Server (Backend)**: Node.js + Express - Provides REST APIs for matches, events, and feeds. 
+- **Database**: Firestore - For realtime storage
+
+- **Authentication**: Firebase (roles : admin, viewer)
+
+- **Hosting**: Microsoft Azure (backend) + Vercel (Frontend)
+
+- **CI/CD**: Github Actions + Codecov
+
+
+##Data Flow (with Client–Server)
+
+Admin (client) → calls Backend API → saves match into Firestore
+
+Events (client/admin tools) → hit Live Update API → Firestore updates
+
+Frontend (client) → listens to Firestore changes or queries Feed API
+
+Backend (server) → provides formatted display API → overlays/scoreboards
