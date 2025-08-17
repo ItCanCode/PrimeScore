@@ -7,10 +7,9 @@ coverage:
       default:
         target: 70%   # require at least 70% coverage on new/changed code
 
+# Use a single combined flag for the entire project
 flags:
-  frontend:
+  combined:
     paths:
-      - frontend/
-  backend:
-    paths:
-      - backend/
+      - frontend/src/
+      - backend/src/
