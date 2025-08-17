@@ -2,9 +2,9 @@ name: Backend Tests and Coverage
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, Testing ]
   pull_request:
-
+    branches: [ main, Testing ]
 jobs:
   backend-tests:
     runs-on: ubuntu-latest

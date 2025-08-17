@@ -10,4 +10,4 @@ coverage:
 flags:
   backend:
     paths:
-      - backend/src/
+      - backend/
