@@ -31,6 +31,7 @@
     ],
     "collectCoverage": true,
     "coverageDirectory": "coverage",
+    "coverageReporters": ["lcov", "text"],
     "collectCoverageFrom": ["src/**/*.js"],
     "testEnvironment": "node",
     "reporters": ["default", "jest-junit"]
