@@ -6,12 +6,17 @@ on:
   pull_request:
 
 jobs:
-  test-frontend:
-    name: Run Frontend Tests
+  test:
+    name: Run Tests and Upload Coverage
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        folder: [frontend, backend]  # run in both folders
+
     defaults:
       run:
-        working-directory: frontend
+        working-directory: ${{ matrix.folder }}
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -33,49 +38,12 @@ jobs:
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          directory: ./frontend/coverage
-          flags: frontend
+          directory: ./coverage
+          flags: combined
           slug: ItCanCode/PrimeScore
 
       - name: Upload test results to Codecov
         uses: codecov/test-results-action@v1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./frontend/junit.xml
-
-  test-backend:
-    name: Run Backend Tests
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: backend
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Set up Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Run tests with coverage
-        run: npm test -- --coverage --reporters=default --reporters=jest-junit
-        env:
-          JEST_JUNIT_OUTPUT: ./junit.xml
-
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v5
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          directory: ./backend/coverage
-          flags: backend
-          slug: ItCanCode/PrimeScore
-
-      - name: Upload test results to Codecov
-        uses: codecov/test-results-action@v1
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./backend/junit.xml
+          files: ./junit.xml
