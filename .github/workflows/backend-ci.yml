@@ -1,32 +1,46 @@
-name: CI Pipeline
+name: Backend CI and Coverage
 
 on:
-    push:
-        branches: [main, Testing ]
-    pull_request:
-        branches: [main, Testing ]
+  push:
+    branches: [ main, Testing ]
+  pull_request:
+    branches: [ main, Testing ]
 
-jobs: 
+jobs:
+  test-backend:
+    name: Run Backend Tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend  # all commands run in backend folder
 
-    test:
-        name: Run Tests and Upload Coverage
-        runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-        steps:
-            - uses: actions/checkout@v3
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
 
-            - name: Set up Node.js
-              uses: actions/setup-node@v3
-              with:
-                node-version: '18'
+      - name: Install dependencies
+        run: npm ci
 
-            - name: Install dependencies
-              run: npm install
+      - name: Run tests with coverage
+        run: npm test
+        env:
+          JEST_JUNIT_OUTPUT: ./backend/junit.xml
 
-            - name: Run tests
-              run: npm test -- --coverage
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage/lcov.info
+          flags: backend
+          slug: ItCanCode/PrimeScore
 
-            - name: Upload coverage reports to Codecov with GitHub Action
-              uses: codecov/codecov-action@v5
-              env:
-                CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      - name: Upload test results to Codecov
+        uses: codecov/test-results-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./backend/junit.xml

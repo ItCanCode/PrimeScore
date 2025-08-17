@@ -1,14 +1,13 @@
-codecov:
-  require_ci_to_pass: yes   # safer to enforce CI passing before Codecov reports
-
 coverage:
   status:
     project:
       default:
-        target: 60%
-        threshold: 1%   # allow small drops without failing
+        target: 80%
+    patch:
+      default:
+        target: 70%
 
-comment:
-  layout: "reach,diff,flags,files"
-  behavior: default
-  require_changes: false
+flags:
+  backend:
+    paths:
+      - backend/
