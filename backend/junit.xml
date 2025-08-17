@@ -1,31 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="jest tests" tests="11" failures="0" errors="0" time="1.935">
-  <testsuite name="verifyGoogleToken service" errors="0" failures="0" skipped="0" timestamp="2025-08-17T10:23:32" time="1.438" tests="2">
-    <testcase classname="frontend" name="verifyGoogleToken service should return decoded token when verification succeeds" time="0.01">
+<testsuites name="jest tests" tests="11" failures="0" errors="0" time="2.239">
+  <testsuite name="adminController.createMatch" errors="0" failures="0" skipped="0" timestamp="2025-08-17T10:47:08" time="1.671" tests="2">
+    <testcase classname="adminController.createMatch should create a match successfully" name="adminController.createMatch should create a match successfully" time="0.008">
     </testcase>
-    <testcase classname="frontend" name="verifyGoogleToken service should throw an error when verification fails" time="0.011">
-    </testcase>
-  </testsuite>
-  <testsuite name="adminController.createMatch" errors="0" failures="0" skipped="0" timestamp="2025-08-17T10:23:32" time="1.461" tests="2">
-    <testcase classname="frontend" name="adminController.createMatch should create a match successfully" time="0.008">
-    </testcase>
-    <testcase classname="frontend" name="adminController.createMatch should return 500 if Firestore throws an error" time="0.001">
+    <testcase classname="adminController.createMatch should return 500 if Firestore throws an error" name="adminController.createMatch should return 500 if Firestore throws an error" time="0.001">
     </testcase>
   </testsuite>
-  <testsuite name="googleAuth controller" errors="0" failures="0" skipped="0" timestamp="2025-08-17T10:23:32" time="1.477" tests="7">
-    <testcase classname="frontend" name="googleAuth controller should return 400 if idToken or action is missing" time="0.011">
+  <testsuite name="verifyGoogleToken service" errors="0" failures="0" skipped="0" timestamp="2025-08-17T10:47:08" time="1.681" tests="2">
+    <testcase classname="verifyGoogleToken service should return decoded token when verification succeeds" name="verifyGoogleToken service should return decoded token when verification succeeds" time="0.01">
     </testcase>
-    <testcase classname="frontend" name="googleAuth controller should return 400 for invalid action" time="0.001">
+    <testcase classname="verifyGoogleToken service should throw an error when verification fails" name="verifyGoogleToken service should throw an error when verification fails" time="0.012">
     </testcase>
-    <testcase classname="frontend" name="googleAuth controller signup: should return 409 if user already exists" time="0.002">
+  </testsuite>
+  <testsuite name="googleAuth controller" errors="0" failures="0" skipped="0" timestamp="2025-08-17T10:47:08" time="1.729" tests="7">
+    <testcase classname="googleAuth controller should return 400 if idToken or action is missing" name="googleAuth controller should return 400 if idToken or action is missing" time="0.008">
     </testcase>
-    <testcase classname="frontend" name="googleAuth controller signup: should create new user and return 201" time="0.001">
+    <testcase classname="googleAuth controller should return 400 for invalid action" name="googleAuth controller should return 400 for invalid action" time="0.001">
     </testcase>
-    <testcase classname="frontend" name="googleAuth controller login: should return 404 if user not found" time="0.001">
+    <testcase classname="googleAuth controller signup: should return 409 if user already exists" name="googleAuth controller signup: should return 409 if user already exists" time="0.001">
     </testcase>
-    <testcase classname="frontend" name="googleAuth controller login: should return 200 with user data if user exists" time="0.001">
+    <testcase classname="googleAuth controller signup: should create new user and return 201" name="googleAuth controller signup: should create new user and return 201" time="0.001">
     </testcase>
-    <testcase classname="frontend" name="googleAuth controller should return 401 on token verification error" time="0.001">
+    <testcase classname="googleAuth controller login: should return 404 if user not found" name="googleAuth controller login: should return 404 if user not found" time="0.001">
+    </testcase>
+    <testcase classname="googleAuth controller login: should return 200 with user data if user exists" name="googleAuth controller login: should return 200 with user data if user exists" time="0.001">
+    </testcase>
+    <testcase classname="googleAuth controller should return 401 on token verification error" name="googleAuth controller should return 401 on token verification error" time="0">
     </testcase>
   </testsuite>
 </testsuites>
