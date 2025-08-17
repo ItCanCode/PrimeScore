@@ -1,35 +1,31 @@
-name: Run frontend tests and upload to Codecov
+name: CI Tests and Coverage
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
   pull_request:
 
 jobs:
-  test:
-    name: Run Jest tests with coverage
+  test-frontend:
+    name: Run Frontend Tests
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./frontend # only run inside frontend folder
-
+        working-directory: frontend
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 2
 
-      - name: Set up Node.js
+      - name: Set up Node
         uses: actions/setup-node@v4
         with:
           node-version: 20
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
-      - name: Run tests with JUnit output
-        run: npx cross-env JEST_JUNIT_CLASSNAME=frontend jest --coverage --reporters=default --reporters=jest-junit
+      - name: Run tests with coverage
+        run: npm test -- --coverage --reporters=default --reporters=jest-junit
         env:
           JEST_JUNIT_OUTPUT: ./junit.xml
 
@@ -38,11 +34,48 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           directory: ./frontend/coverage
+          flags: frontend
           slug: ItCanCode/PrimeScore
 
       - name: Upload test results to Codecov
-        if: ${{ !cancelled() }}
         uses: codecov/test-results-action@v1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ./frontend/junit.xml
+
+  test-backend:
+    name: Run Backend Tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests with coverage
+        run: npm test -- --coverage --reporters=default --reporters=jest-junit
+        env:
+          JEST_JUNIT_OUTPUT: ./junit.xml
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          directory: ./backend/coverage
+          flags: backend
+          slug: ItCanCode/PrimeScore
+
+      - name: Upload test results to Codecov
+        uses: codecov/test-results-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./backend/junit.xml

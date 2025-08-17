@@ -1,0 +1,16 @@
+coverage:
+  status:
+    project:
+      default:
+        target: 80%   # require at least 80% overall coverage
+    patch:
+      default:
+        target: 70%   # require at least 70% coverage on new/changed code
+
+flags:
+  frontend:
+    paths:
+      - frontend/
+  backend:
+    paths:
+      - backend/
