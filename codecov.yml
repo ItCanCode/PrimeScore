@@ -2,14 +2,12 @@ coverage:
   status:
     project:
       default:
-        target: 80%   # require at least 80% overall coverage
+        target: 80%
     patch:
       default:
-        target: 70%   # require at least 70% coverage on new/changed code
+        target: 70%
 
-# Use a single combined flag for the entire project
 flags:
-  combined:
+  backend:
     paths:
-      - frontend/src/
       - backend/src/
