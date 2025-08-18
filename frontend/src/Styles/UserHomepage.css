@@ -52,24 +52,54 @@ footer {
   font-size: 0.9rem;
 }
 
+/* Header setup for separation */
 .home-header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  background: #fb923c;
-  color: white;
-  padding: 1.2rem;
+  background: rgba(255, 255, 255, 0.55);
+  color: #fb923c;
+  padding: 1.5rem 2rem;
+  margin: 2rem 0;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+  position: relative;
+  min-height: 80px; /* Ensures enough height for separation */
 }
 
+/* Welcome text stays left, does not stretch */
 .welcome-text {
   margin: 0;
+  font-size: 2rem;
+  font-weight: bold;
+  flex: 0 0 auto; /* Prevents stretching */
 }
 
-.menu-icons {
-  display: flex;
-  gap: 1rem;
+/* Position dropdown absolutely at top right */
+.dropdown {
+  position: absolute;
+  top: 50%;
+  right: 2rem;
+  transform: translateY(-50%);
+  z-index: 10;
+  /* Optional: add border or shadow for more separation */
+  /* border: 1px solid #fb923c; */
+  /* box-shadow: 0 2px 8px rgba(0,0,0,0.10); */
+  background: rgba(255,255,255,0.85); 
+  border-radius: 8px;
+  padding: 0.2rem 0.5rem;
 }
 
+/* New global dropdown class */
+.dropdown-global {
+  position: absolute;
+  top: 2rem;
+  right: 2rem;
+  z-index: 100;
+  border-radius: 8px;
+  padding: 0; /* Remove padding */
+}
+
+/* Icon button styling */
 .icon-btn {
   background: white;
   color: #fb923c;
@@ -85,26 +115,25 @@ footer {
   background: #ffe0b2;
 }
 
-.dropdown {
-  position: relative;
-  display: inline-block;
-}
-
+/* Dropdown button styling */
 .menu-btn {
-  background: white;
+  background: #f9f9f9;         /* Soft yellow background */
   color: #fb923c;
   border: none;
   padding: 0.5rem 1rem;
-  border-radius: 4px;
+  border-radius: 8px;          /* More rounded for modern look */
   font-weight: bold;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: background 0.2s, box-shadow 0.2s;
+  box-shadow: 0 2px 8px rgba(251, 146, 60, 0.10); /* Soft orange shadow */
 }
 
 .menu-btn:hover {
-  background: #ffe0b2;
+  background: #ffffff;         /* Slightly deeper yellow on hover */
+  box-shadow: 0 4px 12px rgba(251, 146, 60, 0.18);
 }
 
+/* Dropdown content styling */
 .dropdown-content {
   position: absolute;
   right: 0;
@@ -113,7 +142,7 @@ footer {
   min-width: 160px;
   box-shadow: 0 2px 6px rgba(0,0,0,0.15);
   border-radius: 4px;
-  z-index: 1;
+  z-index: 11;
   display: flex;
   flex-direction: column;
   padding: 0.5rem 0;
@@ -132,4 +161,61 @@ footer {
 
 .dropdown-content .icon-btn:hover {
   background: #ffe0b2;
+}
+
+.home-container {
+  min-height: 100vh;
+  background-image: url('/userbackground.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  position: relative;
+  /* Smooth fade-in for background */
+  transition: background-image 0.5s ease-in-out;
+}
+
+/* Glassmorphism overlay */
+.home-container::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.25); /* semi-transparent white */
+  backdrop-filter: blur(8px);
+  z-index: 0;
+}
+
+/* Make content appear above overlay */
+.home-header,
+.matches-section {
+  position: relative;
+  z-index: 1;
+  background: rgba(255, 255, 255, 0.55);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+  padding: 1.5rem 2rem;
+  margin: 2rem 0;
+  /* Glassmorphism effect */
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(255,255,255,0.18);
+  transition: background 0.3s;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+  .home-header,
+  .matches-section {
+    padding: 1rem;
+    margin: 1rem 0;
+  }
+  .dropdown {
+    right: 1rem;
+  }
+  .home-header {
+    padding: 1rem;
+    min-height: 60px;
+  }
 }

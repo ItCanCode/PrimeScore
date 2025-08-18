@@ -66,9 +66,9 @@ export const updateUser = async (req, res) => {
 
     // Update profile fields
     await userRef.update({
-      "profile.username": username,
+      "username": username,
       "profile.bio": bio,
-      "profile.picture": picture,
+      "picture": picture,
     });
 
     // Return updated user data
