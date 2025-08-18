@@ -14,7 +14,7 @@ async function handleGoogleSignup() {
     const result = await signInWithPopup(auth, provider);
     const idToken = await result.user.getIdToken();
 
-    const res = await fetch("http://localhost:3000/auth/google", {
+    const res = await fetch("https://prime-backend.azurewebsites.net/auth/google", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -26,7 +26,7 @@ async function handleGoogleSignup() {
     const data = await res.json();
     console.log(data);
     if(data.message=="Signup successful"){
-      navigate("/dashboard");
+      navigate("/admin");
     }
     else{
       alert("Sign up failed.");
