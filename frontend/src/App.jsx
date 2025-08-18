@@ -4,6 +4,8 @@ import AdminHome from "./Pages/adminHomepage";
 import { Routes, Route, Link } from 'react-router-dom';
 import Dashboard from "./Pages/DashBoard";
 import UserProfile from "./Pages/UserProfile"
+import UserHomepage from "./Pages/UserHomepage";
+
 
 function App() {
   return (
@@ -14,6 +16,7 @@ function App() {
         <Route path="/admin" element={<AdminHome/>}></Route>
         <Route path="/dashboard" element={<Dashboard/>} />
         <Route path="/profile" element={<UserProfile/>} />
+        <Route path="/user" element={<UserHomepage />} />
       </Routes>
 
     </>

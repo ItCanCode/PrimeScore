@@ -14,7 +14,7 @@ async function handleGoogleLogin() {
     const result = await signInWithPopup(auth, provider);
     const idToken = await result.user.getIdToken();
 
-    const res = await fetch("http://localhost:3000/auth/google", {
+    const res = await fetch("https://prime-backend.azurewebsites.net/auth/google", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -22,12 +22,18 @@ async function handleGoogleLogin() {
         action: "login"
       }),
     });
-    console.log(idToken);
+  
     const data = await res.json();
-    console.log(data);
+    const role = data.user.role;
     if(data.message=="Login successful"){
       localStorage.setItem("token", idToken);
-      navigate("/admin");
+      if(role=="viewer"){
+              navigate("/user");
+      }
+      else{
+        navigate("/admin");
+      }
+
     }
     else{
       alert("Login failed, sign up instead.");
