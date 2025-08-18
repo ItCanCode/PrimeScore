@@ -9,14 +9,13 @@ const initialForm = {
   venue: "",
 };
 
+const SPORT_OPTIONS = ["Football", "Basketball", "Tennis", "Cricket", "Rugby"];
+
 export default function AdminHome() {
   const [showModal, setShowModal] = useState(false);
   const [form, setForm] = useState(initialForm);
   const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState(null);
-
-// const backendUrl = import.meta.env.VITE_BACKEND_URL; //  https://prime-backend.azurewebsites.net
-// http://localhost:3000/api/admin/createMatch
 
   const onChange = (e) => {
     const { name, value } = e.target;
@@ -38,7 +37,6 @@ export default function AdminHome() {
     setSubmitting(true);
     setMessage(null);
 
- 
     const required = ["sportType", "matchName", "homeTeam", "awayTeam", "startTime", "venue"];
     const missing = required.filter((k) => !form[k]?.trim());
     if (missing.length) {
@@ -48,20 +46,10 @@ export default function AdminHome() {
     }
 
     try {
-    //   const res = await fetch(`${backendUrl}/api/admin/createMatch`, {
-        const res = await fetch(`https://prime-backend.azurewebsites.net/api/admin/createMatch`, {
-        
+      const res = await fetch(`https://prime-backend.azurewebsites.net/api/admin/createMatch`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-   
-        body: JSON.stringify({
-          sportType: form.sportType,
-          matchName: form.matchName,
-          homeTeam: form.homeTeam,
-          awayTeam: form.awayTeam,
-          startTime: form.startTime,
-          venue: form.venue,
-        }),
+        body: JSON.stringify(form),
       });
 
       const data = await res.json();
@@ -69,7 +57,6 @@ export default function AdminHome() {
         throw new Error(data?.error || data?.message || "Failed to create match");
       }
 
-    //   setMessage({ type: "success", text: `Match created (id: ${data.id || "n/a"})` });
       setForm(initialForm);
       setShowModal(false);
     } catch (err) {
@@ -105,7 +92,6 @@ export default function AdminHome() {
         <ul style={{ paddingLeft: "1.2rem" }}>
           <li>Create matches with home/away teams, start time, and venue.</li>
           <li>This page posts to <code>/api/admin/createMatch</code>.</li>
-         
         </ul>
       </section>
 
@@ -121,13 +107,17 @@ export default function AdminHome() {
             <form onSubmit={onSubmit} style={styles.form}>
               <label style={styles.label}>
                 Sport Type
-                <input
+                <select
                   name="sportType"
-                  placeholder="Football"
                   value={form.sportType}
                   onChange={onChange}
                   style={styles.input}
-                />
+                >
+                  <option value="">-- Select Sport --</option>
+                  {SPORT_OPTIONS.map((sport) => (
+                    <option key={sport} value={sport}>{sport}</option>
+                  ))}
+                </select>
               </label>
 
               <label style={styles.label}>
@@ -169,7 +159,7 @@ export default function AdminHome() {
                   Start Time
                   <input
                     name="startTime"
-                    placeholder="2025-08-15T15:00"
+                    type="datetime-local"
                     value={form.startTime}
                     onChange={onChange}
                     style={styles.input}
