@@ -73,7 +73,7 @@ function ProfileCard() {
     fetchUser();
   }, []);
 
-  if (!user) return <p>Crescent Hunk...</p>;
+  if (!user) return <p>Loading ...</p>;
 
   return (
     <section className="profile-card">
