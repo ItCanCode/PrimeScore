@@ -137,10 +137,11 @@ function WelcomePage() {
           </div>
           <div className="footer-section">
             <h4>Popular Sports</h4>
-            <a href="#">Football/Soccer</a>
             <a href="#">Basketball</a>
+            <a href="#">Football</a>
+            <a href='#'>Rugby</a>
             <a href="#">Tennis</a>
-            <a href="#">American Football</a>
+            <a href='#'>Volleyball</a>
           </div>
           <div className="footer-section">
             <h4>Community</h4>
