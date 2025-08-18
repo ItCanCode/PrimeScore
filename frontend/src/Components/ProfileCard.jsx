@@ -23,7 +23,7 @@ function ProfileCard() {
   async function handleSave() {
     const token = localStorage.getItem("token");
     try {
-      const res = await fetch("http://localhost:3000/api/users/me", {
+      const res = await fetch("https://prime-backend.azurewebsites.net/api/users/me", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -57,7 +57,7 @@ function ProfileCard() {
       const token = localStorage.getItem("token");
       if (!token) return;
 
-      const res = await fetch("http://localhost:3000/api/users/me", {
+      const res = await fetch("https://prime-backend.azurewebsites.net/api/users/me", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
