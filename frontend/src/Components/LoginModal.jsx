@@ -22,12 +22,18 @@ async function handleGoogleLogin() {
         action: "login"
       }),
     });
-    console.log(idToken);
+  
     const data = await res.json();
-    console.log(data);
+    const role = data.user.role;
     if(data.message=="Login successful"){
       localStorage.setItem("token", idToken);
-      navigate("/admin");
+      if(role=="viewer"){
+              navigate("/user");
+      }
+      else{
+        navigate("/admin");
+      }
+
     }
     else{
       alert("Login failed, sign up instead.");
