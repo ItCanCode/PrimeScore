@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import "../Styles/UserHomepage.css";
-
+import UpcomingMatches from '../Components/upcomingMatches';
 function UserHomepage() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
@@ -35,6 +35,8 @@ function UserHomepage() {
         <h3>Live Matches</h3>
         <p>No matches available right now.</p>
       </section>
+
+       <UpcomingMatches/>
     </main>
   );
 }
