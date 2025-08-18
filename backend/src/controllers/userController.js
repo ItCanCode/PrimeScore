@@ -45,9 +45,9 @@ export const updateUser = async (req, res) => {
     const userRef = db.collection('users').doc(userId);
 
     await userRef.update({
-      "profile.username": username,
+      "username": username,
       "profile.bio": bio,
-      "profile.picture": picture,
+      "picture": picture,
     });
 
     const updatedUser = await userRef.get();
