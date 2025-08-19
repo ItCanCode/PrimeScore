@@ -1,65 +1,83 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Calendar, Clock, MapPin, Trophy } from 'lucide-react';
-import '../styles/UpcomingMatches.css';
+import '../Styles/UpcomingMatches.css';
 
 const UpcomingMatches = () => {
-  const matches = [
-    {
-      id: 1,
-      homeTeam: "Manchester United",
-      awayTeam: "Liverpool",
-      venue: "Old Trafford",
-      startTime: "2025-08-20 15:00",
-      sportType: "Football",
-      status: "Scheduled"
-    },
-    {
-      id: 2,
-      homeTeam: "Lakers",
-      awayTeam: "Warriors",
-      venue: "Crypto.com Arena",
-      startTime: "2025-08-21 20:30",
-      sportType: "Basketball",
-      status: "Scheduled"
-    },
-    {
-      id: 3,
-      homeTeam: "England",
-      awayTeam: "Australia",
-      venue: "Lord's Cricket Ground",
-      startTime: "2025-08-22 11:00",
-      sportType: "Cricket",
-      status: "Confirmed"
-    },
-    {
-      id: 4,
-      homeTeam: "Real Madrid",
-      awayTeam: "Barcelona",
-      venue: "Santiago Bernabéu",
-      startTime: "2025-08-23 21:00",
-      sportType: "Football",
-      status: "Scheduled"
-    },
-    {
-      id: 5,
-      homeTeam: "Celtics",
-      awayTeam: "Heat",
-      venue: "TD Garden",
-      startTime: "2025-08-24 19:00",
-      sportType: "Basketball",
-      status: "Postponed"
-    },
-    {
-      id: 6,
-      homeTeam: "India",
-      awayTeam: "Pakistan",
-      venue: "Eden Gardens",
-      startTime: "2025-08-25 14:30",
-      sportType: "Cricket",
-      status: "Confirmed"
-    }
-  ];
+  const [matches, setMatches] = useState([]);
+  
+  useEffect(() => {
+    const fetchMatches = async () => {
+      try {
+        const response = await fetch('https://prime-backend.azurewebsites.net/api/users/viewMatches'); // ← 👈 Use your actual endpoint here
+        const data = await response.json();
+        console.log(data)
+        setMatches(data);
+      } catch (error) {
+        console.error("Error fetching matches:", error);
+      }
+    };
 
+    fetchMatches();
+
+    // setMatches([
+    //   {
+    //     id: 1,
+    //     homeTeam: "Manchester United",
+    //     awayTeam: "Liverpool",
+    //     venue: "Old Trafford",
+    //     startTime: "2025-08-20 15:00",
+    //     sportType: "Football",
+    //     status: "Scheduled"
+    //   },
+    //   {
+    //     id: 2,
+    //     homeTeam: "Lakers",
+    //     awayTeam: "Warriors",
+    //     venue: "Crypto.com Arena",
+    //     startTime: "2025-08-21 20:30",
+    //     sportType: "Basketball",
+    //     status: "Scheduled"
+    //   },
+    //   {
+    //     id: 3,
+    //     homeTeam: "England",
+    //     awayTeam: "Australia",
+    //     venue: "Lord's Cricket Ground",
+    //     startTime: "2025-08-22 11:00",
+    //     sportType: "Cricket",
+    //     status: "Confirmed"
+    //   },
+    //   {
+    //     id: 4,
+    //     homeTeam: "Real Madrid",
+    //     awayTeam: "Barcelona",
+    //     venue: "Santiago Bernabéu",
+    //     startTime: "2025-08-23 21:00",
+    //     sportType: "Football",
+    //     status: "Scheduled"
+    //   },
+    //   {
+    //     id: 5,
+    //     homeTeam: "Celtics",
+    //     awayTeam: "Heat",
+    //     venue: "TD Garden",
+    //     startTime: "2025-08-24 19:00",
+    //     sportType: "Basketball",
+    //     status: "Postponed"
+    //   },
+    //   {
+    //     id: 6,
+    //     homeTeam: "India",
+    //     awayTeam: "Pakistan",
+    //     venue: "Eden Gardens",
+    //     startTime: "2025-08-25 14:30",
+    //     sportType: "Cricket",
+    //     status: "Confirmed"
+    //   }
+    // ]);
+  }, []);
+
+  // Utility function to map match status to CSS classes
   const getStatusColor = (status) => {
     switch (status) {
       case 'Scheduled':
@@ -73,6 +91,7 @@ const UpcomingMatches = () => {
     }
   };
 
+  // Emoji icons by sport type
   const getSportIcon = (sport) => {
     switch (sport) {
       case 'Football':
@@ -86,6 +105,7 @@ const UpcomingMatches = () => {
     }
   };
 
+  // Gradient classes by sport type for styling
   const getSportGradientClass = (sport) => {
     switch (sport) {
       case 'Football':
@@ -99,17 +119,18 @@ const UpcomingMatches = () => {
     }
   };
 
+  // Format date and time nicely
   const formatDateTime = (dateTimeString) => {
     const date = new Date(dateTimeString);
-    const dateStr = date.toLocaleDateString('en-US', { 
-      weekday: 'short', 
-      month: 'short', 
-      day: 'numeric' 
+    const dateStr = date.toLocaleDateString('en-US', {
+      weekday: 'short',
+      month: 'short',
+      day: 'numeric',
     });
-    const timeStr = date.toLocaleTimeString('en-US', { 
-      hour: '2-digit', 
+    const timeStr = date.toLocaleTimeString('en-US', {
+      hour: '2-digit',
       minute: '2-digit',
-      hour12: false 
+      hour12: false,
     });
     return { dateStr, timeStr };
   };
@@ -123,7 +144,9 @@ const UpcomingMatches = () => {
             <Trophy className="header-icon" size={32} />
             Upcoming Matches
           </h1>
-          <p className="header-subtitle">Stay updated with the latest match schedules</p>
+          <p className="header-subtitle">
+            Stay updated with the latest match schedules
+          </p>
         </div>
       </div>
 
@@ -131,7 +154,7 @@ const UpcomingMatches = () => {
       <div className="matches-grid">
         {matches.map((match) => {
           const { dateStr, timeStr } = formatDateTime(match.startTime);
-          
+
           return (
             <div key={match.id} className="match-card">
               {/* Sport Header */}
@@ -141,9 +164,7 @@ const UpcomingMatches = () => {
                     <span className="sport-icon">{getSportIcon(match.sportType)}</span>
                     <span className="sport-name">{match.sportType}</span>
                   </div>
-                  <span className="status-label-header">
-                    {match.status}
-                  </span>
+                  <span className="status-label-header">{match.status}</span>
                 </div>
               </div>
 

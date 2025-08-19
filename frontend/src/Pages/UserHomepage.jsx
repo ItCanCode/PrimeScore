@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom"; // Add this import
 import "../Styles/UserHomepage.css";
 import UpcomingMatches from '../Components/upcomingMatches';
+
 function UserHomepage() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const navigate = useNavigate(); // Add this line
@@ -47,12 +48,7 @@ function UserHomepage() {
       </header>
 
       {/* Matches Section */}
-      <section className="matches-section">
-        <h3>Live Matches</h3>
-        <p>No matches available right now.</p>
-      </section>
-
-       <UpcomingMatches/>
+        <UpcomingMatches/>
     </main>
   );
 }
