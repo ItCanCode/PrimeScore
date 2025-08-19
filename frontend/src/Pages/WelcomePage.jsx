@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import '../Styles/WelcomePage.css';
 import LoginModal from '../Components/LoginModal.jsx';
 import SignupModal from '../Components/SignupModal.jsx';
-
+import Loading from '../Components/Loading.jsx';
 function WelcomePage() {
 
   const [modalType, setModalType] = useState('none');
@@ -21,25 +21,7 @@ function WelcomePage() {
 
   if (loading) {
     return (
-      <div className="loading-screen">
-        <div className="loading-container">
-          {/* Spinning loader */}
-          <div className="loader-wrapper">
-            <div className="loader main"></div>
-            <div className="loader overlay"></div>
-          </div>
-
-          {/* Loading text */}
-          <div className="loading-text">Loading ...</div>
-
-          {/* Animated dots */}
-          <div className="dots">
-            <div className="dot blue"></div>
-            <div className="dot purple"></div>
-            <div className="dot indigo"></div>
-          </div>
-        </div>
-      </div>
+      <Loading/>
     );
   }
  
