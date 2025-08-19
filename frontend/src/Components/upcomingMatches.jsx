@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Calendar, Clock, MapPin, Trophy } from 'lucide-react';
-import '../Styles/UpcomingMatches.css';
+import '../Styles/upcomingMatches.css';
 
 const UpcomingMatches = () => {
   const [matches, setMatches] = useState([]);
