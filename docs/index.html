@@ -1,153 +1,197 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  />
+  <meta name="color-scheme" content="light dark" />
   <title>PrimeScore Documentation</title>
-  <style>
-    body {
-      font-family: Arial, Helvetica, sans-serif;
-      margin: 0;
-      padding: 0;
-      line-height: 1.6;
-      background-color: #f9f9f9;
-      color: #333;
-    }
-    header {
-      background: #fb923c;
-      color: white;
-      padding: 1.2rem;
-      text-align: center;
-    }
-    nav {
-      background: #fb923c;
-      padding: 0.6rem;
-      text-align: center;
-    }
-    nav a {
-      color: white;
-      margin: 0 1rem;
-      text-decoration: none;
-      font-weight: bold;
-    }
-    nav a:hover {
-      text-decoration: underline;
-    }
-    main {
-      max-width: 900px;
-      margin: 2rem auto;
-      padding: 1rem;
-      background: white;
-      border-radius: 8px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    }
-    h2 {
-      border-bottom: 2px solid #006644;
-      padding-bottom: 0.3rem;
-      margin-top: 2rem;
-    }
-    pre {
-      background: #f4f4f4;
-      padding: 1rem;
-      overflow-x: auto;
-      border-radius: 4px;
-    }
-    footer {
-      text-align: center;
-      padding: 1rem;
-      margin-top: 2rem;
-      font-size: 0.9rem;
-      background: #eee;
-      color: #555;
-    }
-  </style>
+  <link rel="stylesheet" href="docs.css" />
 </head>
-<body>
 
-  <header>
-    <h1>PrimeScore Documentation</h1>
+<body>
+  <!-- Skip link for keyboard users -->
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header" role="banner">
+    <div class="container">
+      <h1 class="site-title">PrimeScore Documentation</h1>
+      <p class="site-tagline">Real-time sports feeds • Live updates • Admin tools</p>
+    </div>
   </header>
 
-  <nav>
-    <a href="#overview">Overview</a>
-    <a href="#architecture">Architecture</a>
-    <a href="#api">API</a>
-    <a href="#backlog">Sprint Backlog</a>
-    <a href="#setup">Setup Guide</a>
-    <a href="#git">Git Workflow</a>
+  <nav class="site-nav" aria-label="Primary">
+    <div class="container">
+      <ul class="nav-list">
+        <li><a href="#overview">Overview</a></li>
+        <li><a href="#architecture">Architecture</a></li>
+        <li><a href="#api">APIs</a></li>
+        <li><a href="#backlog">Sprint Backlog</a></li>
+        <li><a href="#stories">User Stories</a></li>
+        <li><a href="#setup">Setup Guide</a></li>
+        <li><a href="#git">Git Workflow</a></li>
+      </ul>
+    </div>
   </nav>
 
-  <main>
-    <section id="overview">
-      <h2>Project Overview</h2>
-      <p>PrimeScore is a real-time sports broadcasting and viewer 
-        experience tool that provides live updates, visualizations, 
-        and commentary feeds for ongoing games. </p>
-      <p> Match Viewer – View current score, game clock, possession, 
-        and key events (goals, fouls, etc.). Display structured data for fans, commentators, or organizers. </p>
-      <p> Event Feed – View live timeline of in-game events with timestamps and descriptions.– Animate key actions like substitutions or cards.</p>
-      <p>  Match Setup – Manually create matches and add teams, players, and expected schedule.</p>
-      <p>  Live Input – Manually input match events and score changes if not integrated with a live tools.– Supports pause/resume and timeline edits.</p>
-    </section>
-
-    <section id="architecture">
-      <h2>High-Level Architecture</h2>
-      <p>PrimeScore uses a client-server architecture:</p>
-      <ul>
-        <li><strong>Frontend (Client):</strong> React-based UI for users and administrators of the app</li>
-        <li><strong>Backend (Server):</strong> Node.js/Express APIs for game data, events, match creation forms and etc...</li>
-        <li><strong>Database:</strong> Firestore for real-time updates.</li>
-        <li><strong>Authentication:</strong>Firebase is used for authentication with only two roles , sign in as either admin or user</li>
-      </ul>
-      <img src="architecture.png" alt="High-level Architecture Diagram" style="max-width:100%; border:1px solid #ccc; border-radius:4px;">
-    </section>
-
-    <section id="api">
-      <h2>API List</h2>
-      <ul>
-        <li><code>GET /api/match/:id</code> – Fetch match details.</li>
-        <li><code>GET /api/events/:matchId</code> – Retrieve timeline of events.</li>
-        <li><code>POST /api/event</code> – Add a new game event.</li>
+  <main id="main" class="container" role="main">
+    <!-- Overview -->
+    <section id="overview" class="section" aria-labelledby="overview-title">
+      <header class="section-header">
+        <h2 id="overview-title">Project Overview</h2>
+      </header>
+      <p>
+        PrimeScore is a real-time sports broadcasting and viewer experience tool that provides live updates,
+        visualizations, and commentary feeds for ongoing games.
+      </p>
+      <ul class="bullets">
+        <li><strong>Match Viewer</strong> — View current score, game clock, possession, and key events (goals, fouls, etc.).</li>
+        <li><strong>Event Feed</strong> — Timeline of in-game events with timestamps (animate substitutions, cards).</li>
+        <li><strong>Match Setup</strong> — Create matches and add teams, players, and expected schedule.</li>
+        <li><strong>Live Input</strong> — Manually input events and score changes; supports pause/resume and timeline edits.</li>
       </ul>
     </section>
 
-    <section id="backlog">
-      <h2>Current Sprint Backlog</h2>
-      <ul>
+    <!-- Architecture -->
+    <section id="architecture" class="section" aria-labelledby="arch-title">
+      <header class="section-header">
+        <h2 id="arch-title">High-Level Architecture</h2>
+      </header>
+
+      <p>PrimeScore uses a client–server architecture:</p>
+      <ul class="bullets">
+        <li><strong>Frontend (React on Vercel):</strong> UI for viewers and admins.</li>
+        <li><strong>Backend (Node.js/Express on Azure):</strong> APIs for match setup, live updates, feeds, and display overlays.</li>
+        <li><strong>Database (Firestore):</strong> Real-time storage for matches, events, teams, and display state.</li>
+        <li><strong>Authentication (Firebase Auth):</strong> Roles: admin, viewer.</li>
+      </ul>
+
+      <figure class="figure">
+        <img src="architecture.png" alt="PrimeScore high-level architecture diagram" />
+        <figcaption>Figure 1 — System overview and data flow.</figcaption>
+      </figure>
+
+      <h3>UML Diagrams</h3>
+      <div class="media-grid">
+        <figure class="figure">
+          <img src="PrimeScore(use_cases).png" alt="PrimeScore use case diagram" />
+          <figcaption>Use Case Diagram</figcaption>
+        </figure>
+        <figure class="figure">
+          <img src="PrimeScore(state_diagram).png" alt="PrimeScore state diagram" />
+          <figcaption>State Diagram</figcaption>
+        </figure>
+      </div>
+
+      <h4>Basic Wireframe</h4>
+      <figure class="figure">
+        <img src="wireframe1.png" alt="Wireframe of PrimeScore home page layout" />
+        <figcaption>Low-fidelity wireframe for the home page.</figcaption>
+      </figure>
+    </section>
+
+    <!-- APIs -->
+    <section id="api" class="section" aria-labelledby="api-title">
+      <header class="section-header">
+        <h2 id="api-title">API List</h2>
+      </header>
+
+      <dl class="definition-list">
+        <dt><code>Live Update API</code></dt>
+        <dd>Receive and store stat events from external sources.</dd>
+
+        <dt><code>Feed API</code></dt>
+        <dd>Retrieve current state of the match for front-end display.</dd>
+
+        <dt><code>Match Setup API</code></dt>
+        <dd>CRUD for game meta (teams, match time, venue).</dd>
+
+        <dt><code>Display API</code></dt>
+        <dd>Serve structured game data to clients (scoreboards, overlays, etc.).</dd>
+      </dl>
+    </section>
+
+    <!-- Backlog -->
+    <section id="backlog" class="section" aria-labelledby="backlog-title">
+      <header class="section-header">
+        <h2 id="backlog-title">Current Sprint Backlog</h2>
+      </header>
+      <ul class="checklist">
         <li>Implement user authentication (sign in as admin or as viewer)</li>
         <li>Create a user homepage that shows upcoming matches</li>
-        <li>Create a user profile under the user homepage where the user can edit their personal details</li>
-        <li>Setup the Documentation site on github pages and add the link on the ReadMe file</li>
-        <li>setup backend testing and show the code coverage badge on the repo</li>
-        <li>Match Creation form on the admin page that must automatically reflect and an upcoming match on the user homepage</li>
+        <li>Create a user profile under the homepage where the user can edit personal details</li>
+        <li>Set up the documentation site on GitHub Pages and link it in the README</li>
+        <li>Set up backend testing and show a code coverage badge on the repo</li>
+        <li>Match creation form on the admin page that automatically reflects as an upcoming match on the user homepage</li>
       </ul>
     </section>
 
-    <section id="setup">
-      <h2>Developer Setup Guide</h2>
-      <pre>
-git clone https://github.com/your-repo/primescore.git
-cd frontend (on one terminal)
-cd backend (on another terminal)
-npm install
-npm run dev
-      </pre>
-      <p>Ensure you have Node.js and npm installed before running the commands above.</p>
+    <!-- User Stories -->
+    <section id="stories" class="section" aria-labelledby="stories-title">
+      <header class="section-header">
+        <h2 id="stories-title">Sprint 1 User Stories</h2>
+      </header>
+      <ol class="ordered">
+        <li>As a viewer, I want to create an account and log in, so that I can access my homepage.</li>
+        <li>As a viewer, I want to see upcoming matches on my homepage, so that I stay updated on events.</li>
+        <li>As a viewer, I want to open a profile page, so that I can view my profile details.</li>
+        <li>As a viewer, I want to edit my personal details, so that my profile stays up-to-date.</li>
+        <li>As a viewer, I want to log out and return to the Welcome page, so that I exit my session safely.</li>
+        <li>As a developer, I want to host a documentation site on GitHub Pages, so contributors can access docs easily.</li>
+        <li>As a developer, I want to set up backend testing, so that I can ensure the system works correctly.</li>
+        <li>As an admin, I want to create a match using a form, so that it appears under upcoming matches for viewers.</li>
+        <li>As an admin, I want to log in to the Admin page, so that I can access the admin homepage.</li>
+        <li>As a developer, I want to deploy the app to Vercel (frontend) and Azure (backend), so that it’s hosted online.</li>
+      </ol>
     </section>
 
-    <section id="git">
-      <h2>Git Workflow Overview</h2>
-      <ul>
-        <li><strong>Branching Strategy:</strong> Use <code>main</code> for stable code, feature branches for new work.</li>
-        <li><strong>Pull Requests:</strong> All code changes must be reviewed before merging.</li>
-        <li><strong>Commit Messages:</strong> Follow the format <code>type(scope): description</code>.</li>
+    <!-- Setup -->
+    <section id="setup" class="section" aria-labelledby="setup-title">
+      <header class="section-header">
+        <h2 id="setup-title">Developer Setup Guide</h2>
+      </header>
+
+      <pre class="code-block" aria-label="setup commands"><code>git clone https://github.com/your-repo/primescore.git
+
+# Terminal 1 (frontend)
+cd frontend
+npm install
+npm run dev
+
+# Terminal 2 (backend)
+cd backend
+npm install
+npm run dev
+</code></pre>
+
+      <p class="note">Ensure you have Node.js and npm installed before running the commands above.</p>
+    </section>
+
+    <!-- Git -->
+    <section id="git" class="section" aria-labelledby="git-title">
+      <header class="section-header">
+        <h2 id="git-title">Git Workflow Overview</h2>
+      </header>
+
+      <ul class="bullets">
+        <li><strong>Branching:</strong> <code>main</code> for stable code; feature branches for new work.</li>
+        <li><strong>Pull Requests:</strong> All changes go through PR review with at least one approval.</li>
+        <li><strong>Commit messages:</strong> Conventional commits: <code>type(scope): short description</code>.</li>
       </ul>
     </section>
   </main>
 
-  <footer>
-    <p>&copy; 2025 PrimeScore Team</p>
+  <footer class="site-footer" role="contentinfo">
+    <div class="container">
+      <p>&copy; <span id="year"></span> PrimeScore Team</p>
+    </div>
   </footer>
 
+  <script>
+    // Small enhancement: current year in footer
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
 </body>
 </html>

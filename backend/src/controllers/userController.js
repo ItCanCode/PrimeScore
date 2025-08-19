@@ -25,7 +25,19 @@ export const createUser = (req, res) => {
   users.push(newUser);
   res.status(201).json(newUser);
 };
+export const getMatches =async (req,res)=>{
+  const usersSnapshot = await admin.firestore().collection("matches").get();
+  usersSnapshot.forEach(doc => {
+  console.log(doc.id, doc.data().sportType);
+  
+});
 
+    const matches = usersSnapshot.docs.map(doc => ({
+      id: doc.id,             
+      ...doc.data()           
+    }));
+     return res.status(200).json(matches);
+}
 /**
  * Get the currently authenticated user from Firestore
  * @route GET /users/me
@@ -66,9 +78,9 @@ export const updateUser = async (req, res) => {
 
     // Update profile fields
     await userRef.update({
-      "profile.username": username,
+      "username": username,
       "profile.bio": bio,
-      "profile.picture": picture,
+      "picture": picture,
     });
 
     // Return updated user data

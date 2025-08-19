@@ -5,43 +5,44 @@ import { auth, provider } from "../firebase";
 import { signInWithPopup } from "firebase/auth";
 import { useNavigate } from 'react-router-dom';
 
+
 function LoginModal ({ closeModal,setModalType }){
     const navigate = useNavigate();
   
-async function handleGoogleLogin() {
-  try {
-    
-    const result = await signInWithPopup(auth, provider);
-    const idToken = await result.user.getIdToken();
+    async function handleGoogleLogin() {
+      try {
+        
+        const result = await signInWithPopup(auth, provider);
+        const idToken = await result.user.getIdToken();
 
-    const res = await fetch("https://prime-backend.azurewebsites.net/auth/google", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        idToken,
-        action: "login"
-      }),
-    });
-  
-    const data = await res.json();
-    const role = data.user.role;
-    if(data.message=="Login successful"){
-      localStorage.setItem("token", idToken);
-      if(role=="viewer"){
-              navigate("/user");
-      }
-      else{
-        navigate("/admin");
-      }
+        const res = await fetch("https://prime-backend.azurewebsites.net/auth/google", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            idToken,
+            action: "login"
+          }),
+        });
+      
+        const data = await res.json();
+        const role = data.user.role;
+        if(data.message=="Login successful"){
+          localStorage.setItem("token", idToken);
+          if(role=="viewer"){
+                  navigate("/user");
+          }
+          else{
+            navigate("/admin");
+          }
 
+        }
+        else{
+          alert("Login failed, sign up instead.");
+        }
+      } catch (err) {
+        console.error(err);
+      }
     }
-    else{
-      alert("Login failed, sign up instead.");
-    }
-  } catch (err) {
-    console.error(err);
-  }
-}
 
   return(
       
@@ -123,6 +124,7 @@ async function handleGoogleLogin() {
         </button>
       </div>
     </div>
+   
   </div>
   )
 
