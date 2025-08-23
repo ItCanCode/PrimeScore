@@ -62,11 +62,15 @@
 
       <p>PrimeScore uses a client–server architecture:</p>
       <ul class="bullets">
-        <li><strong>Frontend (React on Vercel):</strong> UI for viewers and admins.</li>
-        <li><strong>Backend (Node.js/Express on Azure):</strong> APIs for match setup, live updates, feeds, and display overlays.</li>
-        <li><strong>Database (Firestore):</strong> Real-time storage for matches, events, teams, and display state.</li>
-        <li><strong>Authentication (Firebase Auth):</strong> Roles: admin, viewer.</li>
-      </ul>
+      <li><strong>Frontend (React on Vercel):</strong> Chosen because React’s component-based structure makes it ideal for building dynamic UIs like scoreboards and dashboards, while Vercel provides seamless deployments, global CDN, and automatic scaling for fast access worldwide.</li>
+
+      <li><strong>Backend (Node.js/Express on Azure):</strong> Selected for its ability to handle real-time data efficiently. Node.js/Express offers lightweight, scalable APIs for match setup and live feeds, while Azure provides reliability, monitoring, and scalability as the platform grows.</li>
+
+      <li><strong>Database (Firestore):</strong> Used for its real-time synchronization capabilities, ensuring that match updates, team changes, and events appear instantly for all users. Firestore also scales automatically and integrates smoothly with Firebase services.</li>
+
+      <li><strong>Authentication (Firebase Auth):</strong> Provides secure, role-based access management. It was chosen because it supports multiple authentication methods and allows us to easily manage roles (admin, manager, viewer) with minimal setup.</li>
+    </ul>
+
 
       <figure class="figure">
         <img src="architecture.png" alt="PrimeScore high-level architecture diagram" />
