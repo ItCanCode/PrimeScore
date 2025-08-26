@@ -2,7 +2,7 @@ body {
   font-family: Arial, Helvetica, sans-serif;
   margin: 0;
   padding: 0;
-  background-image: url("back3.jpg");
+  background-image: url("/back3.jpg");
   /*color: #ffffff;*/
   min-height: 100vh;
 }
