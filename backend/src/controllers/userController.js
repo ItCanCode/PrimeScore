@@ -17,14 +17,14 @@ export const getAllUsers = (req, res) => {
  * Create a new user (adds to in-memory array)
  * @route POST /users
  */
-// export const createUser = (req, res) => {
-//   const newUser = {
-//     id: users.length + 1,
-//     name: req.body.name
-//   };
-//   users.push(newUser);
-//   res.status(201).json(newUser);
-// };
+export const createUser = (req, res) => {
+  const newUser = {
+    id: users.length + 1,
+    name: req.body.name
+  };
+  users.push(newUser);
+  res.status(201).json(newUser);
+};
 export const getMatches =async (req,res)=>{
   const usersSnapshot = await admin.firestore().collection("matches").get();
   usersSnapshot.forEach(doc => {
