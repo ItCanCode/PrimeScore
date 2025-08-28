@@ -1,5 +1,4 @@
 import admin from "../config/firebaseAdmin.js";
-import cloudinary from "../config/cloudinary.js";
 
 const db = admin.firestore();
 
@@ -90,37 +89,5 @@ export const updateUser = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Failed to update profile" });
-  }
-};
-
-export const uploadImage = async (req, res) => {
-  try {
-    if (!req.file) {
-      console.error("❌ No file received");
-      return res.status(400).json({ error: "No file uploaded" });
-    }
-
-    console.log("📂 Uploading file:", req.file.originalname);
-
-    const result = await new Promise((resolve, reject) => {
-      const stream = cloudinary.uploader.upload_stream(
-        { folder: "test_uploads" },
-        (error, result) => {
-          if (error) {
-            console.error("❌ Cloudinary error:", error);
-            reject(error);
-          } else {
-            console.log("✅ Uploaded successfully:", result.secure_url);
-            resolve(result);
-          }
-        }
-      );
-      stream.end(req.file.buffer);
-    });
-
-    res.json({ url: result.secure_url });
-  } catch (err) {
-    console.error("🔥 Upload failed:", err);
-    res.status(500).json({ error: "Image upload failed" });
   }
 };
