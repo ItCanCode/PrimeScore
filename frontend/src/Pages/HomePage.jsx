@@ -10,7 +10,7 @@ function HomePage() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const navigate = useNavigate();
 
-  // Simulate loading
+
   useEffect(() => {
     const timer = setTimeout(() => {
       setLoading(false);
@@ -63,6 +63,11 @@ function HomePage() {
                 Matches
               </a>
             </li>
+            <li>
+              <a href="#manager" onClick={() => navigate("/manager")}>
+                Manage Team
+              </a>
+            </li>
           </ul>
           <div className="auth-buttons">
             <button
@@ -104,7 +109,6 @@ function HomePage() {
         </div>
       </nav>
 
-      {/* Hero Section */}
       <section className="hero" id="home">
         {/* Floating Sports Icons */}
         <div className="floating-icon icon-1">⚽</div>
