@@ -2,21 +2,24 @@ body {
   font-family: Arial, Helvetica, sans-serif;
   margin: 0;
   padding: 0;
-  background-color: #f9f9f9;
-  color: #333;
+  background-image: url("/back3.jpg");
+  /*color: #ffffff;*/
+  min-height: 100vh;
 }
 
 .header {
-  background: #fb923c;
+  background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
   color: white;
   padding: 1.2rem;
   text-align: center;
+  box-shadow: 0 4px 20px rgba(255, 107, 53, 0.3);
 }
 
 .nav {
-  background: #fb923c;
+  background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
   padding: 0.6rem;
   text-align: center;
+  box-shadow: 0 2px 10px rgba(255, 107, 53, 0.2);
 }
 
 .nav a {
@@ -24,25 +27,37 @@ body {
   margin: 0 1rem;
   text-decoration: none;
   font-weight: bold;
+  transition: all 0.3s ease;
 }
 
 .nav a:hover {
   text-decoration: underline;
+  color: #ffffff;
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
 }
 
 .main {
   max-width: 900px;
   margin: 2rem auto;
   padding: 1rem;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(12px);
+  border-radius: 20px;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #2a2a5a;
+  position: relative;
+  z-index: 1;
+  animation: fadeInUp 0.8s ease-out forwards;
 }
 
 h2 {
-  border-bottom: 2px solid #006644;
+  border-bottom: 2px solid #ff6b35;
   padding-bottom: 0.3rem;
   margin-top: 2rem;
+  color: #2a2a5a;
 }
 
 footer {
@@ -50,20 +65,36 @@ footer {
   padding: 1rem;
   margin-top: 2rem;
   font-size: 0.9rem;
+  color: #2a2a5a;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  border-radius: 15px;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  position: relative;
+  z-index: 1;
 }
 
 /* Header setup for separation */
 .home-header {
   display: flex;
   align-items: center;
-  background: rgba(255, 255, 255, 0.55);
-  color: #fb923c;
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(12px);
+  color: #2a2a5a;
   padding: 1.5rem 2rem;
   margin: 2rem 0;
-  border-radius: 16px;
-  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+  border-radius: 20px;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   position: relative;
-  min-height: 80px; /* Ensures enough height for separation */
+  min-height: 80px;
+  z-index: 1;
+  animation: fadeInUp 0.8s ease-out forwards;
 }
 
 /* Welcome text stays left, does not stretch */
@@ -71,7 +102,9 @@ footer {
   margin: 0;
   font-size: 2rem;
   font-weight: bold;
-  flex: 0 0 auto; /* Prevents stretching */
+  flex: 0 0 auto;
+  color: #2a2a5a;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 /* Position dropdown absolutely at top right */
@@ -80,13 +113,7 @@ footer {
   top: 50%;
   right: 2rem;
   transform: translateY(-50%);
-  z-index: 10;
-  /* Optional: add border or shadow for more separation */
-  /* border: 1px solid #fb923c; */
-  /* box-shadow: 0 2px 8px rgba(0,0,0,0.10); */
-  background: rgba(255,255,255,0.85); 
-  border-radius: 8px;
-  padding: 0.2rem 0.5rem;
+  z-index: 100;
 }
 
 /* New global dropdown class */
@@ -95,42 +122,31 @@ footer {
   top: 2rem;
   right: 2rem;
   z-index: 100;
-  border-radius: 8px;
-  padding: 0; /* Remove padding */
+  border-radius: 12px;
+  padding: 0;
 }
 
-/* Icon button styling */
-.icon-btn {
-  background: white;
-  color: #fb923c;
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.icon-btn:hover {
-  background: #ffe0b2;
-}
+/* Icon button styling - REMOVED to use unified menu-btn */
 
 /* Dropdown button styling */
 .menu-btn {
-  background: #f9f9f9;         /* Soft yellow background */
-  color: #fb923c;
+  background: rgba(255, 255, 255, 0.9);
+  color: #ff6b35;
   border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 8px;          /* More rounded for modern look */
-  font-weight: bold;
+  padding: 0.75rem 1.25rem;
+  border-radius: 12px;
+  font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s, box-shadow 0.2s;
-  box-shadow: 0 2px 8px rgba(251, 146, 60, 0.10); /* Soft orange shadow */
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(255, 107, 53, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  font-size: 0.95rem;
 }
 
 .menu-btn:hover {
-  background: #ffffff;         /* Slightly deeper yellow on hover */
-  box-shadow: 0 4px 12px rgba(251, 146, 60, 0.18);
+  background: rgba(255, 255, 255, 1);
+  box-shadow: 0 6px 20px rgba(255, 107, 53, 0.3);
+  transform: translateY(-2px);
 }
 
 /* Dropdown content styling */
@@ -138,54 +154,70 @@ footer {
   position: absolute;
   right: 0;
   top: 110%;
-  background: white;
-  min-width: 160px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-  border-radius: 4px;
-  z-index: 11;
-  display: flex;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  min-width: 180px;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  z-index: 101;
+  display: none;
   flex-direction: column;
   padding: 0.5rem 0;
 }
 
-.dropdown-content .icon-btn {
-  color: #fb923c;
+.dropdown-content.show {
+  display: flex;
+}
+
+.dropdown-content .nav-link {
+  color: #2a2a5a;
   background: none;
   border: none;
   text-align: left;
-  padding: 0.5rem 1rem;
+  padding: 0.75rem 1.25rem;
   width: 100%;
   border-radius: 0;
-  font-weight: normal;
+  font-weight: 500;
+  box-shadow: none;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: block;
 }
 
-.dropdown-content .icon-btn:hover {
-  background: #ffe0b2;
+.dropdown-content .nav-link:hover {
+  background: linear-gradient(135deg, rgba(255, 107, 53, 0.1) 0%, rgba(247, 147, 30, 0.1) 100%);
+  color: #ff6b35;
 }
 
 .home-container {
   min-height: 100vh;
-  background-image: url('/userbackground.jpg');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
+  background: linear-gradient(135deg, #1e1e3f 0%, #2a2a5a 50%, #1a1a2e 100%);
+  background-image:
+    radial-gradient(circle at 20% 10%, rgba(255, 107, 53, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(247, 147, 30, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 40% 60%, rgba(255, 130, 67, 0.05) 0%, transparent 50%);
+  background-size: 100% 100%;
+  background-attachment: fixed;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
   position: relative;
-  /* Smooth fade-in for background */
   transition: background-image 0.5s ease-in-out;
 }
 
-/* Glassmorphism overlay */
+/* Unified glassmorphism overlay */
 .home-container::before {
   content: "";
-  position: absolute;
+  position: fixed;
   inset: 0;
-  background: rgba(255, 255, 255, 0.25); /* semi-transparent white */
-  backdrop-filter: blur(8px);
+  background: rgba(0, 0, 0, 0.05);
+  backdrop-filter: blur(1px);
   z-index: 0;
+  pointer-events: none;
 }
 
 /* Make content appear above overlay */
@@ -193,15 +225,26 @@ footer {
 .matches-section {
   position: relative;
   z-index: 1;
-  background: rgba(255, 255, 255, 0.55);
-  border-radius: 16px;
-  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(12px);
+  border-radius: 20px;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   padding: 1.5rem 2rem;
   margin: 2rem 0;
-  /* Glassmorphism effect */
-  backdrop-filter: blur(4px);
-  border: 1px solid rgba(255,255,255,0.18);
-  transition: background 0.3s;
+  transition: all 0.3s ease;
+  animation: fadeInUp 0.8s ease-out forwards;
+}
+
+.matches-section {
+  color: #2a2a5a;
+}
+
+.matches-section h2 {
+  color: #2a2a5a;
+  border-bottom: 2px solid #ff6b35;
 }
 
 /* Responsive adjustments */
@@ -217,5 +260,36 @@ footer {
   .home-header {
     padding: 1rem;
     min-height: 60px;
+  }
+  
+  .welcome-text {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .welcome-text {
+    font-size: 1.25rem;
+  }
+  
+  .menu-btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+  }
+  
+  .dropdown-content {
+    min-width: 140px;
+  }
+}
+
+/* Add unified animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
