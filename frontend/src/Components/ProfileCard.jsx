@@ -2,28 +2,41 @@ import { useEffect, useState } from "react";
 import "../Styles/Profile.css";
 import Loading from "./Loading";
 function ProfileCard() {
-  
-    const [user, setUser] = useState(null);
-    const [isEditing, setIsEditing] = useState(false);
-    const [bio, setBio] = useState("");
-    const [username, setUsername] = useState("");
-    const [picture, setPicture] = useState("");
+  const [user, setUser] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [bio, setBio] = useState("");
+  const [username, setUsername] = useState("");
+  const [picture, setPicture] = useState("");
+  const [pictureFile, setPictureFile] = useState(null);
 
-    function handlePictureChange(e) {
-        
-        const uploadedFile = e.target.files[0];
-        
-        if (uploadedFile) {
-            const reader = new FileReader();
-            reader.onload = () => setPicture(reader.result);
-            reader.readAsDataURL(uploadedFile);
-        }
+  function handlePictureChange(e) {
+    const file = e.target.files[0];
+    if (file) {
+      setPictureFile(file);
+      setPicture(URL.createObjectURL(file));
     }
+  }
+
+  async function uploadImage() {
+    if (!pictureFile) return picture;
+    const token = localStorage.getItem("token");
+    const formData = new FormData();
+    formData.append("picture", pictureFile);
+    const res = await fetch("http://localhost:3000/api/users/upload", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${token}` },
+      body: formData,
+    });
+    if (!res.ok) throw new Error("Image upload failed");
+    const data = await res.json();
+    return data.url;
+  }
 
   async function handleSave() {
     const token = localStorage.getItem("token");
     try {
-      const res = await fetch("https://prime-backend.azurewebsites.net/api/users/me", {
+      const uploadedUrl = await uploadImage();
+      const res = await fetch("http://localhost:3000/api/users/me", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -32,44 +45,35 @@ function ProfileCard() {
         body: JSON.stringify({
           username,
           bio,
-          picture,
+          picture: uploadedUrl,
         }),
       });
-
       const data = await res.json();
-
       if (res.ok) {
-        setUser(data.user); 
+        setUser(data.user);
         setIsEditing(false);
-      } 
-      else {
+        setPictureFile(null);
+      } else {
         console.error(data.error);
       }
-    } 
-    catch (err) {
-        console.error(err);
+    } catch (err) {
+      console.error(err);
     }
   }
-
 
   useEffect(() => {
     const fetchUser = async () => {
       const token = localStorage.getItem("token");
       if (!token) return;
-
-      const res = await fetch("https://prime-backend.azurewebsites.net/api/users/me", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+      const res = await fetch("http://localhost:3000/api/users/me", {
+        headers: { Authorization: `Bearer ${token}` },
       });
-
       const data = await res.json();
       setUser(data.user);
       setUsername(data.user.username);
       setBio(data.user.profile?.bio || "");
       setPicture(data.user.picture || "");
     };
-
     fetchUser();
   }, []);
 
@@ -78,19 +82,15 @@ function ProfileCard() {
   return (
     <section className="profile-card">
       <header>My Profile</header>
-
       <section className="profile-picture">
         <img src={picture} alt={username} className="picture" />
-
         {isEditing && (
           <input type="file" accept="image/*" onChange={handlePictureChange} />
         )}
-
         <button className="edit-btn" onClick={() => setIsEditing(!isEditing)}>
           {isEditing ? "Cancel" : "Edit Profile"}
         </button>
       </section>
-
       <section className="profile-info">
         {isEditing ? (
           <>
