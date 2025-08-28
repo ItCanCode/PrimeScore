@@ -25,16 +25,16 @@ function LoginModal ({ closeModal,setModalType }){
         });
       
         const data = await res.json();
-        const role = data.user.role;
+        // const role = data.user.role;
         if(data.message=="Login successful"){
           localStorage.setItem("token", idToken);
-          if(role=="viewer"){
-                  navigate("/user");
-          }
-          else{
-            navigate("/admin");
-          }
-
+          // if(role=="viewer"){
+          //         navigate("/user");
+          // }
+          // else{
+          //   navigate("/admin");
+          // }
+          navigate("/home");
         }
         else{
           alert("Login failed, sign up instead.");
