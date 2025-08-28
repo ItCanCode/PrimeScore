@@ -5,6 +5,7 @@ import { Routes, Route, Link } from 'react-router-dom';
 import Dashboard from "./Pages/DashBoard";
 import UserProfile from "./Pages/UserProfile"
 import UserHomepage from "./Pages/UserHomepage";
+import ManagerHomepage from "./Pages/managerHomepage";
 
 
 function App() {
@@ -17,6 +18,7 @@ function App() {
         <Route path="/dashboard" element={<Dashboard/>} />
         <Route path="/profile" element={<UserProfile/>} />
         <Route path="/user" element={<UserHomepage />} />
+        <Route path="/manager" element={<ManagerHomepage />}></Route>
       </Routes>
 
     </>
