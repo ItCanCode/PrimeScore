@@ -25,11 +25,14 @@ function LoginModal ({ closeModal,setModalType }){
         });
       
         const data = await res.json();
-        // const role = data.user.role;
+        const role = data.user.role;
         if(data.message=="Login successful"){
           localStorage.setItem("token", idToken);
-          if(data.user.role=="viewer"){
+          if(role=="viewer"){
               navigate("/home");
+          }
+          else if(role == "manager"){
+            navigate("/manager");
           }
           else{
             navigate("/admin");
