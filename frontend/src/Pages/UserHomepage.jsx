@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom"; // Add this import
 import "../Styles/UserHomepage.css";
+import UpcomingMatches from '../Components/upcomingMatches';
 
 function UserHomepage() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -17,7 +18,7 @@ function UserHomepage() {
   return (
     <main className="home-container">
       {/* Dropdown Menu at top right */}
-      <div className="dropdown-global">
+      <section className="dropdown-global">
         <button
           className="menu-btn"
           onClick={() => setDropdownOpen((open) => !open)}
@@ -27,7 +28,7 @@ function UserHomepage() {
           Menu &#x25BC;
         </button>
         {dropdownOpen && (
-          <div className="dropdown-content">
+          <section className="dropdown-content">
             <button className="icon-btn" title="Notifications">Notifications</button>
             <button
               className="icon-btn"
@@ -37,9 +38,9 @@ function UserHomepage() {
               Profile
             </button>
             <button className="icon-btn" title="Logout" onClick={handleLogout}>Logout</button>
-          </div>
+          </section>
         )}
-      </div>
+      </section>
 
       {/* Header */}
       <header className="home-header">
@@ -47,10 +48,7 @@ function UserHomepage() {
       </header>
 
       {/* Matches Section */}
-      <section className="matches-section">
-        <h3>Live Matches</h3>
-        <p>No matches available right now.</p>
-      </section>
+        <UpcomingMatches/>
     </main>
   );
 }

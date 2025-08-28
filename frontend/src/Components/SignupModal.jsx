@@ -26,7 +26,7 @@ async function handleGoogleSignup() {
     const data = await res.json();
     console.log(data);
     if(data.message=="Signup successful"){
-      navigate("/admin");
+      navigate("/user");
     }
     else{
       alert("Sign up failed.");

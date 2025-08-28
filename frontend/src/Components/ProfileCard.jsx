@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import "../Styles/Profile.css";
-
+import Loading from "./Loading";
 function ProfileCard() {
   const [user, setUser] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
@@ -77,7 +77,7 @@ function ProfileCard() {
     fetchUser();
   }, []);
 
-  if (!user) return <p>Loading ...</p>;
+  if (!user) return <Loading/>;
 
   return (
     <section className="profile-card">
