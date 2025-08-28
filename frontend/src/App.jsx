@@ -6,6 +6,8 @@ import Dashboard from "./Pages/DashBoard";
 import UserProfile from "./Pages/UserProfile"
 import UserHomepage from "./Pages/UserHomepage";
 import SportsSelector from "./Pages/SportsSelector";
+import ManagerHomepage from "./Pages/managerHomepage";
+
 
 function App() {
   return (
@@ -18,6 +20,8 @@ function App() {
         <Route path="/profile" element={<UserProfile/>} />
         <Route path="/user" element={<UserHomepage />} />
         <Route path="/sports" element={<SportsSelector/>}/>
+        <Route path="/manager" element={<ManagerHomepage />}></Route>
+
       </Routes>
 
     </>
