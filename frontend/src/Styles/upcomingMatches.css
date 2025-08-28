@@ -137,7 +137,12 @@
   background: linear-gradient(135deg, rgba(255, 107, 53, 0.1) 0%, rgba(247, 147, 30, 0.1) 100%);
   color: #ff6b35;
 }
-
+.loading-message {
+  text-align: center;
+  font-size: 1.25rem;
+  padding: 2rem;
+  color: #4d7727;
+}
 /* Matches Grid */
 .matches-grid {
   display: grid;

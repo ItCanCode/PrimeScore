@@ -1,4 +1,4 @@
-
+import { useNavigate } from 'react-router-dom';
 import { ChevronRight, Home, Trophy, Users, Calendar } from 'lucide-react';
 import '../Styles/SportsSelector.css'; // import the CSS file
 
@@ -11,6 +11,8 @@ const SportsSelector = () => {
 
   ];
 
+  const navigate = useNavigate();
+
   const renderHomePage = () => (
     <div className="home-bg">
       <div className="container-wrapper">
@@ -22,7 +24,12 @@ const SportsSelector = () => {
           {sports.map((sport) => (
             <div
               key={sport.id}
-              onClick={() => {}}
+              onClick={() => {
+                if(sport.id == 'football'){
+                    navigate("/user")
+                }
+               
+              }}
               className="sport-card"
             >
               <div className="card-content">
