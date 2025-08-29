@@ -32,7 +32,7 @@ function LoginModal ({ closeModal,setModalType }){
               navigate("/home");
           }
           else if(role == "manager"){
-            navigate("/manager");
+            navigate("/home");
           }
           else{
             navigate("/admin");
