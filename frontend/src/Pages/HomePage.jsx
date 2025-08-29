@@ -64,7 +64,7 @@ function HomePage() {
               </a>
             </li>
             <li>
-              <a href="" onClick={() => navigate("/management")}>
+              <a href="#management" onClick={() => navigate("/management")}>
                 Manage Team
               </a>
             </li>
