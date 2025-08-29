@@ -1,3 +1,43 @@
+/* --- Dropdown Restructure for Maximum Visibility --- */
+.home .auth-buttons {
+  position: relative;
+  overflow: visible;
+  z-index: 10000;
+}
+
+.home .dropdown-content {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  min-width: 200px;
+  background: #fff;
+  color: #222;
+  border: 2px solid #ff6b35;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+  z-index: 99999;
+  padding: 1rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.home .dropdown-item {
+  background: none;
+  border: none;
+  color: #222;
+  text-align: left;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: background 0.2s, color 0.2s;
+}
+
+.home .dropdown-item:hover {
+  background: #ff6b35;
+  color: #fff;
+}
 /* Global Reset for Home Page */
 .home * {
   margin: 0;
@@ -116,7 +156,7 @@
   padding: 0.8rem 1.5rem;
   background: none;
   border: none;
-  color: rgba(255, 255, 255, 0.9);
+  color: rgba(197, 55, 55, 0.9);
   text-align: left;
   cursor: pointer;
   transition: all 0.3s ease;
