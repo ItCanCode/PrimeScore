@@ -131,6 +131,8 @@ function ManagerHomepage() {
                   <option value="Rugby">Rugby</option>
                   <option value="Hockey">Hockey</option>
                   <option value="Tennis">Tennis</option>
+                  <option value="Volleyball">Volleyball</option>
+                  <option value="other">Other</option>
                 </select>
               </label>
               <label>

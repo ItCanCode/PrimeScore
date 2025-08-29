@@ -85,7 +85,7 @@ function HomePage() {
                   title="Notifications"
                   onClick={() => {}}
                 >
-                  📢 Notifications
+                   Notifications
                 </button>
 
                 <button
@@ -93,7 +93,7 @@ function HomePage() {
                   title="Profile"
                   onClick={() => navigate("/profile")}
                 >
-                  👤 Profile
+                   Profile
                 </button>
 
                 <button 
@@ -101,7 +101,7 @@ function HomePage() {
                   title="Logout" 
                   onClick={handleLogout}
                 >
-                  🚪 Logout
+                   Logout
                 </button>
               </div>
             )}
