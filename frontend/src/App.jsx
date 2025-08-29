@@ -5,12 +5,14 @@ import { Routes, Route, Link } from 'react-router-dom';
 import Dashboard from "./Pages/DashBoard";
 import UserProfile from "./Pages/UserProfile"
 import UserHomepage from "./Pages/UserHomepage";
+import LiveApi from "./Pages/liveapi";
 
 
 function App() {
   return (
     <>
       <Routes>
+        <Route path="/err" element={<LiveApi/>}/>
         <Route path="/" element={<WelcomePage />} />
         <Route path="/home" element={<HomePage />} />
         <Route path="/admin" element={<AdminHome/>}></Route>
