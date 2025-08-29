@@ -7,7 +7,7 @@ import UserProfile from "./Pages/UserProfile"
 import UserHomepage from "./Pages/UserHomepage";
 import SportsSelector from "./Pages/SportsSelector";
 import ManagerHomepage from "./Pages/managerHomepage";
-
+import TeamManagement from "./Pages/TeamManagement";
 
 function App() {
   return (
@@ -21,6 +21,7 @@ function App() {
         <Route path="/user" element={<UserHomepage />} />
         <Route path="/sports" element={<SportsSelector/>}/>
         <Route path="/manager" element={<ManagerHomepage />}/>
+        <Route path="/management" element={<TeamManagement />}/>
       </Routes>
 
     </>
