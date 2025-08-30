@@ -1,0 +1,238 @@
+/* Root */
+.mai-root {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  color: white;
+  font-family: Arial, sans-serif;
+  position: relative;
+}
+
+/* Header navigation */
+.mai-nav {
+  background-color: #030f24;
+  border-bottom: 1px solid #374151;
+  padding: 16px 24px;
+}
+
+.mai-nav-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.mai-logo {
+  font-size: 24px;
+  font-weight: bold;
+  color: #f97316;
+}
+
+.mai-nav-links a {
+  margin-left: 24px;
+  color: #d1d5db;
+  text-decoration: none;
+}
+
+.mai-nav-links a:hover {
+  color: white;
+}
+
+.mai-active-link {
+  color: #f97316;
+  font-weight: 500;
+}
+
+.mai-nav-buttons {
+  display: flex;
+  gap: 12px;
+}
+
+.mai-create-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background-color: #f97316;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.mai-create-btn:hover {
+  background-color: #ea580c;
+}
+
+.mai-menu-btn {
+  background: none;
+  border: none;
+  color: #d1d5db;
+  cursor: pointer;
+}
+
+/* Container */
+.mai-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px 24px;
+}
+
+.mai-page-header h2 {
+  font-size: 28px;
+  margin-bottom: 8px;
+}
+
+.mai-page-header p {
+  color: #9ca3af;
+}
+
+/* Form styles */
+.mai-match-form {
+  background-color: #1e293b;
+  border: 1px solid #374151;
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 32px;
+}
+
+.mai-match-form h3 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 20px;
+  margin-bottom: 16px;
+  color: white;
+}
+
+.mai-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.mai-form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.mai-form-group label {
+  margin-bottom: 6px;
+  font-size: 14px;
+  color: #d1d5db;
+}
+
+.mai-form-group input,
+.mai-form-group select {
+  padding: 8px 12px;
+  border: 1px solid #374151;
+  border-radius: 8px;
+  background-color: #1f2937;
+  color: white;
+}
+
+.mai-form-actions {
+  grid-column: span 2;
+  display: flex;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.mai-cancel-btn {
+  padding: 8px 16px;
+  border: 1px solid #374151;
+  border-radius: 8px;
+  background: none;
+  color: #d1d5db;
+  cursor: pointer;
+}
+
+.mai-cancel-btn:hover {
+  background-color: #374151;
+}
+
+/* Matches list */
+.mai-matches-list {
+  background-color: #1e293b;
+  border: 1px solid #374151;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.mai-matches-header {
+  padding: 16px;
+  border-bottom: 1px solid #374151;
+}
+
+.mai-matches-header h3 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mai-matches-body {
+  padding: 16px;
+}
+
+.mai-match-card {
+  background-color: #1f2937;
+  border: 1px solid #374151;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.mai-match-card:hover {
+  background-color: #374151;
+  border-color: #f97316;
+}
+
+.mai-match-info .mai-sport-tag {
+  background-color: rgba(249, 115, 22, 0.2);
+  color: #f97316;
+  padding: 2px 8px;
+  border-radius: 16px;
+  font-size: 12px;
+  margin-right: 8px;
+}
+
+.mai-match-info h4 {
+  font-size: 18px;
+  margin: 8px 0;
+}
+
+.mai-teams {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 500;
+}
+
+.mai-match-meta {
+  display: flex;
+  gap: 16px;
+  font-size: 14px;
+  color: #9ca3af;
+  margin-top: 8px;
+}
+
+.mai-no-matches {
+  text-align: center;
+  padding: 64px 0;
+  color: #9ca3af;
+}
+
+/* Floating icons */
+.mai-floating-icons .mai-icon {
+  position: absolute;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.2;
+}
+
+.mai-icon-soccer { top: 80px; left: 40px; width: 48px; height: 48px; background-color: #3b82f6; }
+.mai-icon-basketball { top: 160px; right: 80px; width: 40px; height: 40px; background-color: #f97316; }
+.mai-icon-tennis { bottom: 160px; left: 80px; width: 32px; height: 32px; background-color: #a78bfa; }
+.mai-icon-football { top: 240px; left: 33%; width: 40px; height: 40px; background-color: #facc15; }
+.mai-icon-tabletennis { bottom: 240px; right: 40px; width: 32px; height: 32px; background-color: #ec4899; }
+.mai-icon-volleyball { bottom: 80px; right: 33%; width: 40px; height: 40px; background-color: #22c55e; }
