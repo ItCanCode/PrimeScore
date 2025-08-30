@@ -25,7 +25,7 @@ const LiveApi = () => {
         if (!response.ok) {
           console.error("Failed to fetch");
           setLoading(false);
-          return;
+          return; 
         }
 
         const data = await response.json();
