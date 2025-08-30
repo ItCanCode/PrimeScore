@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 const API_KEY = "4399a3821d4ce5eb1a989436dc4e5303cf5e7176";
 // const sec_API="9705bc4a7c3976dd88ceb3410db328363e8abd87"
 let selected_date="2025-08-30";
-let Psl_id="296"
+let Psl_id="296";
 const LiveApi = () => {
   const [matches, setMatches] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -41,7 +41,7 @@ const LiveApi = () => {
 
         setMatches(filtered);
 
-        await fetch("https://prime-backend.azurewebsites.net/api/storeMatch", {
+        await fetch("http://localhost:3000/api/storeMatch", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
