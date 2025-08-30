@@ -5,7 +5,7 @@ import { Routes, Route, Link } from 'react-router-dom';
 import Dashboard from "./Pages/DashBoard";
 import UserProfile from "./Pages/UserProfile"
 import UserHomepage from "./Pages/UserHomepage";
-import LiveApi from "./Pages/liveapi";
+import LiveApi from "./Pages/Liveaapi";
 import SportsSelector from "./Pages/SportsSelector";
 import ManagerHomepage from "./Pages/managerHomepage";
 import TeamManagement from "./Pages/TeamManagement";
