@@ -28,7 +28,7 @@ app.use(express.json());
 // Routes
 app.use('/api/users', userRoutes);
 app.use('/api/admin',adminRoutes);
-app.use('/api',matchRoutes)
+app.use('/api/matches',matchRoutes)
 app.use('/api/manager',managerRoutes);
 app.get('/api/hello', (req, res) => {
   res.json({ message: 'Hello from backend!' });
@@ -50,8 +50,9 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: 'Internal Server Error' });
 });
 
-const HOST = "0.0.0.0";
 
+
+const HOST = "0.0.0.0";
 app.listen(PORT, HOST, () => {
   console.log(`Server is running on http://${HOST}:${PORT}`);
 });

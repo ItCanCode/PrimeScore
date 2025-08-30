@@ -2,12 +2,14 @@ import React, { useState, useEffect } from 'react';
 import '../Styles/Home.css';
 import Loading from '../Components/Loading.jsx';
 import { useNavigate } from 'react-router-dom';
+import { io } from 'socket.io-client';
 
 function HomePage() {
   const [user, _setUser] = useState(null);
   const [_error, _setError] = useState(null);
   const [loading, setLoading] = useState(true);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [matches, setMatches] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -31,6 +33,16 @@ function HomePage() {
       document.removeEventListener('click', handleClickOutside);
     };
   }, [dropdownOpen]);
+
+  useEffect(() => {
+    fetch('/api/matches/live')
+      .then(res => res.json())
+      .then(data => setMatches(data));
+
+    const socket = io('http://localhost:YOUR_PORT'); // Replace with your backend port
+    socket.on('matchUpdate', (data) => setMatches(data));
+    return () => socket.disconnect();
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem("authToken");
@@ -127,6 +139,17 @@ function HomePage() {
         <div className="floating-icon icon-5">🏸</div>
         <div className="floating-icon icon-6">🏓</div>
       </section>
+
+      <div>
+        {matches.map(match => (
+          <div key={match.matchId} className="match-card">
+            <h3>{match.homeTeam} vs {match.awayTeam}</h3>
+            <p>Score: {match.homeScore} - {match.awayScore}</p>
+            <p>Time: {match.timeElapsed}</p>
+            {/* Render goals, fouls, cards, etc. */}
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

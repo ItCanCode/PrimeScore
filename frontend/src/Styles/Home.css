@@ -98,6 +98,7 @@
   font-size: 2rem;
   font-weight: bold;
   background: linear-gradient(45deg, #ff6b35, #f7931e);
+  background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   cursor: pointer;
@@ -204,6 +205,7 @@
   margin-bottom: 1rem;
   background: linear-gradient(45deg, #ff6b35, #f7931e, #ffbd69, #ff6b35);
   background-size: 400% 400%;
+  background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   animation: gradientShift 3s ease-in-out infinite;

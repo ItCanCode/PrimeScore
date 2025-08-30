@@ -91,19 +91,6 @@ const UpcomingMatches = () => {
     }
   };
 
-  // Emoji icons by sport type
-  const getSportIcon = (sport) => {
-    switch (sport) {
-      case 'Football':
-        return '⚽';
-      case 'Basketball':
-        return '🏀';
-      case 'Cricket':
-        return '🏏';
-      default:
-        return '🏆';
-    }
-  };
 
   // Format date and time nicely
   const formatDateTime = (dateTimeString) => {
@@ -127,7 +114,6 @@ const UpcomingMatches = () => {
       <div className="header-card">
         <div className="header-content">
           <h1 className="header-title">
-            <Trophy className="header-icon" size={36} />
             Upcoming Matches
           </h1>
           <p className="header-subtitle">
@@ -147,7 +133,6 @@ const UpcomingMatches = () => {
               <div className="sport-header">
                 <div className="sport-header-content">
                   <div className="sport-type">
-                    <span className="sport-icon">{getSportIcon(match.sportType)}</span>
                     <span className="sport-name">{match.sportType}</span>
                   </div>
                   <span className="status-label-header">{match.status}</span>

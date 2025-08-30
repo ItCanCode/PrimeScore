@@ -6,8 +6,8 @@ const SportsSelector = () => {
 
 
   const sports = [
-    { id: 'football', name: 'Football', icon: '⚽', description: 'The beautiful game played worldwide' },
-    { id: 'basketball', name: 'Basketball', icon: '🏀', description: 'Fast-paced court action' },
+    { id: 'football', name: 'Football',  description: 'The beautiful game played worldwide' },
+    { id: 'basketball', name: 'Basketball',  description: 'Fast-paced court action' },
 
   ];
 
