@@ -8,7 +8,7 @@
 /* Home Page */
 .home-bg {
   min-height: 100vh;
-  background: linear-gradient(to bottom right, #fff7ed, #ebf8ff);
+  background:rgba(15, 15, 35, 0.95);
 }
 
 .home-header {
@@ -19,7 +19,7 @@
 .home-title {
   font-size: 3rem;
   font-weight: bold;
-  background: linear-gradient(to right, #ea580c, #1e3a8a);
+  background: linear-gradient(to right, #ea580c, #b38506);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   margin-bottom: 1rem;
