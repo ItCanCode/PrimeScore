@@ -10,7 +10,6 @@ function HomePage() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const navigate = useNavigate();
 
-
   useEffect(() => {
     const timer = setTimeout(() => {
       setLoading(false);
@@ -66,6 +65,16 @@ function HomePage() {
             <li>
               <a href="#management" onClick={() => navigate("/management")}>
                 Manage Team
+              </a>
+            </li>
+            <li>
+              <a href="#management" onClick={() => navigate("/match-admin")}>
+                Manage Matches
+              </a>
+            </li>
+            <li>
+              <a href="#management" onClick={() => navigate("/err")}>
+                Live
               </a>
             </li>
           </ul>
