@@ -25,10 +25,14 @@
   },
   "jest": {
     "roots": [
+      "<rootDir>/src/controllers",
+      "<rootDir>/src/services",
+      "<rootDir>/src/middleware",
       "<rootDir>/tests"
     ],
     "testMatch": [
       "**/__tests__/**/*.[jt]s?(x)",
+      "**/tests/**/*.[jt]s?(x)",
       "**/?(*.)+(spec|test).[jt]s?(x)"
     ],
     "collectCoverage": true,

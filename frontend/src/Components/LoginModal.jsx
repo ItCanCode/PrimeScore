@@ -28,17 +28,16 @@ function LoginModal ({ closeModal,setModalType }){
         const role = data.user.role;
         if(data.message=="Login successful"){
           localStorage.setItem("token", idToken);
-          if(role=="viewer"){
+          if(role){
               navigate("/home");
           }
-          else if(role == "manager"){
-            navigate("/manager");
-          }
-          else{
-            navigate("/admin");
-          }
-          
-          // navigate("/home");
+          // else if(role == "manager"){
+          //   navigate("/home");
+          // }
+          // else{
+          //   navigate("/admin");
+          // }
+          navigate("/home");
         }
         else{
           alert("Login failed, sign up instead.");

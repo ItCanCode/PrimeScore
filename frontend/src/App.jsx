@@ -6,14 +6,16 @@ import Dashboard from "./Pages/DashBoard";
 import UserProfile from "./Pages/UserProfile"
 import UserHomepage from "./Pages/UserHomepage";
 import ManageMatchPage from "./Pages/ManageMatchPage";
+import LiveApi from "./Pages/Liveaapi";
 import SportsSelector from "./Pages/SportsSelector";
-import ManagerHomepage from "./Pages/managerHomepage";
-
+import TeamManagement from "./Pages/TeamManagement";
+import MatchAdminInterface from "./Pages/MatchAdminInterface";
 
 function App() {
   return (
     <>
       <Routes>
+        <Route path="/err" element={<LiveApi/>}/>
         <Route path="/" element={<WelcomePage />} />
         <Route path="/home" element={<HomePage />} />
         <Route path="/admin" element={<AdminHome/>}></Route>
@@ -22,8 +24,8 @@ function App() {
         <Route path="/profile" element={<UserProfile/>} />
         <Route path="/user" element={<UserHomepage />} />
         <Route path="/sports" element={<SportsSelector/>}/>
-        <Route path="/manager" element={<ManagerHomepage />}></Route>
-
+        <Route path="/management" element={<TeamManagement />}/>
+        <Route path="/match-admin" element={<MatchAdminInterface/>}/>
       </Routes>
 
     </>
