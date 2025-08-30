@@ -29,12 +29,16 @@ function LoginModal ({ closeModal,setModalType }){
         if(data.message=="Login successful"){
           localStorage.setItem("token", idToken);
           if(role=="viewer"){
-                  navigate("/user");
+              navigate("/home");
+          }
+          else if(role == "manager"){
+            navigate("/manager");
           }
           else{
             navigate("/admin");
           }
-
+          
+          // navigate("/home");
         }
         else{
           alert("Login failed, sign up instead.");

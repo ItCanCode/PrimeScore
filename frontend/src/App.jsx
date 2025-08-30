@@ -6,6 +6,8 @@ import Dashboard from "./Pages/DashBoard";
 import UserProfile from "./Pages/UserProfile"
 import UserHomepage from "./Pages/UserHomepage";
 import LiveApi from "./Pages/liveapi";
+import SportsSelector from "./Pages/SportsSelector";
+import ManagerHomepage from "./Pages/managerHomepage";
 
 
 function App() {
@@ -15,10 +17,12 @@ function App() {
         <Route path="/err" element={<LiveApi/>}/>
         <Route path="/" element={<WelcomePage />} />
         <Route path="/home" element={<HomePage />} />
-        <Route path="/admin" element={<AdminHome/>}></Route>
+        <Route path="/admin" element={<AdminHome/>}/>
         <Route path="/dashboard" element={<Dashboard/>} />
         <Route path="/profile" element={<UserProfile/>} />
         <Route path="/user" element={<UserHomepage />} />
+        <Route path="/sports" element={<SportsSelector/>}/>
+        <Route path="/manager" element={<ManagerHomepage />}/>
       </Routes>
 
     </>

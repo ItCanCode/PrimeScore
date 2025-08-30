@@ -1,12 +1,12 @@
-body {
+/* .body {
   font-family: Arial, Helvetica, sans-serif;
   margin: 0;
   padding: 0;
-  background-image: url("back3.jpg");
-  color: #ffffff;
-  min-height: 100vh;
-}
-
+  background-image: url("/back3.jpg");
+  /* color: #ffffff; */
+  /* min-height: 100vh;
+} */ */
+ 
 .header {
   background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
   color: white;
@@ -15,190 +15,14 @@ body {
   box-shadow: 0 4px 20px rgba(255, 107, 53, 0.3);
 }
 
-.nav {
-  background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
-  padding: 0.6rem;
-  text-align: center;
-  box-shadow: 0 2px 10px rgba(255, 107, 53, 0.2);
-}
 
-.nav a {
-  color: white;
-  margin: 0 1rem;
-  text-decoration: none;
-  font-weight: bold;
-  transition: all 0.3s ease;
-}
-
-.nav a:hover {
-  text-decoration: underline;
-  color: #ffffff;
-  text-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
-}
-
-.main {
-  max-width: 900px;
-  margin: 2rem auto;
-  padding: 1rem;
-  background: rgba(255, 255, 255, 0.25);
-  backdrop-filter: blur(12px);
-  border-radius: 20px;
-  box-shadow: 
-    0 8px 32px rgba(0, 0, 0, 0.2),
-    inset 0 1px 0 rgba(255, 255, 255, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  color: #2a2a5a;
-  position: relative;
-  z-index: 1;
-  animation: fadeInUp 0.8s ease-out forwards;
-}
-
-h2 {
-  border-bottom: 2px solid #ff6b35;
-  padding-bottom: 0.3rem;
-  margin-top: 2rem;
-  color: #2a2a5a;
-}
-
-footer {
-  text-align: center;
-  padding: 1rem;
-  margin-top: 2rem;
-  font-size: 0.9rem;
-  color: #2a2a5a;
-  background: rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(10px);
-  border-radius: 15px;
-  max-width: 600px;
-  margin-left: auto;
-  margin-right: auto;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  position: relative;
-  z-index: 1;
-}
-
-/* Header setup for separation */
-.home-header {
-  display: flex;
-  align-items: center;
-  background: rgba(255, 255, 255, 0.25);
-  backdrop-filter: blur(12px);
-  color: #2a2a5a;
-  padding: 1.5rem 2rem;
-  margin: 2rem 0;
-  border-radius: 20px;
-  box-shadow: 
-    0 8px 32px rgba(0, 0, 0, 0.2),
-    inset 0 1px 0 rgba(255, 255, 255, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  position: relative;
-  min-height: 80px;
-  z-index: 1;
-  animation: fadeInUp 0.8s ease-out forwards;
-}
-
-/* Welcome text stays left, does not stretch */
-.welcome-text {
-  margin: 0;
-  font-size: 2rem;
-  font-weight: bold;
-  flex: 0 0 auto;
-  color: #2a2a5a;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-}
-
-/* Position dropdown absolutely at top right */
-.dropdown {
-  position: absolute;
-  top: 50%;
-  right: 2rem;
-  transform: translateY(-50%);
-  z-index: 100;
-}
-
-/* New global dropdown class */
-.dropdown-global {
-  position: absolute;
-  top: 2rem;
-  right: 2rem;
-  z-index: 100;
-  border-radius: 12px;
-  padding: 0;
-}
-
-/* Icon button styling - REMOVED to use unified menu-btn */
-
-/* Dropdown button styling */
-.menu-btn {
-  background: rgba(255, 255, 255, 0.9);
-  color: #ff6b35;
-  border: none;
-  padding: 0.75rem 1.25rem;
-  border-radius: 12px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(255, 107, 53, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  font-size: 0.95rem;
-}
-
-.menu-btn:hover {
-  background: rgba(255, 255, 255, 1);
-  box-shadow: 0 6px 20px rgba(255, 107, 53, 0.3);
-  transform: translateY(-2px);
-}
-
-/* Dropdown content styling */
-.dropdown-content {
-  position: absolute;
-  right: 0;
-  top: 110%;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(20px);
-  min-width: 180px;
-  box-shadow: 
-    0 8px 32px rgba(0, 0, 0, 0.2),
-    inset 0 1px 0 rgba(255, 255, 255, 0.3);
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  z-index: 101;
-  display: none;
-  flex-direction: column;
-  padding: 0.5rem 0;
-}
-
-.dropdown-content.show {
-  display: flex;
-}
-
-.dropdown-content .nav-link {
-  color: #2a2a5a;
-  background: none;
-  border: none;
-  text-align: left;
-  padding: 0.75rem 1.25rem;
-  width: 100%;
-  border-radius: 0;
-  font-weight: 500;
-  box-shadow: none;
-  transition: all 0.3s ease;
-  text-decoration: none;
-  display: block;
-}
-
-.dropdown-content .nav-link:hover {
-  background: linear-gradient(135deg, rgba(255, 107, 53, 0.1) 0%, rgba(247, 147, 30, 0.1) 100%);
-  color: #ff6b35;
-}
 
 .home-container {
+  font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-image: url("/back3.jpg");
   min-height: 100vh;
-  background: linear-gradient(135deg, #1e1e3f 0%, #2a2a5a 50%, #1a1a2e 100%);
-  background-image:
-    radial-gradient(circle at 20% 10%, rgba(255, 107, 53, 0.08) 0%, transparent 50%),
-    radial-gradient(circle at 80% 80%, rgba(247, 147, 30, 0.08) 0%, transparent 50%),
-    radial-gradient(circle at 40% 60%, rgba(255, 130, 67, 0.05) 0%, transparent 50%);
   background-size: 100% 100%;
   background-attachment: fixed;
   display: flex;
