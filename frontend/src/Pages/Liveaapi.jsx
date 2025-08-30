@@ -41,7 +41,7 @@ const LiveApi = () => {
 
         setMatches(filtered);
 
-        await fetch("http://localhost:3000/api/storeMatch", {
+        await fetch("https://prime-backend.azurewebsites.net/api/storeMatch", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
