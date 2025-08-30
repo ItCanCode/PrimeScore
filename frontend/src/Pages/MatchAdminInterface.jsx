@@ -63,19 +63,9 @@ export default function MatchAdminInterface() {
       <nav className="mai-nav">
         <div className="mai-nav-container">
           <h1 className="mai-logo">PrimeScore</h1>
-
-          <div className="mai-nav-links">
-            <a href="#">Matches</a>
-            <a href="#">Manage Team</a>
-            <a href="#" className="mai-active-link">Manage Matches</a>
-          </div>
-
           <div className="mai-nav-buttons">
             <button className="mai-create-btn" onClick={() => setShowForm(!showForm)}>
               <Plus size={18} /> Create Match
-            </button>
-            <button className="mai-menu-btn">
-              <Menu size={20} />
             </button>
           </div>
         </div>

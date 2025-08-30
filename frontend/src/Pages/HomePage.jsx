@@ -73,7 +73,7 @@ function HomePage() {
               </a>
             </li>
             <li>
-              <a href="#management" onClick={() => navigate("/err")}>
+              <a href="#admin" onClick={() => navigate("/err")}>
                 Live
               </a>
             </li>

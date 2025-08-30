@@ -2,16 +2,16 @@
 .mai-root {
   min-height: 100vh;
   background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-  color: white;
+  color: rgb(172, 169, 169);
   font-family: Arial, sans-serif;
   position: relative;
 }
 
 /* Header navigation */
 .mai-nav {
-  background-color: #030f24;
+  background-color: #021029;
   border-bottom: 1px solid #374151;
-  padding: 16px 24px;
+  padding: 15px 24px;
 }
 
 .mai-nav-container {
@@ -25,7 +25,7 @@
 .mai-logo {
   font-size: 24px;
   font-weight: bold;
-  color: #f97316;
+  color: #e36d18;
   margin: 0;
 }
 
@@ -88,22 +88,31 @@
   max-width: 1200px;
   margin: 0 auto;
   padding: 32px 24px;
+  position: relative;
+  z-index: 1;
 }
 
 .mai-page-header {
+  margin-top: 40px;
   margin-bottom: 32px;
+  padding-top: 16px;
 }
 
 .mai-page-header h2 {
-  font-size: 28px;
+  font-size: 30px;
   font-weight: bold;
   margin: 0 0 8px 0;
   color: white;
+  display: block;
+  visibility: visible;
+  opacity: 1;
 }
 
 .mai-page-header p {
   color: #9ca3af;
   margin: 0;
+  display: block;
+  visibility: visible;
 }
 
 /* Form styles */
@@ -424,8 +433,16 @@
 
 /* Responsive design */
 @media (max-width: 768px) {
+
+  
   .mai-nav-links {
-    display: none;
+    order: 3;
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .mai-nav-buttons {
+    order: 2;
   }
   
   .mai-menu-btn {
@@ -450,4 +467,32 @@
   .mai-floating-icons .mai-icon {
     display: none;
   }
+
+  .mai-container {
+    padding: 16px;
+  }
 }
+
+/* @media (max-width: 480px) {
+  .mai-nav {
+    padding: 12px 16px;
+  }
+  
+  .mai-logo {
+    font-size: 20px;
+  }
+  
+  .mai-nav-links {
+    display: none;
+  }
+  
+  .mai-page-header h2 {
+    font-size: 24px;
+  }
+  
+  .mai-match-form,
+  .mai-matches-list {
+    margin-left: -8px;
+    margin-right: -8px;
+  }
+} */
