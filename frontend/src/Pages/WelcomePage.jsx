@@ -3,12 +3,14 @@ import '../Styles/WelcomePage.css';
 import LoginModal from '../Components/LoginModal.jsx';
 import SignupModal from '../Components/SignupModal.jsx';
 import Loading from '../Components/Loading.jsx';
+
 function WelcomePage() {
 
   const [modalType, setModalType] = useState('none');
   const [user, _setUser] = useState(null);
   const [_error, _setError] = useState(null);
   const [loading, setLoading] = useState(true);
+
     // Simulate loading
   useEffect(() => {
     // Replace with actual loading logic (e.g., fetch user)
