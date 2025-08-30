@@ -13,7 +13,7 @@ function ManagerHomepage() {
   });
 
   const [players, setPlayers] = useState(Array(10).fill("")); // 10 empty player inputs
-
+  const [teamId, setTeamId] = useState(null); // store team ID after creation
   // Handle team form input
   const handleTeamChange = (e) => {
     const { name, value } = e.target;
@@ -60,14 +60,28 @@ function ManagerHomepage() {
   const handlePlayersSubmit = async (e) => {
     e.preventDefault();
     try {
-      console.log("Players list:", players);
+      if (!teamId) {
+        alert("Please create a team first!");
+        return;
+      }
 
-      // TODO: send to backend (e.g. /api/manager/addPlayers)
-      // await fetch(...)
+      const response = await fetch(
+        `https://prime-backend.azurewebsites.net/api/manager/addPlayers`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ teamId, players }),
+        }
+      );
 
-      alert("Players added successfully!");
-      setShowPlayersPopup(false);
-      setPlayers(Array(10).fill(""));
+      if (response.ok) {
+        alert("Players added successfully!");
+        setShowPlayersPopup(false);
+        setPlayers(Array(10).fill(""));
+      } else {
+        const err = await response.json();
+        alert("Failed to add players: " + err.error);
+      }
     } catch (error) {
       console.error("Error adding players:", error);
       alert("Something went wrong!");
