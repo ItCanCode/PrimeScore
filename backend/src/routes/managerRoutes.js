@@ -3,5 +3,7 @@ import express from 'express';
 const router=express.Router()
 import managerController from '../controllers/managerController.js';
 
-router.post('/createTeam',managerController.createTeam)
+router.post('/createTeam',managerController.createTeam);
+router.post('/addPlayers', managerController.addPlayers);
+
 export default router;

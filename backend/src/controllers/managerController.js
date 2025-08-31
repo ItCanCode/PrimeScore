@@ -19,6 +19,28 @@ const managerController = {
       res.status(500).json({ error: error.message });
     }
   },
+  addPlayers: async (req, res) => {
+    try {
+      const { teamId, players } = req.body;
+      if (!teamId || !players || !Array.isArray(players)) {
+        return res.status(400).json({ error: "teamId and players[] required" });
+      }
+
+      const batch = admin.firestore().batch();
+      const teamRef = admin.firestore().collection("teams").doc(teamId);
+
+      players.forEach((player) => {
+        const playerRef = teamRef.collection("players").doc();
+        batch.set(playerRef, { name: player });
+      });
+
+      await batch.commit();
+
+      res.status(201).json({ message: "Players added successfully" });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  },
 };
 
 export default managerController;

@@ -72,6 +72,11 @@ function HomePage() {
                 Manage Matches
               </a>
             </li>
+            <li>
+              <a href="#admin" onClick={() => navigate("/err")}>
+                Live
+              </a>
+            </li>
           </ul>
           <div className="auth-buttons">
             <button
