@@ -1,3 +1,45 @@
+/* Home Navigation */
+.mai-home-nav {
+  position: fixed;
+  top: 2rem;
+  right: 2rem;
+  z-index: 100;
+}
+
+.mai-home-nav-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  background: rgba(31, 41, 55, 0.9);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(156, 163, 175, 0.3);
+  border-radius: 12px;
+  color: #cbd5e1;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.mai-home-nav-button:hover {
+  color: #f97316;
+  border-color: rgba(249, 115, 22, 0.5);
+  background: rgba(31, 41, 55, 1);
+  transform: scale(1.05);
+  box-shadow: 0 6px 20px rgba(249, 115, 22, 0.2);
+}
+
+.mai-home-nav-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  transition: transform 0.3s ease;
+}
+
+.mai-home-nav-button:hover .mai-home-nav-icon {
+  transform: scale(1.1);
+}
+
 /* Root container */
 .mai-root {
   min-height: 100vh;
@@ -57,7 +99,6 @@
 
 /* Main container */
 .mai-container {
-  
   max-width: 1200px;
   margin: 0 auto;
   padding: 32px 20px;
@@ -70,7 +111,6 @@
   margin-top: 50px;
   text-align: center;
   margin-bottom: 32px;
-
 }
 
 .mai-page-header h2 {
@@ -219,7 +259,6 @@
   font-size: 0.875rem;
   font-weight: 500;
   margin-bottom: 8px;
-
 }
 
 .mai-form-group input,
@@ -232,7 +271,6 @@
   font-size: 1rem;
   outline: none;
   transition: all 0.2s ease;
-  
 }
 
 .mai-form-group input::placeholder {
@@ -500,7 +538,7 @@
   box-shadow: 0 4px 12px rgba(249, 115, 22, 0.4);
 }
 
-/* Status controls - THIS WAS MISSING! */
+/* Status controls */
 .mai-status-controls {
   display: flex;
   gap: 12px;
@@ -819,5 +857,27 @@
   .mai-status-btn {
     width: 200px;
     justify-content: center;
+  }
+
+  .mai-home-nav {
+    top: 1rem;
+    right: 1rem;
+  }
+
+  .mai-home-nav-button {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+
+  .mai-home-nav-icon {
+    width: 1rem;
+    height: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .mai-home-nav {
+    top: 0.75rem;
+    right: 0.75rem;
   }
 }

@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
-import { Plus, Calendar, MapPin, Users, Trophy, Menu, Clock, Play, Square, Edit2, Trash2, X, ArrowLeft } from "lucide-react";
+import { Plus, Calendar, MapPin, Users, Trophy, Menu, Clock, Play, Square, Edit2, Trash2, X, ArrowLeft, Home } from "lucide-react";
 import "../Styles/MatchAdminInterface.css";
-// import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+
 export default function MatchAdminInterface() {
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
   const [matches, setMatches] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [activeTab, setActiveTab] = useState('scheduled');
@@ -352,6 +353,9 @@ export default function MatchAdminInterface() {
 
   return (
     <div className="mai-root">
+      <div className="mai-home-nav">
+
+      </div>
    
       <nav className="mai-nav">
         <div className="mai-nav-container">
@@ -363,6 +367,13 @@ export default function MatchAdminInterface() {
             {/* <button className="mai-create-btn" onClick={navigate("/home")}>
               <ArrowLeft size={18} /> Back
             </button> */}
+                    <button 
+          onClick={() => navigate("/home")}
+          className="mai-home-nav-button"
+          aria-label="Navigate to home"
+        >
+          <Home className="mai-home-nav-icon" />
+        </button>
           </div>
         </div>
       </nav>
