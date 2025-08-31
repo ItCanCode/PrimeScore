@@ -18,7 +18,6 @@ function MatchState(){
         home_score: 0,
         away_score: 0,
         isRunning: true,
-        match_id: matchId,
         period: 1,
         fouls: [],
         substitutions: [],
@@ -27,7 +26,7 @@ function MatchState(){
 
         
         try {
-            const res = await fetch(`http://localhost:3000/api/feed/${matchId}/start`, {
+            const res = await fetch(`https://prime-backend.azurewebsites.net/api/feed/${matchId}/start`, {
                 method: "POST",
                 headers: {
                 "Content-Type": "application/json",
@@ -46,8 +45,6 @@ function MatchState(){
             setLoading(false);
             setIsStarted(true);
         }
-
-
     }
 
     return(
