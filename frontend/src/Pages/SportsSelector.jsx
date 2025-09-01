@@ -1,8 +1,11 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronRight, Home, Trophy, Users, Calendar } from 'lucide-react';
+import { ChevronRight, Home, Trophy, Users, Calendar, X } from 'lucide-react';
 import '../Styles/SportsSelector.css';
 
 const SportsSelector = () => {
+  const [showFootballModal, setShowFootballModal] = useState(false);
+  
   const sports = [
     { 
       id: 'football', 
@@ -42,13 +45,33 @@ const SportsSelector = () => {
     }
   ];
 
+  const footballLeagues = [
+    { id: 'premier-league', name: 'Premier League', flag: '🏴󠁧󠁢󠁥󠁮󠁧󠁿' },
+    { id: 'serie-a', name: 'Serie A', flag: '🇮🇹' },
+    { id: 'psl', name: 'PSL', flag: '🇿🇦' },
+    { id: 'local-leagues', name: 'Local Leagues', flag: '🌍' }
+  ];
+
   const navigate = useNavigate();
 
   const handleSportClick = (sportId) => {
     if (sportId === 'football') {
-      navigate("/user");
+      setShowFootballModal(true);
     }
     // Add navigation for other sports as needed
+  };
+
+  const handleLeagueSelection = (leagueId) => {
+    setShowFootballModal(false);
+    // Navigate based on league selection
+    if(leagueId == "local-leagues"){
+      navigate("/user");
+    }
+    
+  };
+
+  const closeModal = () => {
+    setShowFootballModal(false);
   };
 
   const renderHomePage = () => (
@@ -94,6 +117,43 @@ const SportsSelector = () => {
           ))}
         </div>
       </div>
+
+      {/* Football League Selection Modal */}
+      {showFootballModal && (
+        <div className="modal-overlay" onClick={closeModal}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2 className="modal-title">
+                <span className="football-icon">⚽</span>
+                Select Football League
+              </h2>
+              <button 
+                onClick={closeModal}
+                className="modal-close-button"
+                aria-label="Close modal"
+              >
+                <X size={24} />
+              </button>
+            </div>
+            
+            <div className="modal-body">
+              <div className="leagues-grid">
+                {footballLeagues.map((league) => (
+                  <button
+                    key={league.id}
+                    onClick={() => handleLeagueSelection(league.id)}
+                    className="league-option"
+                  >
+                    <span className="league-flag">{league.flag}</span>
+                    <span className="league-name">{league.name}</span>
+                    <ChevronRight className="league-arrow" />
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 

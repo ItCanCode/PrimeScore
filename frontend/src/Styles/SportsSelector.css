@@ -216,6 +216,139 @@
   width: 100%;
 }
 
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  opacity: 0;
+  animation: fadeIn 0.3s ease forwards;
+}
+
+@keyframes fadeIn {
+  to { opacity: 1; }
+}
+
+.modal-content {
+  background: rgba(31, 41, 55, 0.95);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(156, 163, 175, 0.3);
+  border-radius: 20px;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+  width: 90%;
+  max-width: 500px;
+  transform: scale(0.9);
+  animation: scaleIn 0.3s ease forwards;
+  overflow: hidden;
+}
+
+@keyframes scaleIn {
+  to { transform: scale(1); }
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 2rem 2rem 1rem;
+  border-bottom: 1px solid rgba(156, 163, 175, 0.2);
+}
+
+.modal-title {
+  font-size: 1.75rem;
+  font-weight: bold;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0;
+}
+
+.football-icon {
+  font-size: 2rem;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+}
+
+.modal-close-button {
+  background: rgba(55, 65, 81, 0.5);
+  border: 1px solid rgba(156, 163, 175, 0.3);
+  border-radius: 8px;
+  color: #cbd5e1;
+  padding: 0.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-close-button:hover {
+  background: rgba(55, 65, 81, 0.8);
+  color: #f97316;
+  border-color: rgba(249, 115, 22, 0.5);
+}
+
+.modal-body {
+  padding: 1.5rem 2rem 2rem;
+}
+
+.leagues-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.league-option {
+  background: rgba(55, 65, 81, 0.5);
+  border: 1px solid rgba(156, 163, 175, 0.3);
+  border-radius: 12px;
+  padding: 1.25rem 1.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  color: white;
+  font-size: 1.1rem;
+  font-weight: 500;
+  width: 100%;
+  text-align: left;
+}
+
+.league-option:hover {
+  background: rgba(55, 65, 81, 0.8);
+  border-color: rgba(249, 115, 22, 0.5);
+  transform: translateX(4px);
+  box-shadow: 0 4px 15px rgba(249, 115, 22, 0.2);
+}
+
+.league-flag {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.league-name {
+  flex: 1;
+  font-weight: 600;
+}
+
+.league-arrow {
+  color: #94a3b8;
+  transition: all 0.3s ease;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.league-option:hover .league-arrow {
+  color: #f97316;
+  transform: translateX(4px);
+}
+
 /* Sport Page */
 .sport-bg {
   min-height: 100vh;
@@ -527,6 +660,23 @@
     width: 1rem;
     height: 1rem;
   }
+
+  .modal-content {
+    width: 95%;
+    margin: 1rem;
+  }
+
+  .modal-header {
+    padding: 1.5rem 1.5rem 1rem;
+  }
+
+  .modal-title {
+    font-size: 1.5rem;
+  }
+
+  .modal-body {
+    padding: 1rem 1.5rem 1.5rem;
+  }
 }
 
 @media (max-width: 480px) {
@@ -549,5 +699,22 @@
   .home-nav {
     top: 0.75rem;
     right: 0.75rem;
+  }
+
+  .modal-header {
+    padding: 1.25rem 1.25rem 0.75rem;
+  }
+
+  .modal-title {
+    font-size: 1.25rem;
+  }
+
+  .modal-body {
+    padding: 0.75rem 1.25rem 1.25rem;
+  }
+
+  .league-option {
+    padding: 1rem 1.25rem;
+    font-size: 1rem;
   }
 }
