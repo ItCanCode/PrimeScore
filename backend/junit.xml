@@ -1,11 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="jest tests" tests="3" failures="0" errors="0" time="1.748">
-  <testsuite name="managerController" errors="0" failures="0" skipped="0" timestamp="2025-09-01T17:25:34" time="1.511" tests="3">
-    <testcase classname="managerController createTeam should create a team and return 201" name="managerController createTeam should create a team and return 201" time="0.004">
+<testsuites name="jest tests" tests="11" failures="0" errors="0" time="1.199">
+  <testsuite name="verifyGoogleToken service" errors="0" failures="0" skipped="0" timestamp="2025-09-01T15:53:00" time="0.837" tests="2">
+    <testcase classname="verifyGoogleToken service should return decoded token when verification succeeds" name="verifyGoogleToken service should return decoded token when verification succeeds" time="0.006">
     </testcase>
-    <testcase classname="managerController addPlayers should add players to team and return 201" name="managerController addPlayers should add players to team and return 201" time="0.002">
+    <testcase classname="verifyGoogleToken service should throw an error when verification fails" name="verifyGoogleToken service should throw an error when verification fails" time="0.006">
     </testcase>
-    <testcase classname="managerController addPlayers should return 400 if teamId or players[] missing" name="managerController addPlayers should return 400 if teamId or players[] missing" time="0.001">
+  </testsuite>
+  <testsuite name="adminController.createMatch" errors="0" failures="0" skipped="0" timestamp="2025-09-01T15:53:00" time="0.837" tests="2">
+    <testcase classname="adminController.createMatch should create a match successfully" name="adminController.createMatch should create a match successfully" time="0.007">
+    </testcase>
+    <testcase classname="verifyGoogleToken service should throw an error when verification fails" name="verifyGoogleToken service should throw an error when verification fails" time="0.009">
+    </testcase>
+  </testsuite>
+  <testsuite name="googleAuth controller" errors="0" failures="0" skipped="0" timestamp="2025-09-01T15:53:00" time="0.853" tests="7">
+    <testcase classname="googleAuth controller should return 400 if idToken or action is missing" name="googleAuth controller should return 400 if idToken or action is missing" time="0.008">
+    </testcase>
+    <testcase classname="googleAuth controller should return 400 for invalid action" name="googleAuth controller should return 400 for invalid action" time="0.001">
+    </testcase>
+    <testcase classname="googleAuth controller signup: should return 409 if user already exists" name="googleAuth controller signup: should return 409 if user already exists" time="0.002">
+    </testcase>
+    <testcase classname="googleAuth controller signup: should create new user and return 201" name="googleAuth controller signup: should create new user and return 201" time="0">
+    </testcase>
+    <testcase classname="googleAuth controller login: should return 404 if user not found" name="googleAuth controller login: should return 404 if user not found" time="0.001">
+    </testcase>
+    <testcase classname="googleAuth controller login: should return 200 with user data if user exists" name="googleAuth controller login: should return 200 with user data if user exists" time="0.001">
+    </testcase>
+    <testcase classname="googleAuth controller should return 401 on token verification error" name="googleAuth controller should return 401 on token verification error" time="0">
+    </testcase>
+  </testsuite>
+  <testsuite name="adminController.createMatch" errors="0" failures="0" skipped="0" timestamp="2025-09-01T16:01:12" time="1.427" tests="2">
+    <testcase classname="adminController.createMatch should create a match successfully" name="adminController.createMatch should create a match successfully" time="0.007">
+    </testcase>
+    <testcase classname="adminController.createMatch should return 500 if Firestore throws an error" name="adminController.createMatch should return 500 if Firestore throws an error" time="0.001">
     </testcase>
   </testsuite>
 </testsuites>

@@ -2,7 +2,8 @@ import admin from "../config/firebaseAdmin.js";
 const createMatch = async (req, res) => {
   try {
     const { matchName, homeTeam, awayTeam, startTime, venue, sportType } = req.body;
-    await admin.firestore().collection("matches").add({
+    // Add match to Firestore and get the new document reference
+    const docRef = await admin.firestore().collection("matches").add({
       sportType,
       matchName,
       homeTeam,
@@ -11,7 +12,8 @@ const createMatch = async (req, res) => {
       status: "scheduled",
       venue,
     });
-    res.status(201).json({ message: "Match created" });
+    // Return the Firestore document ID to the frontend
+    res.status(201).json({ message: "Match created", id: docRef.id });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -22,8 +24,38 @@ const updateMatchStatus = async (req, res) => {
   try {
     const matchId = req.params.id;
     const { status } = req.body;
-    await admin.firestore().collection('matches').doc(matchId).update({ status });
-    res.status(200).json({ message: 'Match status updated' });
+    const db = admin.firestore();
+    const matchRef = db.collection('matches').doc(matchId);
+    const ongoingRef = db.collection('ongoingMatches').doc(matchId);
+    const matchDoc = await matchRef.get();
+    const ongoingDoc = await ongoingRef.get();
+    if (status === 'ongoing') {
+      // Move from matches to ongoingMatches
+      if (matchDoc.exists) {
+        await ongoingRef.set({ ...matchDoc.data(), status: 'ongoing', movedToOngoingAt: new Date().toISOString() });
+        await matchRef.delete();
+        res.status(200).json({ message: 'Match moved to ongoingMatches' });
+        return;
+      } else {
+        res.status(404).json({ error: 'Match not found in matches collection' });
+        return;
+      }
+    } else {
+      // Move from ongoingMatches back to matches or update status
+      if (ongoingDoc.exists) {
+        await matchRef.set({ ...ongoingDoc.data(), status });
+        await ongoingRef.delete();
+        res.status(200).json({ message: 'Match moved to matches collection' });
+        return;
+      } else if (matchDoc.exists) {
+        await matchRef.update({ status });
+        res.status(200).json({ message: 'Match status updated' });
+        return;
+      } else {
+        res.status(404).json({ error: 'Match not found' });
+        return;
+      }
+    }
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -32,8 +64,33 @@ const updateMatchStatus = async (req, res) => {
 // Update Score (stub)
 const updateScore = async (req, res) => {
   try {
-    // Implement score update logic here
-    res.status(200).json({ message: 'Score updated (stub)' });
+    const matchId = req.params.id;
+    const { homeScore, awayScore, eventType, team, player, time } = req.body;
+    const db = admin.firestore();
+    // Update score in both collections if exists
+    const matchRef = db.collection('matches').doc(matchId);
+    const ongoingRef = db.collection('ongoingMatches').doc(matchId);
+    const matchDoc = await matchRef.get();
+    const ongoingDoc = await ongoingRef.get();
+    if (matchDoc.exists) {
+      await matchRef.update({ homeScore, awayScore });
+    }
+    if (ongoingDoc.exists) {
+      await ongoingRef.update({ homeScore, awayScore });
+    }
+    // If eventType is 'Goal', add to flat match_events collection
+    if (eventType === 'Goal') {
+      const event = {
+        eventType,
+        team,
+        player,
+        time,
+        matchId,
+        timestamp: new Date().toISOString()
+      };
+      await db.collection('match_events').add(event);
+    }
+    res.status(200).json({ message: 'Score updated' });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -42,8 +99,19 @@ const updateScore = async (req, res) => {
 // Add Match Event (stub)
 const addMatchEvent = async (req, res) => {
   try {
-    // Implement add event logic here
-    res.status(200).json({ message: 'Event added (stub)' });
+    const matchId = req.params.id;
+    const { eventType, team, player, time } = req.body;
+    const db = admin.firestore();
+    const event = {
+      eventType,
+      team,
+      player,
+      time,
+      matchId,
+      timestamp: new Date().toISOString()
+    };
+    await db.collection('match_events').add(event);
+    res.status(200).json({ message: 'Event added' });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
