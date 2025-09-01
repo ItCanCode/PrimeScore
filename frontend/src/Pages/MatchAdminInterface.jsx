@@ -218,20 +218,38 @@ export default function MatchAdminInterface() {
 
   // Update both Firestore and backend for match status
   const updateMatchStatus = async (matchId, newStatus) => {
-    setMatches(prev => prev.map((match) =>
-      match.id === matchId ? { ...match, status: newStatus } : match
-    ));
-
+    // Only allow moving to ongoing if match is in scheduled (matches) collection
+    const isScheduled = matches.some(m => m.id === matchId);
+    if (newStatus === 'ongoing' && !isScheduled) {
+      setMessage({ type: 'error', text: 'Match is not in scheduled state.' });
+      return;
+    }
     try {
+      // Always update backend for consistency FIRST
+      const res = await fetch(`https://prime-backend.azurewebsites.net/api/admin/updateMatchStatus/${matchId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: newStatus }),
+      });
+      if (!res.ok) {
+        let errorMsg = 'Failed to update match status';
+        try {
+          const errData = await res.json();
+          if (errData && errData.error) errorMsg += `: ${errData.error}`;
+        } catch {
+          // Ignore JSON parse errors
+        }
+        throw new Error(errorMsg);
+      }
       // Find the match object
       const match = matches.find(m => m.id === matchId);
       if (newStatus === 'ongoing' && match) {
         if (!matchId) {
-          alert("Match ID missing");
+          alert('Match ID missing');
           return;
         }
         // Debug log
-        console.log("Adding ongoing match to Firestore:", match, "Match ID:", matchId);
+        console.log('Adding ongoing match to Firestore:', match, 'Match ID:', matchId);
         await setDoc(doc(db, 'ongoingMatches', String(matchId)), {
           ...match,
           status: 'ongoing',
@@ -240,27 +258,8 @@ export default function MatchAdminInterface() {
         // Remove from 'matches' (upcoming) collection
         await deleteDoc(doc(db, 'matches', String(matchId)));
       }
-      // Remove from Firestore 'ongoingMatches' if not ongoing (optional)
-       //if (newStatus !== 'ongoing') {
-       //  await deleteDoc(doc(db, 'ongoingMatches', String(matchId)));
-       //}
-
-      // Always update backend for consistency
-      const res = await fetch(`https://prime-backend.azurewebsites.net/api/admin/updateMatchStatus/${matchId}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status: newStatus }),
-      });
-
-      if (!res.ok) {
-        throw new Error("Failed to update match status");
-      }
     } catch (err) {
-      setMessage({ type: "error", text: err.message });
-      // Revert local state if API call fails
-      setMatches(prev => prev.map(match => 
-        match.id === matchId ? { ...match, status: match.status } : match
-      ));
+      setMessage({ type: 'error', text: err.message });
     }
   };
 
@@ -354,37 +353,33 @@ export default function MatchAdminInterface() {
     return () => { unsubscribes.forEach(unsub => unsub && unsub()); };
   }, [ongoingMatches]);
 
+  // Real-time listeners for scheduled and ongoing matches
   useEffect(() => {
-    const fetchMatches = async () => {
-      try {
-        const response = await fetch('https://prime-backend.azurewebsites.net/api/users/viewMatches');
-        const data = await response.json();
-        const matchesWithStatus = data.map(match => ({
-          ...match,
-          status: match.status || 'scheduled',
-          homeScore: match.homeScore || 0,
-          awayScore: match.awayScore || 0
-        }));
-        setMatches(matchesWithStatus);
-      } catch (error) {
-  console.error("Error fetching matches:", error);
-      }
+    // Listen for scheduled matches
+    const scheduledQuery = query(collection(db, 'matches'));
+    const unsubScheduled = onSnapshot(scheduledQuery, (snapshot) => {
+      const scheduled = [];
+      snapshot.forEach((doc) => {
+        scheduled.push({ id: doc.id, ...doc.data(), status: doc.data().status || 'scheduled' });
+      });
+      setMatches(scheduled);
+    });
+    // Listen for ongoing matches
+    const ongoingQuery = query(collection(db, 'ongoingMatches'));
+    const unsubOngoing = onSnapshot(ongoingQuery, (snapshot) => {
+      const ongoing = [];
+      snapshot.forEach((doc) => {
+        ongoing.push({ id: doc.id, ...doc.data(), status: doc.data().status || 'ongoing' });
+      });
+      setOngoingMatches(ongoing);
+    });
+    return () => {
+      unsubScheduled();
+      unsubOngoing();
     };
-    const fetchOngoingMatches = async () => {
-      try {
-        const querySnapshot = await getDocs(collection(db, 'ongoingMatches'));
-        const ongoing = [];
-        querySnapshot.forEach((doc) => {
-          ongoing.push({ id: doc.id, ...doc.data() });
-        });
-        setOngoingMatches(ongoing);
-      } catch {
-        setOngoingMatches([]);
-      }
-    };
-    fetchMatches();
-    fetchOngoingMatches();
   }, []);
+
+  // CLEANED: Only use real-time Firestore listeners for matches and ongoingMatches
 
   // Filter matches for the active tab
   let filteredMatches = [];
@@ -582,8 +577,8 @@ export default function MatchAdminInterface() {
                 <p>No {activeTab} matches found</p>
               </div>
             ) : (
-              filteredMatches.map((match) => (
-                <div key={match.id} className="mai-match-card">
+              filteredMatches.map((match, idx) => (
+                <div key={match.id || idx} className="mai-match-card">
                   <div className="mai-match-header">
                     <div className="mai-match-badges">
                       <span className="mai-sport-tag">{match.sportType}</span>
@@ -642,8 +637,8 @@ export default function MatchAdminInterface() {
                     {matchEvents[match.id] && matchEvents[match.id].length > 0 && (
                       <div className="mai-events-list">
                         <h5>Match Events:</h5>
-                        {matchEvents[match.id].map((event) => (
-                          <div key={event.id} className="mai-event-item">
+                        {matchEvents[match.id].map((event, eidx) => (
+                          <div key={event.id || eidx} className="mai-event-item">
                             <span className="mai-event-time">{event.time}'</span>
                             <span className="mai-event-type">{event.eventType}</span>
                             <span className="mai-event-player">{event.player}</span>
