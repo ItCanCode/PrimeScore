@@ -2,17 +2,55 @@ import React, { useEffect, useState } from "react";
 
 const API_KEY = "4399a3821d4ce5eb1a989436dc4e5303cf5e7176";
 // const sec_API="9705bc4a7c3976dd88ceb3410db328363e8abd87"
-let selected_date="2025-08-30";
-let Psl_id="296";
-const LiveApi = () => {
+let selected_date="";
+// const today = new Date().toISOString().split("T")[0];
+const serie_a="253";
+const Epl_id="228";
+const La_liga="297";
+let selected_league="";
+let league_id="";
+const Psl_id="296";
+const Upcoming = () => {
   const [matches, setMatches] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  function addDays(date, days) {
+  const result = new Date(date);
+  result.setDate(result.getDate() + days);
+  return result.toISOString().split("T")[0];
+}
+
+const day2 = addDays(new Date(), 1);
+const day3 = addDays(new Date(), 2)
+const day4 = addDays(new Date(), 3)
+const day5= addDays(new Date(), 4)
+const day6= addDays(new Date(), 5)
+const day7 = addDays(new Date(), 6)
+const day8 = addDays(new Date(), 7)
   useEffect(() => {
     const fetchLive = async () => {
       try {
+
+
+
+        if (selected_league=="PSL"){
+            league_id=Psl_id;
+          }
+          else if (selected_league=="Epl") {
+            league_id=Epl_id;
+          }
+          else if (selected_league=="La_liga") {
+            league_id=La_liga;
+          }
+          else if (selected_league=="serie_a") {
+            league_id=serie_a;
+          }
+          else{
+            league_id=Epl_id;//just in case
+          }
+
         const response = await fetch(
-          `https://api.soccerdataapi.com/matches/?league_id=${Psl_id}&season=2025-2026&auth_token=${API_KEY}`,
+          `https://api.soccerdataapi.com/matches/?league_id=${league_id}&season=2025-2026&auth_token=${API_KEY}`,
           {
             method: "GET",
             headers: {
@@ -31,12 +69,12 @@ const LiveApi = () => {
         const data = await response.json();
 
         const allMatches = data[0]?.stage?.flatMap((stage) => stage.matches) || [];
-
+        
         const filtered = allMatches.filter((match) => {
           const [day, month, year] = match.date.split("/");
           const isoDate = `${year}-${month}-${day}T${match.time}:00`;
           const matchDate = new Date(isoDate).toISOString().split("T")[0];
-          return matchDate === selected_date;
+          return  matchDate ===day2 ||matchDate === day3 ||matchDate === day4 ||matchDate === day5 ||matchDate ===day6 ||matchDate === day7  ||matchDate === day8;
         });
 
         setMatches(filtered);
@@ -97,4 +135,4 @@ const LiveApi = () => {
   );
 };
 
-export default LiveApi;
+export default Upcoming;
