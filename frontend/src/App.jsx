@@ -12,6 +12,7 @@ import TeamManagement from "./Pages/TeamManagement";
 import MatchAdminInterface from "./Pages/MatchAdminInterface";
 import LiveApiPast7 from "./Pages/PasttMatch";
 import Upcoming from "./Pages/UpcomingMatches";
+import OngoingMatches from "./Pages/OngoingMatches";
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
         <Route path="/sports" element={<SportsSelector/>}/>
         <Route path="/management" element={<TeamManagement />}/>
         <Route path="/match-admin" element={<MatchAdminInterface/>}/>
+        <Route path="/ongoing" element={<OngoingMatches/>}/>
       </Routes>
 
     </>

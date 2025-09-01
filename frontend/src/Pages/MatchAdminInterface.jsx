@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { Plus, Calendar, MapPin, Users, Trophy, Menu, Clock, Play, Square, Edit2, Trash2, X, ArrowLeft, Home } from "lucide-react";
+import { db } from "../firebase";
+import { doc, setDoc, collection, addDoc, deleteDoc } from "firebase/firestore";
 import "../Styles/MatchAdminInterface.css";
 import { useNavigate } from "react-router-dom";
 
@@ -45,26 +47,40 @@ export default function MatchAdminInterface() {
     setEventData((prev) => ({ ...prev, [name]: value }));
   };
 
+  // Add event to both Firestore and backend
   const addMatchEvent = async () => {
     if (!eventData.eventType || !eventData.team || !eventData.player || !eventData.time) {
       alert("Please fill in all event fields");
       return;
     }
+    if (!selectedMatch || !selectedMatch.id) {
+      alert("No match selected or match ID missing");
+      return;
+    }
 
     const newEvent = {
-      id: Date.now(),
+      id: Date.now().toString(),
       ...eventData,
       matchId: selectedMatch.id,
       timestamp: new Date().toISOString()
     };
 
+    // Debug log
+    console.log("Adding event to Firestore:", newEvent, "Match ID:", selectedMatch.id);
+
     // Add event to local state
-    setMatchEvents(prev => ({
+    setMatchEvents && setMatchEvents(prev => ({
       ...prev,
       [selectedMatch.id]: [...(prev[selectedMatch.id] || []), newEvent]
     }));
 
     try {
+      await addDoc(
+        collection(db, 'matchEvents', String(selectedMatch.id), 'events'),
+        newEvent
+      );
+
+      // Also update backend for consistency
       const res = await fetch(`https://prime-backend.azurewebsites.net/api/admin/addMatchEvent/${selectedMatch.id}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -74,10 +90,10 @@ export default function MatchAdminInterface() {
       if (!res.ok) {
         throw new Error("Failed to add event");
       }
-      
       setMessage({ type: "success", text: "Event added successfully" });
     } catch (err) {
       setMessage({ type: "error", text: err.message });
+      console.error("Firestore error:", err);
     } finally {
       setEventData({ eventType: "", team: "", player: "", time: "" });
       setShowEventForm(false);
@@ -148,12 +164,36 @@ export default function MatchAdminInterface() {
     }
   };
 
+  // Update both Firestore and backend for match status
   const updateMatchStatus = async (matchId, newStatus) => {
-    setMatches(prev => prev.map(match => 
+    setMatches(prev => prev.map((match) =>
       match.id === matchId ? { ...match, status: newStatus } : match
     ));
 
     try {
+      // Find the match object
+      const match = matches.find(m => m.id === matchId);
+      if (newStatus === 'ongoing' && match) {
+        if (!matchId) {
+          alert("Match ID missing");
+          return;
+        }
+        // Debug log
+        console.log("Adding ongoing match to Firestore:", match, "Match ID:", matchId);
+        await setDoc(doc(db, 'ongoingMatches', String(matchId)), {
+          ...match,
+          status: 'ongoing',
+          movedToOngoingAt: new Date().toISOString(),
+        });
+        // Remove from 'matches' (upcoming) collection
+        await deleteDoc(doc(db, 'matches', String(matchId)));
+      }
+      // Remove from Firestore 'ongoingMatches' if not ongoing (optional)
+       //if (newStatus !== 'ongoing') {
+       //  await deleteDoc(doc(db, 'ongoingMatches', String(matchId)));
+       //}
+
+      // Always update backend for consistency
       const res = await fetch(`https://prime-backend.azurewebsites.net/api/admin/updateMatchStatus/${matchId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
@@ -173,7 +213,7 @@ export default function MatchAdminInterface() {
   };
 
   const updateScore = async (matchId, homeScore, awayScore) => {
-    setMatches(prev => prev.map(match => 
+    setMatches(prev => prev.map((match) => 
       match.id === matchId ? { ...match, homeScore, awayScore } : match
     ));
 
@@ -204,7 +244,7 @@ export default function MatchAdminInterface() {
         throw new Error("Failed to delete match");
       }
 
-      setMatches(prev => prev.filter(match => match.id !== matchId));
+      setMatches(prev => prev.filter((match) => match.id !== matchId));
       setMessage({ type: "success", text: "Match deleted successfully" });
     } catch (err) {
       setMessage({ type: "error", text: err.message });

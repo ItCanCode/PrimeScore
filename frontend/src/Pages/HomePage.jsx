@@ -128,6 +128,9 @@ function HomePage() {
               </a>
             </li>
 
+            <li>
+              <a href="#ongoing" onClick={() => navigate("/ongoing")}>Ongoing Matches</a>
+            </li>
           </ul>
           
           <div className="auth-buttons">
