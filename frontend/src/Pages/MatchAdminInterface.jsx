@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Plus, Calendar, MapPin, Users, Trophy, Menu, Clock, Play, Square, Edit2, Trash2, X, ArrowLeft, Home } from "lucide-react";
 import { db } from "../firebase";
-import { doc, setDoc, collection, addDoc, deleteDoc, getDocs } from "firebase/firestore";
+import { doc, setDoc, collection, addDoc, deleteDoc, getDocs, query, where, onSnapshot } from "firebase/firestore";
 import "../Styles/MatchAdminInterface.css";
 import { useNavigate } from "react-router-dom";
 export default function MatchAdminInterface() {
@@ -29,6 +29,8 @@ export default function MatchAdminInterface() {
     time: ""
   });
   const [matchEvents, setMatchEvents] = useState({});
+  // Store live stats for each match (score, etc.)
+  const [matchStats, setMatchStats] = useState({});
 
   const sportTypes = [ "Football", "Basketball", "Tennis", "Cricket", "Baseball", "Hockey", "Rugby", "Volleyball", "Badminton", "Table Tennis"];
 
@@ -68,7 +70,7 @@ export default function MatchAdminInterface() {
     // Debug log
     console.log("Adding event to Firestore:", newEvent, "Match ID:", selectedMatch.id);
 
-    // Add event to local state
+    // Add event to local state (for UI display)
     setMatchEvents && setMatchEvents(prev => ({
       ...prev,
       [selectedMatch.id]: [...(prev[selectedMatch.id] || []), newEvent]
@@ -262,25 +264,6 @@ export default function MatchAdminInterface() {
     }
   };
 
-  const updateScore = async (matchId, homeScore, awayScore) => {
-    setMatches(prev => prev.map((match) => 
-      match.id === matchId ? { ...match, homeScore, awayScore } : match
-    ));
-
-    try {
-      const res = await fetch(`https://prime-backend.azurewebsites.net/api/admin/updateScore/${matchId}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ homeScore, awayScore }),
-      });
-
-      if (!res.ok) {
-        throw new Error("Failed to update score");
-      }
-    } catch (err) {
-      setMessage({ type: "error", text: err.message });
-    }
-  };
 
   const deleteMatch = async (matchId) => {
     if (!confirm('Are you sure you want to delete this match?')) return;
@@ -346,36 +329,30 @@ export default function MatchAdminInterface() {
     // (removed old filteredMatches declaration; now handled below)
 
   
-  const ScoreInput = ({ match }) => {
-    const [homeScore, setHomeScore] = useState(match.homeScore || 0);
-    const [awayScore, setAwayScore] = useState(match.awayScore || 0);
 
-    const handleScoreUpdate = () => {
-      updateScore(match.id, parseInt(homeScore) || 0, parseInt(awayScore) || 0);
-    };
-
-    return (
-      <div className="mai-score-update">
-        <span>Update Score:</span>
-        <input
-          type="number"
-          value={homeScore}
-          onChange={(e) => setHomeScore(e.target.value)}
-          min="0"
-        />
-        <span>-</span>
-        <input
-          type="number"
-          value={awayScore}
-          onChange={(e) => setAwayScore(e.target.value)}
-          min="0"
-        />
-        <button onClick={handleScoreUpdate} className="mai-score-btn">
-          Update
-        </button>
-      </div>
-    );
-  };
+  // Listen for real-time match_events for each ongoing match and calculate stats
+  useEffect(() => {
+    let unsubscribes = [];
+    ongoingMatches.forEach((match) => {
+      const q = query(collection(db, 'match_events'), where('matchId', '==', match.id));
+      const unsub = onSnapshot(q, (snapshot) => {
+        const events = snapshot.docs.map(doc => doc.data());
+        setMatchEvents(prev => ({ ...prev, [match.id]: events }));
+        // Calculate score from goal events
+        let homeScore = 0;
+        let awayScore = 0;
+        events.forEach(event => {
+          if (event.eventType === 'Goal') {
+            if (event.team === 'Home') homeScore++;
+            if (event.team === 'Away') awayScore++;
+          }
+        });
+        setMatchStats(prev => ({ ...prev, [match.id]: { homeScore, awayScore } }));
+      });
+      unsubscribes.push(unsub);
+    });
+    return () => { unsubscribes.forEach(unsub => unsub && unsub()); };
+  }, [ongoingMatches]);
 
   useEffect(() => {
     const fetchMatches = async () => {
@@ -643,7 +620,7 @@ export default function MatchAdminInterface() {
                       <span>{match.homeTeam}</span>
                       {(match.status === 'ongoing' || match.status === 'finished') ? (
                         <span className="mai-score">
-                          {match.homeScore || 0} - {match.awayScore || 0}
+                          {(matchStats[match.id]?.homeScore ?? 0)} - {(matchStats[match.id]?.awayScore ?? 0)}
                         </span>
                       ) : (
                         <span>vs</span>
@@ -659,10 +636,7 @@ export default function MatchAdminInterface() {
                       </div>
                     </div>
 
-                    {/* Score Management for Ongoing Matches */}
-                    {match.status === 'ongoing' && (
-                      <ScoreInput match={match} />
-                    )}
+                    {/* Score is now always calculated from events. No manual update. */}
 
                     {/* Match Events Display */}
                     {matchEvents[match.id] && matchEvents[match.id].length > 0 && (
