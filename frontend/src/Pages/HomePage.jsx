@@ -8,7 +8,26 @@ function HomePage() {
   const [_error, _setError] = useState(null);
   const [loading, setLoading] = useState(true);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const [_isTablet, setIsTablet] = useState(false);
   const navigate = useNavigate();
+
+  // Handle screen size detection
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+      setIsTablet(window.innerWidth > 768 && window.innerWidth <= 1024);
+    };
+
+    // Initial check
+    handleResize();
+
+    // Add event listener
+    window.addEventListener('resize', handleResize);
+
+    // Cleanup
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -32,9 +51,22 @@ function HomePage() {
     };
   }, [dropdownOpen]);
 
+  // Close dropdown when screen size changes to mobile
+  useEffect(() => {
+    if (isMobile && dropdownOpen) {
+      setDropdownOpen(true);
+    }
+  }, [isMobile, dropdownOpen]);
+
   const handleLogout = () => {
     localStorage.removeItem("authToken");
     navigate("/");
+    setDropdownOpen(false);
+  };
+
+  const handleNavigation = (path) => {
+    navigate(path);
+    setDropdownOpen(false);
   };
 
   if (loading) {
@@ -43,10 +75,14 @@ function HomePage() {
 
   if (user) {
     return (
-      <div className="user-profile">
-        <h2>Welcome, {user.displayName}!</h2>
-        <p>Email: {user.email}</p>
-        <img src={user.photoURL} alt="profile" />
+      <div className="home">
+        <div className="user-profile">
+          <h2>Welcome, {user.displayName}!</h2>
+          <p>Email: {user.email}</p>
+          {user.photoURL && (
+            <img src={user.photoURL} alt="profile" />
+          )}
+        </div>
       </div>
     );
   }
@@ -56,61 +92,99 @@ function HomePage() {
       <nav className="navbar">
         <div className="nav-container">
           <div className="logo">PrimeScore</div>
+          
           <ul className="nav-links">
             <li>
-              <a href="#home" onClick={() => navigate("/sports")}>
-                Matches
+              <a 
+                href="#home" 
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleNavigation("/sports");
+                }}
+              >
+                {isMobile ? "Matches" : "View Matches"}
               </a>
             </li>
             <li>
-              <a href="#management" onClick={() => navigate("/management")}>
-                Manage Team
+              <a 
+                href="#management" 
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleNavigation("/management");
+                }}
+              >
+                {isMobile ? "Team" : "Manage Team"}
               </a>
             </li>
             <li>
-              <a href="#management" onClick={() => navigate("/match-admin")}>
-                Manage Matches
+              <a 
+                href="#match-admin" 
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleNavigation("/match-admin");
+                }}
+              >
+                {isMobile ? "Admin" : "Manage Matches"}
               </a>
             </li>
-            <li>
-              <a href="#admin" onClick={() => navigate("/err")}>
-                Live
-              </a>
-            </li>
+
           </ul>
+          
           <div className="auth-buttons">
             <button
               className="auth-btn login-btn"
               onClick={() => setDropdownOpen(prev => !prev)}
               aria-expanded={dropdownOpen}
+              aria-haspopup="true"
+              aria-label="Open menu"
             >
-              Menu &#x25BC;
+              {isMobile ? "☰" : "Menu"} {!isMobile && "▼"}
             </button>
 
             {dropdownOpen && (
-              <div className="dropdown-content">
+              <div 
+                className="dropdown-content"
+                role="menu"
+                aria-label="User menu"
+              >
                 <button 
                   className="dropdown-item" 
                   title="Notifications"
-                  onClick={() => {}}
+                  onClick={() => {
+                    // Add notifications functionality here
+                    console.log("Notifications clicked");
+                    setDropdownOpen(false);
+                  }}
+                  role="menuitem"
                 >
-                   Notifications
+                  🔔 Notifications
                 </button>
 
                 <button
                   className="dropdown-item"
                   title="Profile"
-                  onClick={() => navigate("/profile")}
+                  onClick={() => handleNavigation("/profile")}
+                  role="menuitem"
                 >
-                   Profile
+                  👤 Profile
+                </button>
+
+                <button 
+                  className="dropdown-item" 
+                  title="Settings"
+                  onClick={() => handleNavigation("/settings")}
+                  role="menuitem"
+                >
+                  ⚙️ Settings
                 </button>
 
                 <button 
                   className="dropdown-item" 
                   title="Logout" 
                   onClick={handleLogout}
+                  role="menuitem"
                 >
-                   Logout
+                  🚪 Logout
                 </button>
               </div>
             )}
@@ -119,14 +193,22 @@ function HomePage() {
       </nav>
 
       <section className="hero" id="home">
-        {/* Floating Sports Icons */}
+        <div className="hero-content">
+    
+        </div>
+
+        {/* Floating Sports Icons - Hide some on mobile for better performance */}
         <div className="floating-icon icon-1">⚽</div>
         <div className="floating-icon icon-2">🏀</div>
-        <div className="floating-icon icon-3">🏈</div>
+        {!isMobile && <div className="floating-icon icon-3">🏈</div>}
         <div className="floating-icon icon-4">🎾</div>
-        <div className="floating-icon icon-5">🏸</div>
+        {!isMobile && <div className="floating-icon icon-5">🏸</div>}
         <div className="floating-icon icon-6">🏓</div>
       </section>
+
+
+
+   
     </div>
   );
 }
