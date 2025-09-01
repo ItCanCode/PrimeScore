@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Plus, Calendar, MapPin, Users, Trophy, Menu, Clock, Play, Square, Edit2, Trash2, X, ArrowLeft, Home } from "lucide-react";
 import { db } from "../firebase";
-import { doc, setDoc, collection, addDoc } from "firebase/firestore";
+import { doc, setDoc, collection, addDoc, deleteDoc } from "firebase/firestore";
 import "../Styles/MatchAdminInterface.css";
 import { useNavigate } from "react-router-dom";
 
@@ -185,6 +185,8 @@ export default function MatchAdminInterface() {
           status: 'ongoing',
           movedToOngoingAt: new Date().toISOString(),
         });
+        // Remove from 'matches' (upcoming) collection
+        await deleteDoc(doc(db, 'matches', String(matchId)));
       }
       // Remove from Firestore 'ongoingMatches' if not ongoing (optional)
        //if (newStatus !== 'ongoing') {

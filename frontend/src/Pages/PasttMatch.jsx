@@ -5,7 +5,7 @@ const Psl_id = "296";
 const serie_a="253";
 const Epl_id = "228";
 const La_liga="297";
-let selected_league="";
+let selected_league="PSL";
 let league_id="";
 
 const LiveApi = () => {
@@ -75,24 +75,7 @@ const LiveApi = () => {
         });
 
         setMatches(filtered);
-        console.log(matches);
-        // Optional: store matches in your backend
-        // await fetch("https://prime-backend.azurewebsites.net/api/storeMatch", {
-        //   method: "POST",
-        //   headers: {
-        //     "Content-Type": "application/json",
-        //   },
-        //   body: JSON.stringify({
-        //     matches: filtered.map((m) => ({
-        //       id: m.id,
-        //       home: m.teams.home?.name,
-        //       away: m.teams.away?.name,
-        //       time: m.time,
-        //       date: m.date,
-        //       events: m.events || [],
-        //     })),
-        //   }),
-        // });
+        //console.log(matches);
       } catch (error) {
         console.error("Error fetching matches:", error);
       } finally {
