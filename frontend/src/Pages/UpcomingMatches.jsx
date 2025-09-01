@@ -7,7 +7,7 @@ let selected_date="";
 const serie_a="253";
 const Epl_id="228";
 const La_liga="297";
-let selected_league="";
+let selected_league="La_liga";
 let league_id="";
 const Psl_id="296";
 const Upcoming = () => {
@@ -23,15 +23,13 @@ const Upcoming = () => {
 const day2 = addDays(new Date(), 1);
 const day3 = addDays(new Date(), 2)
 const day4 = addDays(new Date(), 3)
-const day5= addDays(new Date(), 4)
+const day5 = addDays(new Date(), 4)
 const day6= addDays(new Date(), 5)
 const day7 = addDays(new Date(), 6)
 const day8 = addDays(new Date(), 7)
   useEffect(() => {
     const fetchLive = async () => {
       try {
-
-
 
         if (selected_league=="PSL"){
             league_id=Psl_id;
@@ -78,23 +76,24 @@ const day8 = addDays(new Date(), 7)
         });
 
         setMatches(filtered);
+        
+        // await fetch("https://prime-backend.azurewebsites.net/api/storeMatch", {
+        //   method: "POST",
+        //   headers: {
+        //     "Content-Type": "application/json",
+        //   },
+        //   body: JSON.stringify({
+        //     matches: filtered.map((m) => ({
 
-        await fetch("https://prime-backend.azurewebsites.net/api/storeMatch", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            matches: filtered.map((m) => ({
+        //       id: m.id,
+        //       home: m.teams.home?.name,
+        //       away: m.teams.away?.name,
+        //       time: m.time,
+        //       date: m.date,
+        //     })),
+        //   }),
+        // });
 
-              id: m.id,
-              home: m.teams.home?.name,
-              away: m.teams.away?.name,
-              time: m.time,
-              date: m.date,
-            })),
-          }),
-        });
       } catch (error) {
         console.error("Error fetching matches:", error);
       } finally {
@@ -129,7 +128,7 @@ const day8 = addDays(new Date(), 7)
           </div>
         ))
       ) : (
-        <p>No matches found.</p>
+        <p>No matches found from {selected_league}.</p>
       )}
     </div>
   );

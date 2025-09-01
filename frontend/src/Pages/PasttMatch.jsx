@@ -75,24 +75,24 @@ const LiveApi = () => {
         });
 
         setMatches(filtered);
-
+        console.log(matches);
         // Optional: store matches in your backend
-        await fetch("https://prime-backend.azurewebsites.net/api/storeMatch", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            matches: filtered.map((m) => ({
-              id: m.id,
-              home: m.teams.home?.name,
-              away: m.teams.away?.name,
-              time: m.time,
-              date: m.date,
-              events: m.events || [],
-            })),
-          }),
-        });
+        // await fetch("https://prime-backend.azurewebsites.net/api/storeMatch", {
+        //   method: "POST",
+        //   headers: {
+        //     "Content-Type": "application/json",
+        //   },
+        //   body: JSON.stringify({
+        //     matches: filtered.map((m) => ({
+        //       id: m.id,
+        //       home: m.teams.home?.name,
+        //       away: m.teams.away?.name,
+        //       time: m.time,
+        //       date: m.date,
+        //       events: m.events || [],
+        //     })),
+        //   }),
+        // });
       } catch (error) {
         console.error("Error fetching matches:", error);
       } finally {
@@ -101,7 +101,7 @@ const LiveApi = () => {
     };
 
     fetchMatches();
-  }, []);
+  }, [matches]);
 
   if (loading) {
     return <p>Loading matches...</p>;
