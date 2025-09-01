@@ -21,6 +21,7 @@ const LiveApi = () => {
 
   useEffect(() => {
     const fetchMatches = async () => {
+      
       try {
 
 
@@ -76,7 +77,7 @@ const LiveApi = () => {
         });
 
         setMatches(filtered);
-        console.log(matches);
+        console.log(matches[0]);
       } catch (error) {
         console.error("Error fetching matches:", error);
       } finally {
@@ -125,7 +126,7 @@ const LiveApi = () => {
 
                   return (
                     <li key={i}>
-                      {e.event_minute}' {e.event_type} – {playerName}
+                      {e.event_minute}' {e.event_type} - {playerName}
                     </li>
                   );
                 })}

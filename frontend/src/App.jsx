@@ -21,7 +21,7 @@ function App() {
       <AuthProvider>
       <Routes>
         <Route path="/err" element={<Upcoming/>}/>
-        <Route path='/hawu' element={<LiveApiPast7/>}/>
+        <Route path='/past' element={<LiveApiPast7/>}/>
         <Route path="/live" element={<OnGoing/>}/>
         <Route path="/" element={<WelcomePage />} />
         <Route path="/home" element={<HomePage />} />
