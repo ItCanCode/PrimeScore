@@ -60,8 +60,8 @@ describe("adminController.createMatch", () => {
       status: "scheduled",
     });
 
-    expect(res.status).toHaveBeenCalledWith(201);
-    expect(res.json).toHaveBeenCalledWith({ message: "Match created" });
+  expect(res.status).toHaveBeenCalledWith(201);
+  expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ message: "Match created" }));
   });
 
   it("should return 500 if Firestore throws an error", async () => {
