@@ -1,8 +1,5 @@
 import admin from "../config/firebaseAdmin.js";
-// adminController.js
-
-// Create Match
-export const createMatch = async (req, res) => {
+const createMatch = async (req, res) => {
   try {
     const { matchName, homeTeam, awayTeam, startTime, venue, sportType } = req.body;
     await admin.firestore().collection("matches").add({
@@ -21,7 +18,7 @@ export const createMatch = async (req, res) => {
 };
 
 // Update Match Status
-export const updateMatchStatus = async (req, res) => {
+const updateMatchStatus = async (req, res) => {
   try {
     const matchId = req.params.id;
     const { status } = req.body;
@@ -33,7 +30,7 @@ export const updateMatchStatus = async (req, res) => {
 };
 
 // Update Score (stub)
-export const updateScore = async (req, res) => {
+const updateScore = async (req, res) => {
   try {
     // Implement score update logic here
     res.status(200).json({ message: 'Score updated (stub)' });
@@ -43,11 +40,18 @@ export const updateScore = async (req, res) => {
 };
 
 // Add Match Event (stub)
-export const addMatchEvent = async (req, res) => {
+const addMatchEvent = async (req, res) => {
   try {
     // Implement add event logic here
     res.status(200).json({ message: 'Event added (stub)' });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
+};
+
+export default {
+  createMatch,
+  updateMatchStatus,
+  updateScore,
+  addMatchEvent,
 };
