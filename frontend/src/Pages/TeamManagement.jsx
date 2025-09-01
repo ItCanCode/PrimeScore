@@ -1,15 +1,50 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Plus, X, Users, MapPin, Trophy, Target } from 'lucide-react';
 import '../Styles/TeamManagement.css';
+import { useAuth } from "../context/useAuth.js";
 
 const TeamManagement = () => {
+  const { token } = useAuth();
   const [team, setTeam] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [showAddPlayerModal, setShowAddPlayerModal] = useState(false);
   const [players, setPlayers] = useState([]);
   const [newPlayer, setNewPlayer] = useState({ name: '', position: '', number: '', age: '' });
   const [newTeam, setNewTeam] = useState({ teamName: '', shortName: '', sportType: '', city: '' });
 
   const sportOptions = ['Soccer','Basketball','Rugby'];
+
+  useEffect(() => {
+    const fetchMyTeam = async () => {
+      
+      if (!token) {
+        setLoading(false);
+        return;
+      }
+      
+      try {
+        const response = await fetch(`https://prime-backend.azurewebsites.net/api/manager/myTeam`, {
+          method: "GET",
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          if (data.hasTeam) {
+            setTeam(data.team);
+          }
+        } else {
+          console.error("Failed to fetch team");
+        }
+      } catch (error) {
+        console.error("Error fetching team:", error);
+      }
+      setLoading(false);
+    };
+
+    fetchMyTeam();
+  }, [token]);
+
 
   const getPositionsBySport = (sport) => {
     const positions = {
@@ -26,16 +61,21 @@ const TeamManagement = () => {
       return;
     }
 
+    if (!token) return;
+
     try {
       const response = await fetch(`https://prime-backend.azurewebsites.net/api/manager/createTeam`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          Authorization:`Bearer ${token}`,
+         },
         body: JSON.stringify(newTeam),
       });
 
       if (response.ok) {
         const data = await response.json();
-        setTeam(newTeam); // only set team after successful creation
+        setTeam({ ...newTeam, teamId: data.teamId }); // only set team after successful creation
         setNewTeam({ teamName: '', shortName: '', sportType: '', city: '' });
         alert("Team created successfully!");
         console.log("Team created:", data);
@@ -49,24 +89,77 @@ const TeamManagement = () => {
     }
   };
 
-  const handleAddPlayer = () => {
-    if (!newPlayer.name || !newPlayer.position || !newPlayer.number) {
-      alert("Please fill in player name, position, and number");
-      return;
+  const handleAddPlayer = async (e) => {
+    e.preventDefault();
+
+    if (!token) return;
+
+    try {
+      const res = await fetch(`https://prime-backend.azurewebsites.net/api/manager/addPlayers`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          teamId: team.teamId,
+          players: [newPlayer],
+        }),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        setPlayers([...players, ...data.players]); // update list
+        setNewPlayer({ name: '', position: '', number: '', age: '' });
+        setShowAddPlayerModal(false);
+      } else {
+        const data = await res.json();
+        alert(data.error || "Failed to add player");
+      }
+    } catch (err) {
+      console.error("Error adding player:", err);
     }
-    setPlayers([...players, { ...newPlayer, id: Date.now() }]);
-    setNewPlayer({ name:'', position:'', number:'', age:'' });
-    setShowAddPlayerModal(false);
   };
 
-  const removePlayer = (id) => setPlayers(players.filter(player => player.id !== id));
+  useEffect(() => {
+  if (!team) return;
 
-//   const resetTeam = () => {
-//     setTeam(null);
-//     setPlayers([]);
-//     setNewPlayer({ name:'', position:'', number:'', age:'' });
-//     setNewTeam({ teamName: '', shortName: '', sportType: '', city: '' });
-//   };
+  const fetchPlayers = async () => {
+    try {
+      const res = await fetch(`https://prime-backend.azurewebsites.net/api/manager/players/${team.teamId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setPlayers(data.players || []);
+      }
+    } catch (err) {
+      console.error("Error fetching players:", err);
+    }
+  };
+
+  fetchPlayers();
+}, [team,token]);
+
+
+  const removePlayer = async (id) => {
+
+    try {
+      const res = await fetch(`https://prime-backend.azurewebsites.net/api/manager/player/${id}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (res.ok) {
+        setPlayers(players.filter(p => p.playerId !== id));
+      }
+    } catch (err) {
+      console.error("Error removing player:", err);
+    }
+  };
+
+  if (loading) {
+    return <div className="tm-container"><p>Loading team...</p></div>;
+  }
 
   // TEAM CREATION VIEW
   if (!team) {
@@ -192,8 +285,8 @@ const TeamManagement = () => {
         {players.length > 0 && (
           <div className="tm-players-grid">
             {players.map(player => (
-              <div key={player.id} className="tm-player-card">
-                <button onClick={()=>removePlayer(player.id)} className="tm-remove-player-button"><X/></button>
+              <div key={player.playerId} className="tm-player-card">
+                <button onClick={()=>removePlayer(player.playerId)} className="tm-remove-player-button"><X/></button>
                 <div className="tm-player-info">
                   <div className="tm-player-number">{player.number}</div>
                   <h4>{player.name}</h4>

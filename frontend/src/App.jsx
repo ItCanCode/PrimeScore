@@ -13,10 +13,12 @@ import MatchAdminInterface from "./Pages/MatchAdminInterface";
 import LiveApiPast7 from "./Pages/PasttMatch";
 import Upcoming from "./Pages/UpcomingMatches";
 import OngoingMatches from "./Pages/OngoingMatches";
+import { AuthProvider } from "./context/authContext.jsx";
 
 function App() {
   return (
     <>
+      <AuthProvider>
       <Routes>
         <Route path="/err" element={<Upcoming/>}/>
         <Route path='/hawu' element={<LiveApiPast7/>}/>
@@ -33,7 +35,7 @@ function App() {
         <Route path="/match-admin" element={<MatchAdminInterface/>}/>
         <Route path="/ongoing" element={<OngoingMatches/>}/>
       </Routes>
-
+      </AuthProvider>
     </>
   )
 }

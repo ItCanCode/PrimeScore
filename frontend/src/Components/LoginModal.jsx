@@ -4,11 +4,11 @@ import { FaFacebookF } from 'react-icons/fa';
 import { auth, provider } from "../firebase";
 import { signInWithPopup } from "firebase/auth";
 import { useNavigate } from 'react-router-dom';
-
+import { useAuth } from "../context/useAuth.js";
 
 function LoginModal ({ closeModal,setModalType }){
     const navigate = useNavigate();
-  
+    const { login } = useAuth();
     async function handleGoogleLogin() {
       try {
         
@@ -28,6 +28,7 @@ function LoginModal ({ closeModal,setModalType }){
         const role = data.user.role;
         if(data.message=="Login successful"){
           localStorage.setItem("token", idToken);
+          login(result.user, idToken);
           if(role){
               navigate("/home");
           }

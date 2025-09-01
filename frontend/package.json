@@ -32,7 +32,7 @@
     "jest-environment-jsdom": "^30.0.5",
     "jest-junit": "^16.0.0",
     "rollup": "^4.46.2",
-    "vite": "^5.4.19",
+    "vite": "^7.1.4",
     "vite-plugin-eslint": "^1.8.1"
   }
 }
