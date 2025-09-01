@@ -32,6 +32,7 @@
         <li><a href="#stories">User Stories</a></li>
         <li><a href="#setup">Setup Guide</a></li>
         <li><a href="#git">Git Workflow</a></li>
+        <li><a href="#database">Database</a></li>
       </ul>
     </div>
   </nav>
@@ -80,11 +81,11 @@
       <h3>UML Diagrams</h3>
       <div class="media-grid">
         <figure class="figure">
-          <img src="PrimeScore(use_cases).png" alt="PrimeScore use case diagram" />
+          <img src="PrimeScore(use_cases)_sprint_2.png" alt="PrimeScore use case diagram" />
           <figcaption>Use Case Diagram</figcaption>
         </figure>
         <figure class="figure">
-          <img src="PrimeScore(state_diagram).png" alt="PrimeScore state diagram" />
+          <img src="PrimeScore(state_diagram)_sprint_2.png" alt="PrimeScore state diagram" />
           <figcaption>State Diagram</figcaption>
         </figure>
       </div>
@@ -151,6 +152,19 @@
       </ol>
     </section>
 
+    <section id="stories" class="section" aria-labelledby="stories-title">
+      <header class="section-header">
+        <h2 id="stories-title">Sprint 2 User Stories</h2>
+      </header>
+      <ol class="ordered">
+        <li>As a viewer, I want to see the live score of my team, so that I can follow the match in real time.</li>
+        <li>As a manager, I want to create a new team, so that I can manage my players and participate in matches.</li>
+        <li>As a manager, I want to add players to a team, so that I can build my roster.</li>
+        <li>As an admin, I want to update the status of a match from upcoming to ongoing, so that fans and players know the match has started.</li>
+        <li>As an admin, I want to update the events of the matches, so that the viewers can see the events occuring in the match.</li>
+      </ol>
+    </section>
+
     <!-- Setup -->
     <section id="setup" class="section" aria-labelledby="setup-title">
       <header class="section-header">
@@ -185,6 +199,75 @@ npm run dev
         <li><strong>Commit messages:</strong> Conventional commits: <code>type(scope): short description</code>.</li>
       </ul>
     </section>
+
+        <!-- Database -->
+    <section id="database" class="section" aria-labelledby="db-title">
+      <header class="section-header">
+        <h2 id="db-title">Database Documentation</h2>
+      </header>
+
+      <h3>Schema Overview</h3>
+      <ul class="bullets">
+        <li><strong>teams</strong> (collection)
+          <ul>
+            <li><code>teamId</code> — unique identifier (auto-generated)</li>
+            <li><code>teamName</code> — full name of the team</li>
+            <li><code>shortName</code> — abbreviation for displays</li>
+            <li><code>sportType</code> — e.g. Football, Basketball</li>
+            <li><code>city</code> — home city</li>
+            <li><code>createdBy</code> — UID of the manager who created the team</li>
+          </ul>
+        </li>
+
+        <li><strong>players</strong> (collection)
+          <ul>
+            <li><code>playerId</code> — unique identifier (auto-generated)</li>
+            <li><code>name</code> — player’s full name</li>
+            <li><code>teamId</code> — reference to <code>teams.teamId</code></li>
+          </ul>
+        </li>
+
+        <li><strong>matches</strong> (collection)
+          <ul>
+            <li><code>matchId</code> — unique identifier</li>
+            <li><code>homeTeamId</code> — reference to <code>teams.teamId</code></li>
+            <li><code>awayTeamId</code> — reference to <code>teams.teamId</code></li>
+            <li><code>dateTime</code> — scheduled start time</li>
+            <li><code>status</code> — upcoming | ongoing | completed</li>
+          </ul>
+        </li>
+
+        <li><strong>events</strong> (subcollection under matches)
+          <ul>
+            <li><code>eventId</code> — unique identifier</li>
+            <li><code>type</code> — goal, foul, substitution, etc.</li>
+            <li><code>timestamp</code> — game clock / real time</li>
+            <li><code>playerId</code> — reference to <code>players.playerId</code></li>
+          </ul>
+        </li>
+      </ul>
+
+      <h3>Deployment Info</h3>
+      <p>
+        The database is deployed on <strong>Firebase Firestore</strong>, which provides:
+      </p>
+      <ul class="bullets">
+        <li>Global availability and auto-scaling</li>
+        <li>Real-time synchronization for instant updates across clients</li>
+        <li>Seamless integration with Firebase Authentication and Cloud Functions</li>
+      </ul>
+
+      <h3>Choice Justification</h3>
+      <p>
+        Firestore was chosen over traditional SQL databases because of its ability to handle 
+        real-time data streams, which are critical for sports event updates. Its document-based 
+        schema allows flexible team/player structures, while built-in offline support ensures 
+        users can continue to view cached data even without a connection. Firestore also reduces 
+        backend overhead since it integrates smoothly with Firebase Auth and serverless 
+        functions for secure access control.
+      </p>
+    </section>
+
   </main>
 
   <footer class="site-footer" role="contentinfo">
