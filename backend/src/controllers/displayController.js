@@ -1,13 +1,13 @@
 import admin from '../config/firebaseAdmin.js';
 
-// Controller: Get match events and calculated stats for a given matchId
-// This endpoint aggregates all events (goals, fouls, cards, etc.) for a match and returns live stats
+// Controller: Get match events and calculated stats for a given matchId (flat structure)
+// Now queries match_events collection for all events with the given matchId
 export const getMatchStats = async (req, res) => {
   try {
     const matchId = req.params.id;
     const db = admin.firestore();
-    // Get all events for this match from the match_events subcollection
-    const eventsSnapshot = await db.collection('match_events').doc(String(matchId)).collection('events').get();
+    // Get all events for this match from the flat match_events collection
+    const eventsSnapshot = await db.collection('match_events').where('matchId', '==', matchId).get();
     const events = eventsSnapshot.docs.map(doc => doc.data());
 
     // Calculate stats from events

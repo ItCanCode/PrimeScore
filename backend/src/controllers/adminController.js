@@ -78,7 +78,7 @@ const updateScore = async (req, res) => {
     if (ongoingDoc.exists) {
       await ongoingRef.update({ homeScore, awayScore });
     }
-    // If eventType is 'Goal', add to match_events
+    // If eventType is 'Goal', add to flat match_events collection
     if (eventType === 'Goal') {
       const event = {
         eventType,
@@ -88,7 +88,7 @@ const updateScore = async (req, res) => {
         matchId,
         timestamp: new Date().toISOString()
       };
-      await db.collection('match_events').doc(String(matchId)).collection('events').add(event);
+      await db.collection('match_events').add(event);
     }
     res.status(200).json({ message: 'Score updated' });
   } catch (error) {
@@ -99,8 +99,19 @@ const updateScore = async (req, res) => {
 // Add Match Event (stub)
 const addMatchEvent = async (req, res) => {
   try {
-    // Implement add event logic here
-    res.status(200).json({ message: 'Event added (stub)' });
+    const matchId = req.params.id;
+    const { eventType, team, player, time } = req.body;
+    const db = admin.firestore();
+    const event = {
+      eventType,
+      team,
+      player,
+      time,
+      matchId,
+      timestamp: new Date().toISOString()
+    };
+    await db.collection('match_events').add(event);
+    res.status(200).json({ message: 'Event added' });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
