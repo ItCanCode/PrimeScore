@@ -132,9 +132,9 @@ function HomePage() {
               <a href="#ongoing" onClick={() => navigate("/ongoing")}>Ongoing Matches</a>
             </li>
 
-            <li>
+            {/* <li>
               <a href="#ongoing" onClick={() => navigate("/past")}>Past Matches</a>
-            </li>
+            </li> */}
           </ul>
           
           <div className="auth-buttons">
