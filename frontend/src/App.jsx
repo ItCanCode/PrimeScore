@@ -10,7 +10,7 @@ import OnGoing from "./Pages/LiveeMatches";
 import SportsSelector from "./Pages/SportsSelector";
 import TeamManagement from "./Pages/TeamManagement";
 import MatchAdminInterface from "./Pages/MatchAdminInterface";
-import LiveApiPast7 from "./Pages/pastMatch";
+import LiveApiPast7 from "./Pages/PasttMatch";
 import Upcoming from "./Pages/UpcomingMatches";
 function App() {
   return (
