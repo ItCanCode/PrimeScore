@@ -33,6 +33,7 @@
         <li><a href="#setup">Setup Guide</a></li>
         <li><a href="#git">Git Workflow</a></li>
         <li><a href="#database">Database</a></li>
+        <li><a href="#testing">Testing</a></li>
       </ul>
     </div>
   </nav>
@@ -267,6 +268,50 @@ npm run dev
         functions for secure access control.
       </p>
     </section>
+
+        <!-- Testing -->
+    <section id="testing" class="section" aria-labelledby="testing-title">
+      <header class="section-header">
+        <h2 id="testing-title">Testing Documentation</h2>
+      </header>
+
+      <h3>User Feedback Process</h3>
+      <p>
+        We follow a structured process to collect and integrate user feedback:
+      </p>
+      <ol class="ordered">
+        <li><strong>Feedback Collection</strong> — Users submit feedback via an in-app form or GitHub Issues.</li>
+        <li><strong>Review</strong> — The development team reviews and categorizes feedback (bug, feature request, usability).</li>
+        <li><strong>Prioritization</strong> — Items are logged into the product backlog and tagged for the appropriate sprint.</li>
+        <li><strong>Follow-up</strong> — Users are notified when their feedback results in an update.</li>
+      </ol>
+
+      <h3>Automated Testing</h3>
+      <p>
+        Automated testing is set up to ensure system reliability and quick feedback during development.
+      </p>
+      <ul class="bullets">
+        <li><strong>Unit Testing</strong> — Jest (backend) Testing Library.</li>
+        <li><strong>Integration Testing</strong> — End-to-end API calls are tested using Supertest with Node.js/Express.</li>
+        <li><strong>Coverage</strong> — Code coverage reports are generated and displayed in the repository (via CI pipeline).</li>
+        <li><strong>Continuous Integration</strong> — Tests run automatically on GitHub Actions with every pull request.</li>
+      </ul>
+
+      <pre class="code-block" aria-label="run tests"><code># Run backend tests
+cd backend
+npm test
+
+# Run frontend tests
+cd frontend
+npm test
+</code></pre>
+
+      <p class="note">
+        Developers are required to write tests for all new features and bug fixes before merging.  
+        This ensures that user feedback and automated verification work together to maintain quality.
+      </p>
+    </section>
+
 
   </main>
 
