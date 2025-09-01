@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">90.47% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>19/21</span>
+                <span class='fraction'>0/21</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">78.94% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>15/19</span>
+                <span class='fraction'>0/19</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>1/1</span>
+                <span class='fraction'>0/1</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">90.47% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>19/21</span>
+                <span class='fraction'>0/21</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line high'></div>
+    <div class='status-line low'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -119,28 +119,28 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">6x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">5x</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -154,50 +154,50 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">// controllers/authController.js
 import { verifyGoogleToken } from "../services/authService.js";
 import admin from "../config/firebaseAdmin.js";
 &nbsp;
-export async function googleAuth(req, res) {
-  try {
-    const { idToken, action } = req.body;
+export async function <span class="fstat-no" title="function not covered" >googleAuth(</span>req, res) {
+<span class="cstat-no" title="statement not covered" >  try {</span>
+    const { idToken, action } = <span class="cstat-no" title="statement not covered" >req.body;</span>
 &nbsp;
-    if (!idToken || !action) {
-      return res.status(400).json({ message: "ID token and action are required" });
+<span class="cstat-no" title="statement not covered" >    if (!idToken || !action) {</span>
+<span class="cstat-no" title="statement not covered" >      return res.status(400).json({ message: "ID token and action are required" });</span>
     }
 &nbsp;
-    if (!["login", "signup"].includes(action)) {
-      return res.status(400).json({ message: "Invalid action, must be 'login' or 'signup'" });
+<span class="cstat-no" title="statement not covered" >    if (!["login", "signup"].includes(action)) {</span>
+<span class="cstat-no" title="statement not covered" >      return res.status(400).json({ message: "Invalid action, must be 'login' or 'signup'" });</span>
     }
 &nbsp;
     // Verify Google token
-    const decodedUser = await verifyGoogleToken(idToken);
-    const userRef = admin.firestore().collection("users").doc(decodedUser.uid);
-    const doc = await userRef.get();
+    const decodedUser = <span class="cstat-no" title="statement not covered" >await verifyGoogleToken(idToken);</span>
+    const userRef = <span class="cstat-no" title="statement not covered" >admin.firestore().collection("users").doc(decodedUser.uid);</span>
+    const doc = <span class="cstat-no" title="statement not covered" >await userRef.get();</span>
 &nbsp;
-    if (action === "signup") {
-      if (doc.exists) {
-        return res.status(409).json({ message: "User already exists" });
+<span class="cstat-no" title="statement not covered" >    if (action === "signup") {</span>
+<span class="cstat-no" title="statement not covered" >      if (doc.exists) {</span>
+<span class="cstat-no" title="statement not covered" >        return res.status(409).json({ message: "User already exists" });</span>
       }
 &nbsp;
-      const newUser = {
-        username: decodedUser.name || <span class="branch-1 cbranch-no" title="branch not covered" >decodedUser.displayName </span>|| <span class="branch-2 cbranch-no" title="branch not covered" >"Anonymous",</span>
+      const newUser = <span class="cstat-no" title="statement not covered" >{</span>
+        username: decodedUser.name || decodedUser.displayName || "Anonymous",
         favoriteSport: [],
         profile: {},
         role: "viewer",
         email: decodedUser.email,
-        picture: decodedUser.picture || <span class="branch-1 cbranch-no" title="branch not covered" >decodedUser.photoURL,</span>
+        picture: decodedUser.picture || decodedUser.photoURL,
         createdAt: admin.firestore.FieldValue.serverTimestamp(),
       };
 <span class="cstat-no" title="statement not covered" >      await userRef.set(newUser);</span>
@@ -205,16 +205,16 @@ export async function googleAuth(req, res) {
 <span class="cstat-no" title="statement not covered" >      return res.status(201).json({ message: "Signup successful", user: newUser });</span>
     }
 &nbsp;
-    <span class="missing-if-branch" title="else path not taken" >E</span>if (action === "login") {
-      if (!doc.exists) {
-        return res.status(404).json({ message: "User not found" });
+<span class="cstat-no" title="statement not covered" >    if (action === "login") {</span>
+<span class="cstat-no" title="statement not covered" >      if (!doc.exists) {</span>
+<span class="cstat-no" title="statement not covered" >        return res.status(404).json({ message: "User not found" });</span>
       }
 &nbsp;
-      const userData = doc.data();
-      return res.status(200).json({ message: "Login successful", user: userData });
+      const userData = <span class="cstat-no" title="statement not covered" >doc.data();</span>
+<span class="cstat-no" title="statement not covered" >      return res.status(200).json({ message: "Login successful", user: userData });</span>
     }
   } catch (error) {
-    res.status(401).json({ message: error.message });
+<span class="cstat-no" title="statement not covered" >    res.status(401).json({ message: error.message });</span>
   }
 }</pre></td></tr></table></pre>
 
@@ -223,7 +223,7 @@ export async function googleAuth(req, res) {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-29T13:39:54.544Z
+                at 2025-09-01T17:25:38.530Z
             </div>
         <script src="../prettify.js"></script>
         <script>
