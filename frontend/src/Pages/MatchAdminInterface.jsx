@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react";
 import { Plus, Calendar, MapPin, Users, Trophy, Menu, Clock, Play, Square, Edit2, Trash2, X, ArrowLeft, Home } from "lucide-react";
 import { db } from "../firebase";
-import { doc, setDoc, collection, addDoc, deleteDoc } from "firebase/firestore";
+import { doc, setDoc, collection, addDoc, deleteDoc, getDocs } from "firebase/firestore";
 import "../Styles/MatchAdminInterface.css";
 import { useNavigate } from "react-router-dom";
-
 export default function MatchAdminInterface() {
   const navigate = useNavigate();
   const [matches, setMatches] = useState([]);
+  const [ongoingMatches, setOngoingMatches] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [activeTab, setActiveTab] = useState('scheduled');
   const [editingMatch, setEditingMatch] = useState(null);
@@ -76,19 +76,58 @@ export default function MatchAdminInterface() {
 
     try {
       await addDoc(
-        collection(db, 'matchEvents', String(selectedMatch.id), 'events'),
+        collection(db, 'match_events', String(selectedMatch.id), 'events'),
         newEvent
       );
 
-      // Also update backend for consistency
-      const res = await fetch(`https://prime-backend.azurewebsites.net/api/admin/addMatchEvent/${selectedMatch.id}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(eventData),
-      });
+      // If event is a Goal, update the score automatically
+      let updatedHomeScore = selectedMatch.homeScore || 0;
+      let updatedAwayScore = selectedMatch.awayScore || 0;
+      if (eventData.eventType === 'Goal') {
+        if (eventData.team === 'Home') {
+          updatedHomeScore += 1;
+        } else if (eventData.team === 'Away') {
+          updatedAwayScore += 1;
+        }
+        // Update score in Firestore (both collections)
+        await setDoc(doc(db, 'ongoingMatches', String(selectedMatch.id)), {
+          ...selectedMatch,
+          homeScore: updatedHomeScore,
+          awayScore: updatedAwayScore,
+        }, { merge: true });
+        await setDoc(doc(db, 'matches', String(selectedMatch.id)), {
+          ...selectedMatch,
+          homeScore: updatedHomeScore,
+          awayScore: updatedAwayScore,
+        }, { merge: true });
+        // Update backend score and add event
+        await fetch(`https://prime-backend.azurewebsites.net/api/admin/updateScore/${selectedMatch.id}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            homeScore: updatedHomeScore,
+            awayScore: updatedAwayScore,
+            eventType: eventData.eventType,
+            team: eventData.team,
+            player: eventData.player,
+            time: eventData.time
+          }),
+        });
+        // Update local state
+        setMatches(prev => prev.map(m => m.id === selectedMatch.id ? { ...m, homeScore: updatedHomeScore, awayScore: updatedAwayScore } : m));
+        setOngoingMatches(prev => prev.map(m => m.id === selectedMatch.id ? { ...m, homeScore: updatedHomeScore, awayScore: updatedAwayScore } : m));
+      }
 
-      if (!res.ok) {
-        throw new Error("Failed to add event");
+      // Also update backend for consistency (for non-goal events)
+      if (eventData.eventType !== 'Goal') {
+        const res = await fetch(`https://prime-backend.azurewebsites.net/api/admin/addMatchEvent/${selectedMatch.id}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(eventData),
+        });
+        if (!res.ok) {
+          throw new Error("Failed to add event");
+        }
       }
       setMessage({ type: "success", text: "Event added successfully" });
     } catch (err) {
@@ -131,36 +170,47 @@ export default function MatchAdminInterface() {
         match.id === editingMatch.id ? { ...match, ...matchData } : match
       ));
       setEditingMatch(null);
-    } else {
-      // Create new match
-      const newMatch = { id: Date.now(), ...matchData };
-      setMatches((prev) => [...prev, newMatch]);
-    }
-
-    try {
-      const endpoint = editingMatch 
-        ? `https://prime-backend.azurewebsites.net/api/admin/updateMatch/${editingMatch.id}`
-        : `https://prime-backend.azurewebsites.net/api/admin/createMatch`;
-      
-      const method = editingMatch ? "PUT" : "POST";
-      
-      const res = await fetch(endpoint, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data?.error || data?.message || "Failed to save match");
+      try {
+        const endpoint = `https://prime-backend.azurewebsites.net/api/admin/updateMatch/${editingMatch.id}`;
+        const res = await fetch(endpoint, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData),
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          throw new Error(data?.error || data?.message || "Failed to update match");
+        }
+        setMessage({ type: "success", text: `Match updated successfully` });
+      } catch (err) {
+        setMessage({ type: "error", text: err.message });
+      } finally {
+        setFormData({ sportType: "", matchName: "", homeTeam: "", awayTeam: "", startTime: "", venue: "" });
+        setShowForm(false);
       }
-      
-      setMessage({ type: "success", text: `Match ${editingMatch ? 'updated' : 'created'} successfully` });
-    } catch (err) {
-      setMessage({ type: "error", text: err.message });
-    } finally {
-      setFormData({ sportType: "", matchName: "", homeTeam: "", awayTeam: "", startTime: "", venue: "" });
-      setShowForm(false);
+    } else {
+      // Create new match using backend and use Firestore doc ID
+      try {
+        const endpoint = `https://prime-backend.azurewebsites.net/api/admin/createMatch`;
+        const res = await fetch(endpoint, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData),
+        });
+        const data = await res.json();
+        if (!res.ok || !data.id) {
+          throw new Error(data?.error || data?.message || "Failed to create match");
+        }
+        // Use Firestore doc ID from backend
+        const newMatch = { id: data.id, ...matchData };
+        setMatches((prev) => [...prev, newMatch]);
+        setMessage({ type: "success", text: `Match created successfully` });
+      } catch (err) {
+        setMessage({ type: "error", text: err.message });
+      } finally {
+        setFormData({ sportType: "", matchName: "", homeTeam: "", awayTeam: "", startTime: "", venue: "" });
+        setShowForm(false);
+      }
     }
   };
 
@@ -293,9 +343,7 @@ export default function MatchAdminInterface() {
     }
   };
 
-  const filteredMatches = matches.filter(match =>  
-    match.status === activeTab || (!match.status && activeTab === 'scheduled')
-  );
+    // (removed old filteredMatches declaration; now handled below)
 
   
   const ScoreInput = ({ match }) => {
@@ -334,62 +382,42 @@ export default function MatchAdminInterface() {
       try {
         const response = await fetch('https://prime-backend.azurewebsites.net/api/users/viewMatches');
         const data = await response.json();
-
-        // Ensure all matches have a status field
         const matchesWithStatus = data.map(match => ({
           ...match,
           status: match.status || 'scheduled',
           homeScore: match.homeScore || 0,
           awayScore: match.awayScore || 0
         }));
-        console.log(matchesWithStatus)
         setMatches(matchesWithStatus);
       } catch (error) {
-        console.error("Error fetching matches:", error);
-        // Fallback to dummy data for development
-        setMatches([
-          {
-            id: 1,
-            homeTeam: "Manchester United",
-            awayTeam: "Liverpool",
-            venue: "Old Trafford",
-            startTime: "2025-08-20T15:00",
-            sportType: "Football",
-            matchName: "Premier League Match",
-            status: "scheduled", // FIXED: Changed from "upcoming" to "scheduled"
-            homeScore: 0,
-            awayScore: 0
-          },
-          {
-            id: 2,
-            homeTeam: "Lakers",
-            awayTeam: "Warriors",
-            venue: "Crypto.com Arena",
-            startTime: "2025-08-21T20:30",
-            sportType: "Basketball",
-            matchName: "NBA Regular Season",
-            status: "ongoing",
-            homeScore: 85,
-            awayScore: 92
-          },
-          {
-            id: 3,
-            homeTeam: "England",
-            awayTeam: "Australia",
-            venue: "Lord's Cricket Ground",
-            startTime: "2025-08-22T11:00",
-            sportType: "Cricket",
-            matchName: "Test Match",
-            status: "finished",
-            homeScore: 287,
-            awayScore: 245
-          }
-        ]);
+  console.error("Error fetching matches:", error);
       }
     };
-
+    const fetchOngoingMatches = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, 'ongoingMatches'));
+        const ongoing = [];
+        querySnapshot.forEach((doc) => {
+          ongoing.push({ id: doc.id, ...doc.data() });
+        });
+        setOngoingMatches(ongoing);
+      } catch {
+        setOngoingMatches([]);
+      }
+    };
     fetchMatches();
+    fetchOngoingMatches();
   }, []);
+
+  // Filter matches for the active tab
+  let filteredMatches = [];
+  if (activeTab === 'ongoing') {
+    filteredMatches = ongoingMatches;
+  } else if (activeTab === 'scheduled') {
+    filteredMatches = matches.filter(m => m.status === 'scheduled');
+  } else if (activeTab === 'finished') {
+    filteredMatches = matches.filter(m => m.status === 'finished');
+  }
 
   return (
     <div className="mai-root">
