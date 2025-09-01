@@ -5,6 +5,7 @@ import { Routes, Route, Link } from 'react-router-dom';
 import Dashboard from "./Pages/DashBoard";
 import UserProfile from "./Pages/UserProfile"
 import UserHomepage from "./Pages/UserHomepage";
+import ManageMatchPage from "./Pages/ManageMatchPage";
 import OnGoing from "./Pages/LiveeMatches";
 import SportsSelector from "./Pages/SportsSelector";
 import TeamManagement from "./Pages/TeamManagement";
@@ -20,7 +21,8 @@ function App() {
         <Route path="/live" element={<OnGoing/>}/>
         <Route path="/" element={<WelcomePage />} />
         <Route path="/home" element={<HomePage />} />
-        <Route path="/admin" element={<AdminHome/>}/>
+        <Route path="/admin" element={<AdminHome/>}></Route>
+        <Route path="/admin/match" element={<ManageMatchPage/>}></Route>
         <Route path="/dashboard" element={<Dashboard/>} />
         <Route path="/profile" element={<UserProfile/>} />
         <Route path="/user" element={<UserHomepage />} />
