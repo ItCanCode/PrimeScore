@@ -15,7 +15,7 @@ function addDays(date, days) {
 const Upcoming = () => {
   const [matches, setMatches] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedLeague, _setSelectedLeague] = useState("La_liga");
+  const [selectedLeague, _setSelectedLeague] = useState("PSL");
 
   // create array of upcoming days
   const allowedDays = Array.from({ length: 7 }, (_, i) =>
@@ -72,6 +72,7 @@ const Upcoming = () => {
         });
 
         setMatches(filtered);
+        
       } catch (error) {
         console.error("Error fetching matches:", error);
       } finally {
@@ -80,7 +81,7 @@ const Upcoming = () => {
     };
 
     fetchLive();
-  }, [selectedLeague, allowedDays]); // ✅ correct dependencies
+  }, [selectedLeague, allowedDays,matches]); 
 
   if (loading) {
     return <p>Loading matches...</p>;
@@ -91,6 +92,7 @@ const Upcoming = () => {
       <h2>Upcoming Matches</h2>
       {matches.length > 0 ? (
         matches.map((m) => (
+        
           <div key={m.id}>
             <p>
               {m.teams.home?.name || "Unknown"} vs{" "}
