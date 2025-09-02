@@ -208,7 +208,7 @@ export default function MatchAdminInterface() {
       }
     } catch (err) {
       setMessage({ type: "error", text: err.message });
-      // Revert local state if API call fails
+    
       setMatches(prev => prev.map(match => 
         match.id === matchId ? { ...match, status: match.status } : match
       ));
