@@ -4,8 +4,8 @@ import "../Styles/LiveAPI.css";
 
 const LiveApi = () => {
   // API Configuration
-  //const API_KEY = "4399a3821d4ce5eb1a989436dc4e5303cf5e7176";
-  const API_KEY="ffbf5998cd06786edb62bc17bd591e02649fdcfe"
+  const API_KEY = "4399a3821d4ce5eb1a989436dc4e5303cf5e7176";
+  // const API_KEY="ffbf5998cd06786edb62bc17bd591e02649fdcfe" //new
 
   // Get navigation state
   const location = useLocation();
@@ -47,7 +47,7 @@ const LiveApi = () => {
       console.log("Using league_id:", league_id);
 
       // Build API URL
-      const apiUrl = `https://api.soccerdataapi.com/matches/?league_id=${league_id}&season=2024-2025&auth_token=${API_KEY}`;
+      const apiUrl = `https://api.soccerdataapi.com/matches/?league_id=${league_id}&season=2025-2026&auth_token=${API_KEY}`;
       console.log("API URL:", apiUrl);
 
       const response = await fetch(apiUrl, {
