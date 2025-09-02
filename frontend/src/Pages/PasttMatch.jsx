@@ -1,41 +1,32 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import { useLocation } from "react-router-dom";
-import "../Styles/LiveAPI.css"; // Import the CSS file
-
-// const sec_API = "9705bc4a7c3976dd88ceb3410db328363e8abd87";
-
-// const API_KEY = "4399a3821d4ce5eb1a989436dc4e5303cf5e7176";
-// const Psl_id = "296";
-// const serie_a = "253";
-// const Epl_id = "228";
-// const La_liga = "297";
-// const new_api="ffbf5998cd06786edb62bc17bd591e02649fdcfe"
-// let selected_league = "Epl";
-
-
-// const LiveApi = ({selected_league}) => {
-
-
-// // const sec_API = "9705bc4a7c3976dd88ceb3410db328363e8abd87";
-
-// const API_KEY = "4399a3821d4ce5eb1a989436dc4e5303cf5e7176";
-// const Psl_id = "296";
-// const serie_a = "253";
-// const Epl_id = "228";
-// const La_liga = "297";
-// // const new_api="ffbf5998cd06786edb62bc17bd591e02649fdcfe"
-// // let selected_league = "Epl";
-// let league_id = "";
-
+import "../Styles/LiveAPI.css";
 
 const LiveApi = () => {
-  const location = useLocation();
-  const selected_league = location.state?.selected_league || "Epl"; // Get from navigation state with fallback
-  
-  console.log("Selected league from navigation:", selected_league);
+  // API Configuration
+  const API_KEY = "4399a3821d4ce5eb1a989436dc4e5303cf5e7176";
+  const LEAGUE_IDS = {
+    PSL: "296",
+    serie_a: "253", 
+    Epl: "228",
+    "premier-league": "228",
+    La_liga: "297"
+  };
 
+  // Get navigation state
+  const location = useLocation();
+  const selected_league = location.state?.selected_league || "Epl";
+  
+  // Component state
   const [matches, setMatches] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  
+  // Prevent multiple API calls
+  const hasFetched = useRef(false);
+  const abortController = useRef(null);
+
+  console.log("Component rendered, selected_league:", selected_league);
 
   function addDays(date, days) {
     const result = new Date(date);
@@ -43,140 +34,253 @@ const LiveApi = () => {
     return result.toISOString().split("T")[0];
   }
 
-  useEffect(() => {
-    const fetchMatches = async () => {
+  const fetchMatches = useCallback(async () => {
+    // Cancel any previous request
+    if (abortController.current) {
+      abortController.current.abort();
+    }
+    
+    abortController.current = new AbortController();
+    hasFetched.current = true;
+    
+    setLoading(true);
+    setError(null);
 
-      try {
-        if (selected_league === "PSL") {
-          league_id = Psl_id;
-        } else if (selected_league === "Epl" || selected_league === "premier-league") {
-          league_id = Epl_id;
-        } else if (selected_league === "La_liga") {
-          league_id = La_liga;
-        } else if (selected_league === "serie_a") {
-          league_id = serie_a;
-        } else {
-          league_id = Epl_id;
+    try {
+      // Get league ID
+      const league_id = LEAGUE_IDS[selected_league] || LEAGUE_IDS.Epl;
+      console.log("Using league_id:", league_id);
+
+      // Build API URL
+      const apiUrl = `https://api.soccerdataapi.com/matches/?league_id=${league_id}&season=2024-2025&auth_token=${API_KEY}`;
+      console.log("API URL:", apiUrl);
+
+      const response = await fetch(apiUrl, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept-Encoding": "gzip",
+        },
+        signal: abortController.current.signal
+      });
+
+      console.log("Response status:", response.status);
+
+      if (!response.ok) {
+        if (response.status === 429) {
+          throw new Error("Rate limit exceeded. Please wait a moment and try again.");
+        }
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log("Raw API data structure:", {
+        isArray: Array.isArray(data),
+        length: data?.length,
+        hasStage: data?.[0]?.stage ? true : false
+      });
+
+      // Check data structure
+      if (!data || !Array.isArray(data) || data.length === 0) {
+        console.warn("No data or empty array returned");
+        setMatches([]);
+        return;
+      }
+
+      // Extract matches
+      const allMatches = data[0]?.stage?.flatMap((stage) => stage.matches) || [];
+      console.log("All matches found:", allMatches.length);
+
+      if (allMatches.length === 0) {
+        console.warn("No matches found in API response");
+        setMatches([]);
+        return;
+      }
+
+      // Generate last 7 days
+      const today = new Date();
+      const last7Days = Array.from({ length: 7 }, (_, i) =>
+        addDays(today, -i)
+      );
+
+      // Filter matches in the past 7 days
+      const filtered = allMatches.filter((match) => {
+        if (!match.date || !match.time) {
+          return false;
         }
 
-        console.log("Using league_id:", league_id);
-
-        const response = await fetch(
-          `https://api.soccerdataapi.com/matches/?league_id=${league_id}&season=2025-2026&auth_token=${API_KEY}`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              "Accept-Encoding": "gzip",
-            },
-          }
-        );
-
-        if (!response.ok) {
-          console.error("Failed to fetch");
-          setLoading(false);
-          return;
-        }
-
-        const data = await response.json();
-
-        const allMatches = data[0]?.stage?.flatMap((stage) => stage.matches) || [];
-
-        const today = new Date();
-        const last7Days = Array.from({ length: 7 }, (_, i) =>
-          addDays(today, -i)
-        );
-
-        // Filter matches in the past 7 days
-        const filtered = allMatches.filter((match) => {
+        try {
           const [day, month, year] = match.date.split("/");
-          const isoDate = `${year}-${month}-${day}T${match.time}:00`;
+          const isoDate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}T${match.time}:00`;
           const matchDate = new Date(isoDate).toISOString().split("T")[0];
           return last7Days.includes(matchDate);
-        });
+        } catch {
+          console.warn("Error parsing match date:", match.date);
+          return false;
+        }
+      });
 
-        setMatches(filtered);
-        console.log("Filtered matches:", filtered);
-      } catch (error) {
-        console.error("Error fetching matches:", error);
-      } finally {
-        setLoading(false);
+      console.log("Filtered matches:", filtered.length);
+      setMatches(filtered);
+
+    } catch (error) {
+      if (error.name === 'AbortError') {
+        console.log("Request was aborted");
+        return;
       }
-    };
+      console.error("Error fetching matches:", error);
+      setError(error.message);
+    } finally {
+      setLoading(false);
+    }
+  }, [selected_league, LEAGUE_IDS, API_KEY]);
+
+  useEffect(() => {
+    console.log("useEffect triggered, hasFetched:", hasFetched.current);
+    
+    // Prevent multiple calls
+    if (hasFetched.current) {
+      console.log("Already fetched, skipping...");
+      return;
+    }
 
     fetchMatches();
 
-  }, [selected_league]); // Remove matches from dependency array to prevent infinite loop
+    // Cleanup function
+    return () => {
+      if (abortController.current) {
+        abortController.current.abort();
+      }
+    };
+  }, [fetchMatches]); // Use fetchMatches as dependency
 
+  // Reset fetch flag when league changes
+  useEffect(() => {
+    hasFetched.current = false;
+  }, [selected_league]);
 
+  // Loading state
   if (loading) {
     return (
       <div className="live-api-container">
         <div className="loading-container">
-          <p className="loading-text">Loading matches...</p>
+          <p className="loading-text">Loading {selected_league} matches...</p>
         </div>
       </div>
     );
   }
 
+  // Error state with rate limit handling
+  if (error) {
+    return (
+      <div className="live-api-container">
+        <div className="error-container" style={{ textAlign: 'center', padding: '2rem' }}>
+          <h3>Unable to Load Matches</h3>
+          <p>{error}</p>
+          {error.includes('Rate limit') && (
+            <div style={{ marginTop: '1rem' }}>
+              <p>You've reached the API rate limit. Please wait a few minutes before trying again.</p>
+              <button 
+                onClick={() => {
+                  hasFetched.current = false;
+                  setError(null);
+                  setLoading(true);
+                  window.location.reload();
+                }}
+                style={{ marginTop: '1rem', padding: '0.5rem 1rem' }}
+              >
+                Try Again
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // Main render
   return (
     <div className="live-api-container">
       <div className="live-api-header">
-        <h2 className="live-api-title">{selected_league} Matches in the Last 7 Days</h2>
-        <p className="live-api-subtitle">Recent football matches and live updates</p>
+        <h2 className="live-api-title">
+          {selected_league.toUpperCase()} Matches in the Last 7 Days
+        </h2>
+        <p className="live-api-subtitle">
+          Recent football matches ({matches.length} matches found)
+        </p>
       </div>
       
       {matches.length > 0 ? (
         <div className="matches-grid">
-          {matches.map((m) => (
-            <div key={m.id} className="match-card">
+          {matches.map((match, index) => (
+            <div key={match.id || index} className="match-card">
               <div className="match-header">
                 <div className="match-teams">
                   <span className="team-name">
-                    {m.teams.home?.name || "Unknown"}
+                    {match.teams?.home?.name || "Unknown Home Team"}
                   </span>
                   <span className="vs-text">VS</span>
                   <span className="team-name">
-                    {m.teams.away?.name || "Unknown"}
+                    {match.teams?.away?.name || "Unknown Away Team"}
                   </span>
                 </div>
-                <div className="match-status">FINISHED</div>
+                <div className="match-status">
+                  {match.status || "FINISHED"}
+                </div>
               </div>
 
               <div className="match-info">
                 <p className="match-datetime">
-                   Kickoff:{" "}
-                  {m.date && m.time
-                    ? new Date(
-                        `${m.date.split("/")[2]}-${m.date.split("/")[1]}-${m.date.split("/")[0]}T${m.time}:00`
-                      ).toLocaleString()
-                    : "Invalid Date"}
+                  Kickoff:{" "}
+                  {match.date && match.time
+                    ? (() => {
+                        try {
+                          const [day, month, year] = match.date.split("/");
+                          const isoDate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}T${match.time}:00`;
+                          return new Date(isoDate).toLocaleString();
+                        } catch {
+                          return "Invalid Date";
+                        }
+                      })()
+                    : "Date/Time not available"}
                 </p>
+                
+                {/* Show score if available */}
+                {match.score && (
+                  <p className="match-score">
+                    Score: {match.score.home || 0} - {match.score.away || 0}
+                  </p>
+                )}
               </div>
 
-              {m.events?.length > 0 && (
+              {match.events && match.events.length > 0 && (
                 <div className="events-section">
-                  <h4 className="events-title"> Match Events</h4>
+                  <h4 className="events-title">Match Events</h4>
                   <ul className="events-list">
-                    {m.events.map((e, i) => {
+                    {match.events.slice(0, 5).map((event, eventIndex) => {
                       let playerName = "Unknown";
 
-                      if (e.event_type === "substitution") {
-                        const inName = e.player_in?.name || "Unknown";
-                        const outName = e.player_out?.name || "Unknown";
-                        playerName = `${outName} â†' ${inName}`;
+                      if (event.event_type === "substitution") {
+                        const inName = event.player_in?.name || "Unknown";
+                        const outName = event.player_out?.name || "Unknown";
+                        playerName = `${outName} → ${inName}`;
                       } else {
-                        playerName = e.player?.name || "Unknown";
+                        playerName = event.player?.name || "Unknown";
                       }
 
                       return (
-                        <li key={i} className="event-item">
-                          <span className="event-minute">{e.event_minute}'</span>
-                          <span className="event-type">{e.event_type}</span>
+                        <li key={eventIndex} className="event-item">
+                          <span className="event-minute">{event.event_minute}'</span>
+                          <span className="event-type">{event.event_type}</span>
                           <span className="event-player">- {playerName}</span>
                         </li>
                       );
                     })}
+                    {match.events.length > 5 && (
+                      <li className="event-item">
+                        <span>... and {match.events.length - 5} more events</span>
+                      </li>
+                    )}
                   </ul>
                 </div>
               )}
@@ -185,8 +289,13 @@ const LiveApi = () => {
         </div>
       ) : (
         <div className="no-matches">
-          <div className="no-matches-icon">âš½</div>
-          <p className="no-matches-text">No matches found in the last 7 days.</p>
+          <div className="no-matches-icon">⚽</div>
+          <p className="no-matches-text">
+            No {selected_league} matches found in the last 7 days.
+          </p>
+          <p className="no-matches-subtitle">
+            Try checking back later or selecting a different league.
+          </p>
         </div>
       )}
     </div>
