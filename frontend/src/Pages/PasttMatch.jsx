@@ -4,8 +4,8 @@ import "../Styles/LiveAPI.css";
 
 const LiveApi = () => {
   // API Configuration
-  const API_KEY = "4399a3821d4ce5eb1a989436dc4e5303cf5e7176";
-  // const API_KEY="ffbf5998cd06786edb62bc17bd591e02649fdcfe" //new
+  //const API_KEY = "4399a3821d4ce5eb1a989436dc4e5303cf5e7176";
+  const API_KEY="ffbf5998cd06786edb62bc17bd591e02649fdcfe" //new
 
   // Get navigation state
   const location = useLocation();
