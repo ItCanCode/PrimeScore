@@ -98,9 +98,38 @@ const addMatchEvent = async (req, res) => {
   }
 };
 
+const allTeams = async (req, res) => {
+  try {
+      const { sportType } = req.query;
+      let teamsRef = admin.firestore().collection("teams");
+      let snapshot;
+
+      if (sportType) {
+        snapshot = await teamsRef.where("sportType", "==", sportType).get();
+      } else {
+        snapshot = await teamsRef.get();
+      }
+
+      if (snapshot.empty) {
+        return res.status(200).json({ teams: [] });
+      }
+
+      const teams = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+
+      return res.status(200).json({ teams });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  };
+
+
 export default {
   createMatch,
   updateMatchStatus,
   updateScore,
   addMatchEvent,
+  allTeams,
 };

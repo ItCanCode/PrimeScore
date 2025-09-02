@@ -8,5 +8,6 @@ router.post('/createMatch', adminController.createMatch);
 router.patch('/updateMatchStatus/:id', adminController.updateMatchStatus);
 router.patch('/updateScore/:id', adminController.updateScore);
 router.post('/addMatchEvent/:id', adminController.addMatchEvent);
+router.get('/allTeams',adminController.allTeams);
 
 export default router;
