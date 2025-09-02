@@ -121,6 +121,9 @@ const UpcomingMatches = () => {
     return { dateStr, timeStr };
   };
 
+  // Only show matches with status 'Scheduled'
+  const scheduledMatches = matches.filter(match => (match.status || '').toLowerCase() === 'scheduled');
+
   return (
     <div className="upcoming-matches-container">
       {/* Header */}
@@ -138,7 +141,7 @@ const UpcomingMatches = () => {
 
       {/* Matches Grid */}
       <div className="matches-grid">
-        {matches.map((match) => {
+        {scheduledMatches.map((match) => {
           const { dateStr, timeStr } = formatDateTime(match.startTime);
 
           return (
