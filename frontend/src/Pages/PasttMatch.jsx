@@ -8,7 +8,7 @@ const Psl_id = "296";
 const serie_a = "253";
 const Epl_id = "228";
 const La_liga = "297";
-const new_api=ffbf5998cd06786edb62bc17bd591e02649fdcfe
+const new_api="ffbf5998cd06786edb62bc17bd591e02649fdcfe"
 // let selected_league = "Epl";
 let league_id = "";
 

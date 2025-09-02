@@ -5,7 +5,7 @@ const SERIE_A = "253";
 const EPL = "228";
 const LA_LIGA = "297";
 const PSL = "296";
-const new_api=ffbf5998cd06786edb62bc17bd591e02649fdcfe
+const new_api="ffbf5998cd06786edb62bc17bd591e02649fdcfe"
 function addDays(date, days) {
   const result = new Date(date);
   result.setDate(result.getDate() + days);
