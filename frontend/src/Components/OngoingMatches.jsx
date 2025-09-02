@@ -3,7 +3,7 @@ import { Calendar, Clock, MapPin, Trophy, AlertTriangle, Flag, CornerDownRight, 
 import { useNavigate } from 'react-router-dom';
 import '../Styles/upcomingMatches.css';
 import { db } from '../firebase';
-import { collection, getDocs, onSnapshot } from 'firebase/firestore';
+import { collection, getDocs, onSnapshot, query, where } from 'firebase/firestore';
 
 // OngoingMatches component displays all ongoing matches and their live stats (score, fouls, cards, etc.)
 // Stats are updated in real time using Firestore listeners on match_events
@@ -31,11 +31,10 @@ const OngoingMatches = () => {
         // Remove old listeners
         unsubscribes.forEach(unsub => unsub && unsub());
         unsubscribes = [];
-        // For each ongoing match, listen to its match_events subcollection
+        // For each ongoing match, listen to flat match_events collection filtered by matchId
         ongoing.forEach((match) => {
-          const eventsCol = collection(db, 'match_events', String(match.id), 'events');
-          // Firestore onSnapshot gives real-time updates for this match's events
-          const unsub = onSnapshot(eventsCol, (snapshot) => {
+          const q = query(collection(db, 'match_events'), where('matchId', '==', match.id));
+          const unsub = onSnapshot(q, (snapshot) => {
             const events = snapshot.docs.map(doc => doc.data());
             // Calculate stats from events
             let homeScore = 0;

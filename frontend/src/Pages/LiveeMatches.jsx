@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 
-const API_KEY = "4399a3821d4ce5eb1a989436dc4e5303cf5e7176";
-
+// const API_KEY = "4399a3821d4ce5eb1a989436dc4e5303cf5e7176";
+const new_api="ffbf5998cd06786edb62bc17bd591e02649fdcfe"
+// const sec_API = "9705bc4a7c3976dd88ceb3410db328363e8abd87";
 const serie_a="253";
 const Epl_id="228";
 const La_liga="297";
@@ -16,7 +17,7 @@ const OnGoing = () => {
     const fetchLive = async () => {
       try {
         const response = await fetch(
-          `https://api.soccerdataapi.com/livescores/?auth_token=${API_KEY}`,
+          `https://api.soccerdataapi.com/livescores/?auth_token=${new_api}`,
           {
             method: "GET",
             headers: {
