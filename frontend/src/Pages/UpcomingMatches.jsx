@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-
+// const sec_API = "9705bc4a7c3976dd88ceb3410db328363e8abd87";
 const API_KEY = "4399a3821d4ce5eb1a989436dc4e5303cf5e7176";
 const SERIE_A = "253";
 const EPL = "228";
