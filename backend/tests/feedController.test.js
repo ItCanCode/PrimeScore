@@ -7,11 +7,12 @@ jest.mock('../src/config/firebaseAdmin.js', () => {
   const mockSet = jest.fn();
   const mockUpdate = jest.fn();
   
-  
+  // Create mock FieldValue methods
   const mockArrayUnion = jest.fn((...args) => ({ type: 'arrayUnion', args }));
   const mockIncrement = jest.fn((n) => ({ type: 'increment', value: n }));
   const mockServerTimestamp = jest.fn(() => ({ type: 'serverTimestamp' }));
 
+  // Set up the method chain
   mockCollection.mockReturnValue({
     doc: mockDoc,
   });
@@ -21,12 +22,12 @@ jest.mock('../src/config/firebaseAdmin.js', () => {
     update: mockUpdate,
   });
 
-
+  // Create the firestore function that also has FieldValue as a property
   const mockFirestore = jest.fn(() => ({
     collection: mockCollection,
   }));
   
-
+  // Add FieldValue as a property of the firestore function
   mockFirestore.FieldValue = {
     arrayUnion: mockArrayUnion,
     increment: mockIncrement,
@@ -36,6 +37,7 @@ jest.mock('../src/config/firebaseAdmin.js', () => {
   return {
     firestore: mockFirestore,
     initializeApp: jest.fn(),
+    // Export the mock functions so we can use them in tests
     __mockCollection: mockCollection,
     __mockDoc: mockDoc,
     __mockSet: mockSet,
@@ -46,7 +48,9 @@ jest.mock('../src/config/firebaseAdmin.js', () => {
   };
 });
 
+// Import the mocked module
 import admin from '../src/config/firebaseAdmin.js';
+// Import the mock functions
 const {
   __mockCollection,
   __mockDoc,
@@ -57,6 +61,7 @@ const {
   __mockServerTimestamp
 } = admin;
 
+// Import the functions to test
 import { startMatch, recordGoal, recordSubstitution, recordFoul } from '../src/controllers/feedController.js';
 
 describe('Match Controller', () => {
@@ -72,6 +77,7 @@ describe('Match Controller', () => {
       json: jest.fn(),
     };
     
+    // Reset all mocks before each test
     jest.clearAllMocks();
   });
 
@@ -80,21 +86,23 @@ describe('Match Controller', () => {
       req.params = { matchId: 'test-match-id' };
       req.body = { homeTeam: 'Team A', awayTeam: 'Team B' };
 
+      // Mock the set operation
       __mockSet.mockResolvedValueOnce();
 
       await startMatch(req, res);
 
-      
+      // Verify the query was built correctly
       expect(__mockCollection).toHaveBeenCalledWith('match_events');
       expect(__mockDoc).toHaveBeenCalledWith('test-match-id');
       
+      // Verify the set was called with correct data
       expect(__mockSet).toHaveBeenCalledWith({
         homeTeam: 'Team A',
         awayTeam: 'Team B',
         updatedAt: { type: 'serverTimestamp' },
       });
       
-    
+      // Verify the response
       expect(res.json).toHaveBeenCalledWith({ success: true, message: 'Match started!' });
     });
 
@@ -102,13 +110,13 @@ describe('Match Controller', () => {
       req.params = { matchId: 'test-match-id' };
       req.body = { homeTeam: 'Team A', awayTeam: 'Team B' };
 
- 
+      // Mock the set operation to fail
       const error = new Error('Firestore error');
       __mockSet.mockRejectedValueOnce(error);
 
       await startMatch(req, res);
 
-     
+      // Verify error response
       expect(res.status).toHaveBeenCalledWith(500);
       expect(res.json).toHaveBeenCalledWith({ error: 'Failed to start match' });
     });
@@ -119,23 +127,23 @@ describe('Match Controller', () => {
       req.params = { matchId: 'test-match-id' };
       req.body = { time: 45, team: 'home', player: 'Player 1' };
 
-
+      // Mock the update operation
       __mockUpdate.mockResolvedValueOnce();
 
       await recordGoal(req, res);
 
-     
+      // Verify the query was built correctly
       expect(__mockCollection).toHaveBeenCalledWith('match_events');
       expect(__mockDoc).toHaveBeenCalledWith('test-match-id');
       
-   
+      // Verify the update was called with correct data
       expect(__mockUpdate).toHaveBeenCalledWith({
         goals: { type: 'arrayUnion', args: [{ time: 45, team: 'home', player: 'Player 1' }] },
         home_score: { type: 'increment', value: 1 },
         updatedAt: { type: 'serverTimestamp' },
       });
       
-
+      // Verify the response
       expect(res.json).toHaveBeenCalledWith({ success: true, message: 'Goal recorded!' });
     });
 
@@ -143,18 +151,19 @@ describe('Match Controller', () => {
       req.params = { matchId: 'test-match-id' };
       req.body = { time: 60, team: 'away', player: 'Player 2' };
 
-    
+      // Mock the update operation
       __mockUpdate.mockResolvedValueOnce();
 
       await recordGoal(req, res);
 
-  a
+      // Verify the update was called with correct data
       expect(__mockUpdate).toHaveBeenCalledWith({
         goals: { type: 'arrayUnion', args: [{ time: 60, team: 'away', player: 'Player 2' }] },
         away_score: { type: 'increment', value: 1 },
         updatedAt: { type: 'serverTimestamp' },
       });
       
+      // Verify the response
       expect(res.json).toHaveBeenCalledWith({ success: true, message: 'Goal recorded!' });
     });
 
@@ -319,7 +328,7 @@ describe('Match Controller', () => {
 
       await recordFoul(req, res);
 
-  
+      // Verify error response
       expect(res.status).toHaveBeenCalledWith(500);
       expect(res.json).toHaveBeenCalledWith({ error: 'Failed to record foul' });
     });
