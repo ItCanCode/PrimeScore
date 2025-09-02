@@ -80,7 +80,7 @@ const LiveApi = ({selected_league}) => {
     };
 
     fetchMatches();
-  }, [matches]);
+  }, [matches,selected_league]);
 
   if (loading) {
     return (
