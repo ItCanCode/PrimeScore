@@ -29,7 +29,9 @@ export default function MatchAdminInterface() {
   const [matchEvents, setMatchEvents] = useState({});
   // Store live stats for each match (score, etc.)
   const [matchStats, setMatchStats] = useState({});
-
+  // setMatchStats({});
+  console.log(setMatchStats);
+  
   const sportTypes = [ "Football", "Basketball", "Tennis", "Cricket", "Baseball", "Hockey", "Rugby", "Volleyball", "Badminton", "Table Tennis"];
 
   const eventTypes = [
