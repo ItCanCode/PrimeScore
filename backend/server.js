@@ -22,8 +22,7 @@ app.use(corsMiddleware);
 // ];
 
 
-// const logger = require('./src/middleware/logger');
-// app.use(logger);
+
 
 app.use(express.json());
 

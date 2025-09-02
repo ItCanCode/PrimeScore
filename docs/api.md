@@ -1,7 +1,5 @@
 # API List (Sprint scope)
 
-> Base URL: `https://<your-backend-host>/api`
-
 ## Match Setup API
 
 - **POST /matches** — create a match
