@@ -4,14 +4,8 @@ import "../Styles/LiveAPI.css";
 
 const LiveApi = () => {
   // API Configuration
-  const API_KEY = "4399a3821d4ce5eb1a989436dc4e5303cf5e7176";
-  const LEAGUE_IDS = {
-    PSL: "296",
-    serie_a: "253", 
-    Epl: "228",
-    "premier-league": "228",
-    La_liga: "297"
-  };
+  //const API_KEY = "4399a3821d4ce5eb1a989436dc4e5303cf5e7176";
+  const API_KEY="ffbf5998cd06786edb62bc17bd591e02649fdcfe"
 
   // Get navigation state
   const location = useLocation();
@@ -28,13 +22,14 @@ const LiveApi = () => {
 
   console.log("Component rendered, selected_league:", selected_league);
 
-  function addDays(date, days) {
-    const result = new Date(date);
-    result.setDate(result.getDate() + days);
-    return result.toISOString().split("T")[0];
-  }
-
   const fetchMatches = useCallback(async () => {
+    const LEAGUE_IDS = {
+      PSL: "296",
+      serie_a: "253", 
+      Epl: "228",
+      "premier-league": "228",
+      La_liga: "297"
+    };
     // Cancel any previous request
     if (abortController.current) {
       abortController.current.abort();
@@ -97,27 +92,24 @@ const LiveApi = () => {
         return;
       }
 
-      // Generate last 7 days
+      // Get current date and 7 days ago
       const today = new Date();
-      const last7Days = Array.from({ length: 7 }, (_, i) =>
-        addDays(today, -i)
-      );
+      const sevenDaysAgo = new Date();
+      sevenDaysAgo.setDate(today.getDate() - 7);
+
+      console.log("Date range:", {
+        sevenDaysAgo: sevenDaysAgo.toISOString().split("T")[0],
+        today: today.toISOString().split("T")[0]
+      });
 
       // Filter matches in the past 7 days
-      const filtered = allMatches.filter((match) => {
-        if (!match.date || !match.time) {
-          return false;
-        }
+      const filtered = allMatches.filter(match => {
+        const matchDate = new Date(match.date); // assuming match.date is a valid date string
+        const now = new Date();
+        const sevenDaysAgo = new Date();
+        sevenDaysAgo.setDate(now.getDate() - 7);
 
-        try {
-          const [day, month, year] = match.date.split("/");
-          const isoDate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}T${match.time}:00`;
-          const matchDate = new Date(isoDate).toISOString().split("T")[0];
-          return last7Days.includes(matchDate);
-        } catch {
-          console.warn("Error parsing match date:", match.date);
-          return false;
-        }
+        return matchDate >= sevenDaysAgo && matchDate <= now;
       });
 
       console.log("Filtered matches:", filtered.length);
@@ -133,7 +125,7 @@ const LiveApi = () => {
     } finally {
       setLoading(false);
     }
-  }, [selected_league, LEAGUE_IDS, API_KEY]);
+  }, [selected_league, API_KEY]);
 
   useEffect(() => {
     console.log("useEffect triggered, hasFetched:", hasFetched.current);
@@ -152,9 +144,9 @@ const LiveApi = () => {
         abortController.current.abort();
       }
     };
-  }, [fetchMatches]); // Use fetchMatches as dependency
+  }, [fetchMatches]);
 
-  // Reset fetch flag when league changes
+
   useEffect(() => {
     hasFetched.current = false;
   }, [selected_league]);
