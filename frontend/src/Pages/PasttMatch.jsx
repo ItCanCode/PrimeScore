@@ -38,7 +38,7 @@ const LiveApi = ({selected_league}) => {
         }
 
         const response = await fetch(
-          `https://api.soccerdataapi.com/matches/?league_id=${league_id}&season=2025-2026&auth_token=${sec_API}`,
+          `https://api.soccerdataapi.com/matches/?league_id=${league_id}&season=2025-2026&auth_token=${API_KEY}`,
           {
             method: "GET",
             headers: {
