@@ -99,25 +99,80 @@
     </section>
 
     <!-- APIs -->
-    <section id="api" class="section" aria-labelledby="api-title">
-      <header class="section-header">
-        <h2 id="api-title">API List</h2>
-      </header>
+<section id="api" class="section" aria-labelledby="api-title">
+  <header class="section-header">
+    <h2 id="api-title">API List</h2>
+  </header>
 
-      <dl class="definition-list">
-        <dt><code>Live Update API</code></dt>
-        <dd>Receive and store stat events from external sources.</dd>
+  <dl class="definition-list">
+    <dt><code>Live Update API</code></dt>
+    <dd>Receive and store stat events from external sources.</dd>
 
-        <dt><code>Feed API</code></dt>
-        <dd>Retrieve current state of the match for front-end display.</dd>
+    <dt><code>Feed API</code></dt>
+    <dd>Retrieve current state of the match for front-end display.</dd>
 
-        <dt><code>Match Setup API</code></dt>
-        <dd>CRUD for game meta (teams, match time, venue).</dd>
+    <dt><code>Match Setup API</code></dt>
+    <dd>CRUD for game meta (teams, match time, venue).</dd>
 
-        <dt><code>Display API</code></dt>
-        <dd>Serve structured game data to clients (scoreboards, overlays, etc.).</dd>
-      </dl>
-    </section>
+    <dt><code>Display API</code></dt>
+    <dd>Serve structured game data to clients (scoreboards, overlays, etc.).</dd>
+  </dl>
+
+  <section id="third-party" class="section" aria-labelledby="third-party-title">
+    <header class="section-header">
+      <h2 id="third-party-title">Third-Party Code Documentation</h2>
+    </header>
+
+    <p>
+      For the live soccer data feature, we integrated <strong>SoccerDataAPI</strong>, a third-party API providing real-time and seasonal soccer match data. This allowed our application to display ongoing matches and key events such as goals, substitutions, and cards.
+    </p>
+
+    <h3>API Endpoints Used</h3>
+    <ul>
+      <li><strong>livescores endpoint</strong> – Provides current live matches across multiple leagues.</li>
+      <li><strong>matches endpoint</strong> – Provides all matches for a league season, which we filtered to show relevant matches in South Africa.</li>
+    </ul>
+
+    <h3>League Coverage</h3>
+    <ul>
+      <li>English Premier League (EPL)</li>
+      <li>Serie A (Italy)</li>
+      <li>La Liga (Spain)</li>
+      <li>South African Premier Soccer League (PSL)</li>
+    </ul>
+
+    <h3>Integration and Challenges</h3>
+    <ul>
+      <li><strong>League Selection:</strong> Each league has a unique ID. Our component dynamically sets <code>League_id</code> based on the selected league.</li>
+      <li><strong>Data Structure Complexity:</strong> The API returns nested structures (<code>stage → matches</code>), requiring <code>flatMap</code> and conditional checks to extract match data.</li>
+      <li><strong>Event Mapping:</strong> Each match can have multiple event types (<code>goal</code>, <code>penalty_goal</code>, <code>yellow_card</code>, <code>red_card</code>, <code>substitution</code>), and our app had to map them to user-readable formats.</li>
+      <li><strong>Date & Time Handling:</strong> The API returns date and time separately in <code>dd/mm/yyyy</code> format, which we transform to JavaScript <code>Date</code> objects for proper display.</li>
+      <li><strong>Error Handling & Loading States:</strong> Network failures, empty results, or invalid responses were handled gracefully to ensure UI stability.</li>
+    </ul>
+
+    <h4>Example: Fetching Live Matches</h4>
+    <pre><code class="language-javascript">
+const fetchLive = async () =&gt; {
+  try {
+    const response = await fetch(
+      `https://api.soccerdataapi.com/livescores/?auth_token=${API_KEY}`
+    );
+    const data = await response.json();
+
+    const leagueMatches =
+      data.results
+        .find((league) =&gt; league.league_id === League_id)
+        ?.stage.flatMap((stage) =&gt; stage.matches) || [];
+
+    setMatches(leagueMatches);
+  } catch (error) {
+    console.error("Error fetching matches:", error);
+  }
+};
+    </code></pre>
+  </section>
+</section>
+
 
     <!-- Backlog -->
     <section id="backlog" class="section" aria-labelledby="backlog-title">

@@ -2,40 +2,23 @@ import admin from "../config/firebaseAdmin.js";
 
 const db = admin.firestore();
 
-// In-memory users array for demonstration purposes
-let users = [{ id: 1, name: 'John Doe' }];
 
-/**
- * Get all users (from in-memory array)
- * @route GET /users
- */
-export const getAllUsers = (req, res) => {
-  res.json(users);
-};
-
-/**
- * Create a new user (adds to in-memory array)
- * @route POST /users
- */
-export const createUser = (req, res) => {
-  const newUser = {
-    id: users.length + 1,
-    name: req.body.name
-  };
-  users.push(newUser);
-  res.status(201).json(newUser);
-};
-// Only return matches with status 'scheduled' (i.e., upcoming)
 export const getMatches = async (req, res) => {
-  const usersSnapshot = await admin.firestore().collection("matches").where("status", "==", "scheduled").get();
-  const matches = usersSnapshot.docs.map(doc => ({
-    id: doc.id,
-    ...doc.data()
-  }));
-  return res.status(200).json(matches);
-}
+  try {
+    const matchesSnapshot = await admin.firestore().collection("matches").get(); // fetch all matches
+    const matches = matchesSnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+    return res.status(200).json(matches);
+  } catch (error) {
+    console.error("Error fetching matches:", error);
+    return res.status(500).json({ error: error.message });
+  }
+};
+
 /**
- * Get the currently authenticated user from Firestore
+
  * @route GET /users/me
  */
 export const getCurrentUser = async (req, res) => {

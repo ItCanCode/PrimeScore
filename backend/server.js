@@ -22,8 +22,7 @@ app.use(corsMiddleware);
 // ];
 
 
-// const logger = require('./src/middleware/logger');
-// app.use(logger);
+
 
 app.use(express.json());
 
@@ -38,9 +37,9 @@ app.get('/api/hello', (req, res) => {
   res.json({ message: 'Hello from backend!' });
 });
 
-app.get('/', (req, res) => {
-  res.json({ message: 'Landing page !' });
-});
+// app.get('/', (req, res) => {
+//   res.json({ message: 'Landing page !' });
+// });
 
 //AUTHENTICATION
 

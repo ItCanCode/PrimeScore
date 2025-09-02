@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Plus, Calendar, MapPin, Users, Trophy, Menu, Clock, Play, Square, Edit2, Trash2 } from "lucide-react";
+import { Plus, Calendar, MapPin, Users, Trophy, Menu, Clock, Play, Square, Edit2, Trash2, X } from "lucide-react";
 import "../Styles/MatchAdminInterface.css";
 
 export default function MatchAdminInterface() {
@@ -22,16 +22,49 @@ export default function MatchAdminInterface() {
     eventType: "",
     team: "",
     player: "",
-    time: ""
+    time: "",
+    playerIn: "",
+    playerOut: ""
   });
   const [matchEvents, setMatchEvents] = useState({});
-
+  // Store live stats for each match (score, etc.)
+  const [matchStats, setMatchStats] = useState({});
+  // setMatchStats({});
+  console.log(setMatchStats);
+  
   const sportTypes = [ "Football", "Basketball", "Tennis", "Cricket", "Baseball", "Hockey", "Rugby", "Volleyball", "Badminton", "Table Tennis"];
 
   const eventTypes = [
     "Goal", "Foul", "Yellow Card", "Red Card", "Substitution", 
     "Penalty", "Corner Kick", "Free Kick", "Offside", "Injury", "Timeout"
   ];
+
+  const startMatch = async (match) => {
+    const matchId = match.id;
+    const initialDoc = {
+      home_score: match.homeScore || 0,
+      away_score: match.awayScore || 0,
+      isRunning: true,
+      period: 1,
+      fouls: [],
+      substitutions: [],
+      goals: [],
+    };
+
+    try {
+      await fetch(`https://prime-backend.azurewebsites.net/api/feed/${matchId}/start`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-user-role": "admin" },
+        body: JSON.stringify(initialDoc),
+      });
+
+      updateMatchStatus(matchId, 'ongoing');
+
+    } catch (err) {
+      console.error("Failed to start match", err);
+      setMessage({ type: "error", text: "Failed to start match" });
+    }
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -44,40 +77,52 @@ export default function MatchAdminInterface() {
   };
 
   const addMatchEvent = async () => {
-    if (!eventData.eventType || !eventData.team || !eventData.player || !eventData.time) {
-      alert("Please fill in all event fields");
-      return;
+    let endpoint = "";
+    let payload = { team: eventData.team, time: eventData.time };
+
+    if (eventData.eventType === "Goal" || eventData.eventType === "Foul") {
+      payload.player = eventData.player;
+      endpoint = `/api/feed/${selectedMatch.id}/${eventData.eventType.toLowerCase()}`;
+    } 
+    else if (eventData.eventType === "Substitution") {
+      payload.playerIn = eventData.playerIn;
+      payload.playerOut = eventData.playerOut;
+      endpoint = `/api/feed/${selectedMatch.id}/substitution`;
     }
 
-    const newEvent = {
-      id: Date.now(),
-      ...eventData,
-      matchId: selectedMatch.id,
-      timestamp: new Date().toISOString()
-    };
-
-    // Add event to local state
-    setMatchEvents(prev => ({
-      ...prev,
-      [selectedMatch.id]: [...(prev[selectedMatch.id] || []), newEvent]
-    }));
+    else if (eventData.eventType === "Yellow Card") {
+      payload.player = eventData.player;
+      payload.card = "yellow";
+      endpoint = `/api/feed/${selectedMatch.id}/foul`;
+    } 
+    else if (eventData.eventType === "Red Card") {
+      payload.player = eventData.player;
+      payload.card = "red";
+      endpoint = `/api/feed/${selectedMatch.id}/foul`;
+    }
 
     try {
-      const res = await fetch(`https://prime-backend.azurewebsites.net/api/admin/addMatchEvent/${selectedMatch.id}`, {
+      const res = await fetch(`https://prime-backend.azurewebsites.net${endpoint}`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(eventData),
+        headers: { "Content-Type": "application/json", "x-user-role": "admin" },
+        body: JSON.stringify(payload),
       });
 
-      if (!res.ok) {
-        throw new Error("Failed to add event");
-      }
-      
+      if (!res.ok) throw new Error("Failed to add event");
+
       setMessage({ type: "success", text: "Event added successfully" });
-    } catch (err) {
+
+      const newEvent = { ...payload, id: Date.now(), timestamp: new Date().toISOString() };
+      setMatchEvents(prev => ({
+        ...prev,
+        [selectedMatch.id]: [...(prev[selectedMatch.id] || []), newEvent]
+      }));
+    }
+    catch (err) {
       setMessage({ type: "error", text: err.message });
-    } finally {
-      setEventData({ eventType: "", team: "", player: "", time: "" });
+    } 
+    finally {
+      setEventData({ eventType: "", team: "", player: "", time: "", playerIn: "", playerOut: "" });
       setShowEventForm(false);
     }
   };
@@ -409,16 +454,43 @@ export default function MatchAdminInterface() {
                   </select>
                 </div>
 
-                <div className="mai-form-group">
-                  <label>Player Responsible</label>
-                  <input 
-                    type="text" 
-                    name="player" 
-                    placeholder="Enter player name" 
-                    value={eventData.player} 
-                    onChange={handleEventInputChange} 
-                  />
-                </div>
+                {eventData.eventType !== "Substitution" && (
+                  <div className="mai-form-group">
+                    <label>Player Responsible</label>
+                    <input 
+                      type="text" 
+                      name="player" 
+                      placeholder="Enter player name" 
+                      value={eventData.player} 
+                      onChange={handleEventInputChange} 
+                    />
+                  </div>
+                )}
+                
+                {eventData.eventType === "Substitution" && (
+                  <>
+                    <div className="mai-form-group">
+                      <label>Player In</label>
+                      <input 
+                        type="text" 
+                        name="playerIn" 
+                        value={eventData.playerIn} 
+                        onChange={handleEventInputChange} 
+                        placeholder="Enter player coming in"
+                      />
+                    </div>
+                    <div className="mai-form-group">
+                      <label>Player Out</label>
+                      <input 
+                        type="text" 
+                        name="playerOut" 
+                        value={eventData.playerOut} 
+                        onChange={handleEventInputChange} 
+                        placeholder="Enter player going out"
+                      />
+                    </div>
+                  </>
+                )}
 
                 <div className="mai-form-group">
                   <label>Time (Minutes)</label>
@@ -522,8 +594,8 @@ export default function MatchAdminInterface() {
                 <p>No {activeTab} matches found</p>
               </div>
             ) : (
-              filteredMatches.map((match) => (
-                <div key={match.id} className="mai-match-card">
+              filteredMatches.map((match, idx) => (
+                <div key={match.id || idx} className="mai-match-card">
                   <div className="mai-match-header">
                     <div className="mai-match-badges">
                       <span className="mai-sport-tag">{match.sportType}</span>
@@ -560,7 +632,7 @@ export default function MatchAdminInterface() {
                       <span>{match.homeTeam}</span>
                       {(match.status === 'ongoing' || match.status === 'finished') ? (
                         <span className="mai-score">
-                          {match.homeScore || 0} - {match.awayScore || 0}
+                          {(matchStats[match.id]?.homeScore ?? 0)} - {(matchStats[match.id]?.awayScore ?? 0)}
                         </span>
                       ) : (
                         <span>vs</span>
@@ -576,17 +648,14 @@ export default function MatchAdminInterface() {
                       </div>
                     </div>
 
-                    {/* Score Management for Ongoing Matches */}
-                    {match.status === 'ongoing' && (
-                      <ScoreInput match={match} />
-                    )}
+                    {/* Score is now always calculated from events. No manual update. */}
 
                     {/* Match Events Display */}
                     {matchEvents[match.id] && matchEvents[match.id].length > 0 && (
                       <div className="mai-events-list">
                         <h5>Match Events:</h5>
-                        {matchEvents[match.id].map((event) => (
-                          <div key={event.id} className="mai-event-item">
+                        {matchEvents[match.id].map((event, eidx) => (
+                          <div key={event.id || eidx} className="mai-event-item">
                             <span className="mai-event-time">{event.time}'</span>
                             <span className="mai-event-type">{event.eventType}</span>
                             <span className="mai-event-player">{event.player}</span>
@@ -600,7 +669,7 @@ export default function MatchAdminInterface() {
                     <div className="mai-status-controls">
                       {match.status === 'scheduled' && (
                         <button
-                          onClick={() => updateMatchStatus(match.id, 'ongoing')}
+                          onClick={() => startMatch(match)}
                           className="mai-status-btn mai-start-btn"
                         >
                           <Play size={16} />

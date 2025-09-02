@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">85.71% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/14</span>
+                <span class='fraction'>12/14</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/4</span>
+                <span class='fraction'>4/4</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/2</span>
+                <span class='fraction'>2/2</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">85.71% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/14</span>
+                <span class='fraction'>12/14</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line low'></div>
+    <div class='status-line high'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -114,9 +114,7 @@
 <a name='L49'></a><a href='#L49'>49</a>
 <a name='L50'></a><a href='#L50'>50</a>
 <a name='L51'></a><a href='#L51'>51</a>
-<a name='L52'></a><a href='#L52'>52</a>
-<a name='L53'></a><a href='#L53'>53</a>
-<a name='L54'></a><a href='#L54'>54</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L52'></a><a href='#L52'>52</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -136,22 +134,20 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -160,8 +156,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -169,7 +165,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">// import admin from "../config/firebaseAdmin.js";
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"> import admin from "../config/firebaseAdmin.js";
 // // const db = admin.firestore();
 // const LiveSport=async(req,res)=&gt;{
 &nbsp;
@@ -189,22 +185,20 @@
 &nbsp;
 // export default LiveSport;
 &nbsp;
-import admin from "../config/firebaseAdmin.js";
+ const LiveSport = async (req, res) =&gt; {
+  try {
+    const { matches } = req.body; 
 &nbsp;
-const LiveSport = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >as</span>ync (req, res) =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >  try {</span>
-    const { matches } = <span class="cstat-no" title="statement not covered" >req.body; </span>
-&nbsp;
-<span class="cstat-no" title="statement not covered" >    if (!matches || matches.length === 0) {</span>
-<span class="cstat-no" title="statement not covered" >      return res.status(400).json({ message: "No matches to store" });</span>
+    if (!matches || matches.length === 0) {
+      return res.status(400).json({ message: "No matches to store" });
     }
 &nbsp;
-    const batch = <span class="cstat-no" title="statement not covered" >admin.firestore().batch();</span>
-    const collectionRef = <span class="cstat-no" title="statement not covered" >admin.firestore().collection("Upcoming_Matches");</span>
+    const batch = admin.firestore().batch();
+    const collectionRef = admin.firestore().collection("Upcoming_Matches");
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    matches.forEach(<span class="fstat-no" title="function not covered" >(m</span>) =&gt; {</span>
-      const docRef = <span class="cstat-no" title="statement not covered" >collectionRef.doc(); </span>
-<span class="cstat-no" title="statement not covered" >      batch.set(docRef, {</span>
+    matches.forEach((m) =&gt; {
+      const docRef = collectionRef.doc(); 
+      batch.set(docRef, {
         id: m.id,
         home: m.home,
         away: m.away,
@@ -213,8 +207,8 @@ const LiveSport = <span class="cstat-no" title="statement not covered" ><span cl
       });
     });
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    await batch.commit();</span>
-<span class="cstat-no" title="statement not covered" >    res.status(201).json({ message: "Matches added successfully" });</span>
+    await batch.commit();
+    res.status(201).json({ message: "Matches added successfully" });
   } catch (error) {
 <span class="cstat-no" title="statement not covered" >    console.error("Error storing matches:", error);</span>
 <span class="cstat-no" title="statement not covered" >    res.status(500).json({ error: error.message });</span>
@@ -229,7 +223,7 @@ export default LiveSport;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-09-01T16:01:16.237Z
+                at 2025-09-02T07:55:58.015Z
             </div>
         <script src="../prettify.js"></script>
         <script>

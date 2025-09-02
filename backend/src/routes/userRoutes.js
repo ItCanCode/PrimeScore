@@ -1,12 +1,12 @@
 // routes/userRoutes.js
 
 import express from 'express';
-import { getAllUsers, createUser, getCurrentUser, updateUser,getMatches } from '../controllers/userController.js';
+import {  getCurrentUser, updateUser,getMatches } from '../controllers/userController.js';
 import { authMiddleware } from '../middleware/authMiddleware.js';
 const router = express.Router();
 
-router.get('/', getAllUsers);
-router.post('/', createUser);
+// router.get('/', getAllUsers);
+// router.post('/', createUser);
 router.get('/me', authMiddleware ,getCurrentUser);
 router.put('/me', authMiddleware, updateUser);
 router.get('/viewMatches',getMatches)

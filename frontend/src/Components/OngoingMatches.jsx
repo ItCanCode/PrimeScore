@@ -20,10 +20,11 @@ const OngoingMatches = () => {
     try {
       setLoading(true);
       setError(null);
-      const response = await fetch('/api/display/display-matches');
-      if (!response.ok) throw new Error('Failed to fetch matches');
-      const data = await response.json();
-      setMatches(data.matches || []);
+  const response = await fetch('/api/display/display-matches');
+  if (!response.ok) throw new Error('Failed to fetch matches');
+  const data = await response.json();
+  // The backend returns an array, not an object with a 'matches' property
+  setMatches(Array.isArray(data) ? data : []);
     } catch (err) {
       setError(err.message);
     } finally {

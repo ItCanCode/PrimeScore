@@ -1,5 +1,5 @@
 import express from 'express';
-import { getmatchEvents, getMatchEventsById  } from '../controllers/displayController.js';
+import { getmatchEvents, getMatchEventsById } from '../controllers/displayController.js';
 
 const router = express.Router();
 
