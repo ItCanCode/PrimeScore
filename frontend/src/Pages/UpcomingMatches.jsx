@@ -12,7 +12,7 @@ const Upcoming = () => {
   const [selectedLeague, _setSelectedLeague] = useState("PSL");
 
   // create array of upcoming days
-  const allowedDays = Array.from({ length: 7 }, (_, i) =>
+  const allowedDays = Array.from({ length: 17 }, (_, i) =>
     addDays(new Date(), i + 1)
   );
 const SERIE_A = "253";
