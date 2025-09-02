@@ -1,54 +1,54 @@
-import admin from '../config/firebaseAdmin.js';
+import admin from "../config/firebaseAdmin.js";
 
-// Controller: Get match events and calculated stats for a given matchId (flat structure)
-// Now queries match_events collection for all events with the given matchId
-export const getMatchStats = async (req, res) => {
+//display api
+// Controller to fetch all matches and their associated events from Firestore
+export const getmatchEvents = async (req, res) => {
   try {
-    const matchId = req.params.id;
-    const db = admin.firestore();
-    // Get all events for this match from the flat match_events collection
-    const eventsSnapshot = await db.collection('match_events').where('matchId', '==', matchId).get();
-    const events = eventsSnapshot.docs.map(doc => doc.data());
+    // Fetch all matches from the 'matches' collection
+    const matchesSnapshot = await admin.firestore().collection('matches').get();
+    const ongoingMatches = [];
 
-    // Calculate stats from events
-    let homeScore = 0;
-    let awayScore = 0;
-    let fouls = { Home: 0, Away: 0 };
-    let yellowCards = { Home: 0, Away: 0 };
-    let redCards = { Home: 0, Away: 0 };
-    let penalties = { Home: 0, Away: 0 };
-    let corners = { Home: 0, Away: 0 };
-    let freeKicks = { Home: 0, Away: 0 };
-    let goals = [];
-    // Loop through all events and increment stats accordingly
-    events.forEach(event => {
-      if (event.eventType === 'Goal') {
-        if (event.team === 'Home') homeScore++;
-        if (event.team === 'Away') awayScore++;
-        goals.push(event);
+    // Loop through each match document
+    for (const doc of matchesSnapshot.docs) {
+      const matchData = doc.data();
+      matchData.id = doc.id; // Attach the document ID as the match ID
+
+      // Only process matches with status 'ongoing'
+      if (matchData.status && matchData.status.toLowerCase() === 'ongoing') {
+        // Fetch the corresponding events for this match from 'match_events' collection
+        const eventDoc = await admin.firestore().collection('match_events').doc(doc.id).get();
+        matchData.events = eventDoc.exists ? eventDoc.data() : null;
+        ongoingMatches.push(matchData);
       }
-      if (event.eventType === 'Foul') fouls[event.team]++;
-      if (event.eventType === 'Yellow Card') yellowCards[event.team]++;
-      if (event.eventType === 'Red Card') redCards[event.team]++;
-      if (event.eventType === 'Penalty') penalties[event.team]++;
-      if (event.eventType === 'Corner Kick') corners[event.team]++;
-      if (event.eventType === 'Free Kick') freeKicks[event.team]++;
-    });
+    }
 
-    // Return all calculated stats and the raw events
-    res.status(200).json({
-      homeScore,
-      awayScore,
-      fouls,
-      yellowCards,
-      redCards,
-      penalties,
-      corners,
-      freeKicks,
-      goals,
-      events
-    });
+    // Return only ongoing matches with their events
+    res.json(ongoingMatches);
   } catch (error) {
+    // Log and return error if something goes wrong
+    console.error('Error fetching ongoing matches with events:', error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// Controller to fetch a single match's events by match ID
+export const getMatchEventsById = async (req, res) => {
+  try {
+    // Extract match ID from request parameters
+    const { id } = req.params;
+
+    // Fetch the event document for the given match ID
+    const eventDoc = await admin.firestore().collection('match_events').doc(id).get();
+    if (!eventDoc.exists) {
+      // If no event document found, return 404
+      return res.status(404).json({ error: 'Match events not found' });
+    }
+
+    // Return the event data
+    res.json(eventDoc.data());
+  } catch (error) {
+    // Log and return error if something goes wrong
+    console.error('Error fetching match events by Id', error);
     res.status(500).json({ error: error.message });
   }
 };
