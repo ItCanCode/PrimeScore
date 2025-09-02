@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import "../Styles/LiveAPI.css"; // Import the CSS file
 
 // const sec_API = "9705bc4a7c3976dd88ceb3410db328363e8abd87";
@@ -12,7 +13,12 @@ const new_api="ffbf5998cd06786edb62bc17bd591e02649fdcfe"
 // let selected_league = "Epl";
 let league_id = "";
 
-const LiveApi = ({selected_league}) => {
+const LiveApi = () => {
+  const location = useLocation();
+  const selected_league = location.state?.selected_league || "Epl"; // Get from navigation state with fallback
+  
+  console.log("Selected league from navigation:", selected_league);
+  
   const [matches, setMatches] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -28,7 +34,7 @@ const LiveApi = ({selected_league}) => {
       try {
         if (selected_league === "PSL") {
           league_id = Psl_id;
-        } else if (selected_league === "Epl") {
+        } else if (selected_league === "Epl" || selected_league === "premier-league") {
           league_id = Epl_id;
         } else if (selected_league === "La_liga") {
           league_id = La_liga;
@@ -37,6 +43,8 @@ const LiveApi = ({selected_league}) => {
         } else {
           league_id = Epl_id;
         }
+
+        console.log("Using league_id:", league_id);
 
         const response = await fetch(
           `https://api.soccerdataapi.com/matches/?league_id=${league_id}&season=2025-2026&auth_token=${new_api}`,
@@ -73,7 +81,7 @@ const LiveApi = ({selected_league}) => {
         });
 
         setMatches(filtered);
-        console.log(matches[0]);
+        console.log("Filtered matches:", filtered);
       } catch (error) {
         console.error("Error fetching matches:", error);
       } finally {
@@ -82,7 +90,7 @@ const LiveApi = ({selected_league}) => {
     };
 
     fetchMatches();
-  }, [matches,selected_league]);
+  }, [selected_league]); // Remove matches from dependency array to prevent infinite loop
 
   if (loading) {
     return (
@@ -97,7 +105,7 @@ const LiveApi = ({selected_league}) => {
   return (
     <div className="live-api-container">
       <div className="live-api-header">
-        <h2 className="live-api-title"> Matches in the Last 7 Days</h2>
+        <h2 className="live-api-title">{selected_league} Matches in the Last 7 Days</h2>
         <p className="live-api-subtitle">Recent football matches and live updates</p>
       </div>
       
@@ -139,7 +147,7 @@ const LiveApi = ({selected_league}) => {
                       if (e.event_type === "substitution") {
                         const inName = e.player_in?.name || "Unknown";
                         const outName = e.player_out?.name || "Unknown";
-                        playerName = `${outName} → ${inName}`;
+                        playerName = `${outName} â†' ${inName}`;
                       } else {
                         playerName = e.player?.name || "Unknown";
                       }
@@ -160,7 +168,7 @@ const LiveApi = ({selected_league}) => {
         </div>
       ) : (
         <div className="no-matches">
-          <div className="no-matches-icon">⚽</div>
+          <div className="no-matches-icon">âš½</div>
           <p className="no-matches-text">No matches found in the last 7 days.</p>
         </div>
       )}

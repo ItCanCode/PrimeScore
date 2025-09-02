@@ -46,7 +46,7 @@ const SportsSelector = () => {
   ];
 
   const footballLeagues = [
-    { id: 'premier-league', name: 'Premier League', flag: '🏴󠁧󠁢󠁥󠁮󠁧󠁿' },
+    { id: 'Epl', name: 'Premier League', flag: '🏴󠁧󠁢󠁥󠁮󠁧󠁿' },
     { id: 'serie_a', name: 'Serie A', flag: '🇮🇹' },
     { id: 'PSL', name: 'PSL', flag: '🇿🇦' },
     { id: 'local-leagues', name: 'Local Leagues', flag: '🌍' }
@@ -58,7 +58,7 @@ const SportsSelector = () => {
     if (sportId === 'football') {
       setShowFootballModal(true);
     }
-    // Add navigation for other sports as needed
+   
   };
 
   const handleLeagueSelection = (leagueId) => {
@@ -71,10 +71,15 @@ const SportsSelector = () => {
       navigate("/past", { 
       state: { selected_league: leagueId } 
     });
+    console.log(leagueId)
     }else if(leagueId == "serie_a"){
         navigate("/past", { 
       state: { selected_league: leagueId } 
     });
+    }else{
+      navigate("/past",{
+        state:{ selected_league: leagueId}
+      })
     }
     
   };
