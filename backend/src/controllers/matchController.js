@@ -1,4 +1,4 @@
-// import admin from "../config/firebaseAdmin.js";
+ import admin from "../config/firebaseAdmin.js";
 // // const db = admin.firestore();
 // const LiveSport=async(req,res)=>{
 
@@ -18,9 +18,7 @@
 
 // export default LiveSport;
 
-import admin from "../config/firebaseAdmin.js";
-
-const LiveSport = async (req, res) => {
+ const LiveSport = async (req, res) => {
   try {
     const { matches } = req.body; 
 
