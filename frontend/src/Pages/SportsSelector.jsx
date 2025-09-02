@@ -47,8 +47,8 @@ const SportsSelector = () => {
 
   const footballLeagues = [
     { id: 'premier-league', name: 'Premier League', flag: '🏴󠁧󠁢󠁥󠁮󠁧󠁿' },
-    { id: 'serie-a', name: 'Serie A', flag: '🇮🇹' },
-    { id: 'psl', name: 'PSL', flag: '🇿🇦' },
+    { id: 'serie_a', name: 'Serie A', flag: '🇮🇹' },
+    { id: 'PSL', name: 'PSL', flag: '🇿🇦' },
     { id: 'local-leagues', name: 'Local Leagues', flag: '🌍' }
   ];
 
@@ -66,6 +66,15 @@ const SportsSelector = () => {
     // Navigate based on league selection
     if(leagueId == "local-leagues"){
       navigate("/user");
+    }
+    else if(leagueId == "PSL"){
+      navigate("/past", { 
+      state: { selected_league: leagueId } 
+    });
+    }else if(leagueId == "serie_a"){
+        navigate("/past", { 
+      state: { selected_league: leagueId } 
+    });
     }
     
   };

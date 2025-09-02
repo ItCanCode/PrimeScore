@@ -72,7 +72,7 @@ const Upcoming = () => {
         });
 
         setMatches(filtered);
-        
+        console.log(filtered);
       } catch (error) {
         console.error("Error fetching matches:", error);
       } finally {

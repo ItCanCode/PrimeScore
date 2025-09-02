@@ -137,9 +137,7 @@ const OngoingMatches = () => {
             <Trophy className="header-icon" size={36} />
             Ongoing Matches
           </h1>
-          <p className="header-subtitle">
-            View all matches currently in progress
-          </p>
+          <p className="header-subtitle">View all matches currently in progress </p>
         </div>
       </div>
       <div className="matches-grid">
@@ -149,6 +147,7 @@ const OngoingMatches = () => {
           matches.map((match) => {
             const { dateStr, timeStr } = formatDateTime(match.startTime);
             const stats = matchStats[match.id] || {};
+            console.log(match);
             return (
               <div key={match.id} className="match-card">
                 <div className="sport-header">
