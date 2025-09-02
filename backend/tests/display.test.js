@@ -6,6 +6,7 @@ jest.mock('../src/config/firebaseAdmin.js', () => {
 
   mockCollection.mockReturnValue({
     doc: mockDoc,
+    get: mockGet, // Needed for collection().get()
   });
 
   mockDoc.mockReturnValue({
@@ -26,38 +27,25 @@ jest.mock('../src/config/firebaseAdmin.js', () => {
 import admin from '../src/config/firebaseAdmin.js';
 const { __mockCollection, __mockDoc, __mockGet } = admin;
 
-// Import the function to test
-import { getMatchEventsById } from '../src/controllers/displayController.js';
+import { getMatchEventsById, getmatchEvents } from '../src/controllers/displayController.js';
 
-describe('Match Events Controller', () => {
+describe('Display Controller', () => {
   let req, res;
 
   beforeEach(() => {
-    req = {
-      params: {
-        id: 'test-match-id',
-      },
-    };
+    req = { params: { id: 'test-match-id' } };
     res = {
       status: jest.fn(() => res),
       json: jest.fn(),
     };
-    
-    // Reset all mocks before each test
     jest.clearAllMocks();
   });
 
+  // ------------------ getMatchEventsById ------------------
   describe('getMatchEventsById', () => {
     it('should return match events when found', async () => {
-      // Mock event data
-      const mockEventData = {
-        events: [
-          { eventType: 'Goal', team: 'Home' },
-          { eventType: 'Foul', team: 'Away' },
-        ]
-      };
+      const mockEventData = { events: [{ eventType: 'Goal', team: 'Home' }] };
 
-      // Mock the Firestore document to return data
       __mockGet.mockResolvedValueOnce({
         exists: true,
         data: () => mockEventData,
@@ -65,36 +53,71 @@ describe('Match Events Controller', () => {
 
       await getMatchEventsById(req, res);
 
-      // Verify the query was built correctly
       expect(__mockCollection).toHaveBeenCalledWith('match_events');
       expect(__mockDoc).toHaveBeenCalledWith('test-match-id');
-      
-      // Verify the response
-      expect(res.status).not.toHaveBeenCalled(); // Should not call status for success
       expect(res.json).toHaveBeenCalledWith(mockEventData);
     });
 
     it('should return 404 when match events not found', async () => {
-      // Mock the Firestore document to not exist
-      __mockGet.mockResolvedValueOnce({
-        exists: false,
-      });
+      __mockGet.mockResolvedValueOnce({ exists: false });
 
       await getMatchEventsById(req, res);
 
-      // Verify the response
       expect(res.status).toHaveBeenCalledWith(404);
       expect(res.json).toHaveBeenCalledWith({ error: 'Match events not found' });
     });
 
     it('should handle errors', async () => {
-      // Mock Firestore error
-      const error = new Error('Firestore error');
-      __mockGet.mockRejectedValueOnce(error);
+      __mockGet.mockRejectedValueOnce(new Error('Firestore error'));
 
       await getMatchEventsById(req, res);
 
-      // Verify error response
+      expect(res.status).toHaveBeenCalledWith(500);
+      expect(res.json).toHaveBeenCalledWith({ error: 'Firestore error' });
+    });
+  });
+
+  // ------------------ getmatchEvents ------------------
+  describe('getmatchEvents', () => {
+    it('should return only ongoing matches with events', async () => {
+      // Fake Firestore match docs
+      const mockMatchDocs = [
+        { id: 'm1', data: () => ({ status: 'ongoing', home: 'A' }) },
+        { id: 'm2', data: () => ({ status: 'scheduled', home: 'B' }) },
+      ];
+
+      // Mock matches collection snapshot
+      __mockGet
+        .mockResolvedValueOnce({ docs: mockMatchDocs }) // matches collection
+        .mockResolvedValueOnce({ exists: true, data: () => ({ home_score: 1, away_score: 0 }) }); // match_events for m1
+
+      req = {}; // no params for this one
+      await getmatchEvents(req, res);
+
+      expect(__mockCollection).toHaveBeenCalledWith('matches');
+      expect(res.json).toHaveBeenCalledWith([
+        expect.objectContaining({
+          id: 'm1',
+          status: 'ongoing',
+          homeScore: 1,
+          awayScore: 0,
+        }),
+      ]);
+    });
+
+    it('should return empty array if no ongoing matches', async () => {
+      __mockGet.mockResolvedValueOnce({ docs: [] }); // no matches
+
+      await getmatchEvents(req, res);
+
+      expect(res.json).toHaveBeenCalledWith([]);
+    });
+
+    it('should handle errors', async () => {
+      __mockGet.mockRejectedValueOnce(new Error('Firestore error'));
+
+      await getmatchEvents(req, res);
+
       expect(res.status).toHaveBeenCalledWith(500);
       expect(res.json).toHaveBeenCalledWith({ error: 'Firestore error' });
     });
