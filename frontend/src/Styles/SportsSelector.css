@@ -52,7 +52,7 @@
 /* Home Page */
 .home-bg {
   min-height: 100vh;
-  background: linear-gradient(135deg, #0f172a, #030918, #0f172a);
+  background-image: url("/back3.jpg");
   position: relative;
 }
 

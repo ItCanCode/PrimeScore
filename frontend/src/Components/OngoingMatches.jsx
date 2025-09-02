@@ -25,7 +25,7 @@ const OngoingMatches = () => {
     try {
       setLoading(true);
       setError(null);
-      const response = await fetch('/api/display/display-matches');
+      const response = await fetch('http://localhost:3000/api/display/display-matches');
       if (!response.ok) throw new Error('Failed to fetch matches');
       const data = await response.json();
       // Only set matches that are truly ongoing (not scheduled/upcoming)
