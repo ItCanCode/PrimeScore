@@ -1,18 +1,18 @@
 import React, { useEffect, useState } from "react";
 
-const API_KEY = "4399a3821d4ce5eb1a989436dc4e5303cf5e7176";
-// const new_api="ffbf5998cd06786edb62bc17bd591e02649fdcfe"
-// const sec_API = "9705bc4a7c3976dd88ceb3410db328363e8abd87";
-const serie_a="253";
-const Epl_id="228";
-const La_liga="297";
-let selected_league="";
-let League_id="";
-const Psl_id="296";
+
 const OnGoing = () => {
   const [matches, setMatches] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  const API_KEY = "4399a3821d4ce5eb1a989436dc4e5303cf5e7176";
+// const new_api="ffbf5998cd06786edb62bc17bd591e02649fdcfe"
+// const sec_API = "9705bc4a7c3976dd88ceb3410db328363e8abd87";
+  const serie_a="253";
+  const Epl_id="228";
+  const La_liga="297";
+  let selected_league="";
+  let League_id="";
+  const Psl_id="296";
   useEffect(() => {
     const fetchLive = async () => {
       try {
