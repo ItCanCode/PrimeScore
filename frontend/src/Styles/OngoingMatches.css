@@ -6,6 +6,7 @@
   position: relative;
   box-sizing: border-box;
   overflow-x: hidden;
+  background-image: url("/back3.jpg");
 }
 
 .ongoing-matches-container::before {
@@ -226,28 +227,43 @@
   padding: 1.5rem;
 }
 
+/* Teams Row: Home - VS - Away */
 .ongoing-teams {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  margin-bottom: 1.5rem;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-bottom: 0.5rem;
 }
-
 .ongoing-team-name {
   font-size: 1.25rem;
   font-weight: 700;
   color: #2a2a5a;
   text-shadow: none;
-  flex: 1;
+  min-width: 100px;
   text-align: center;
 }
-
 .ongoing-vs {
   font-size: 1.5rem;
   font-weight: 800;
   color: #1e1e3f;
-  margin: 0 1rem;
   text-shadow: none;
+  min-width: 40px;
+  text-align: center;
+}
+.ongoing-score-row {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+.ongoing-score {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #2a2a5a;
+  background: rgba(255,255,255,0.7);
+  border-radius: 8px;
+  padding: 0.25rem 1.25rem;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.07);
 }
 
 /* Match Details */
