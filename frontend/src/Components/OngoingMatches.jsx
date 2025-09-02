@@ -4,10 +4,13 @@
 // Fetches data from backend API and polls for updates.
 
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Award, Flag, User, RefreshCw } from 'lucide-react';
+import '../Styles/OngoingMatches.css';
 
 // Main component
 const OngoingMatches = () => {
+  const navigate = useNavigate();
   // State to hold ongoing matches
   const [matches, setMatches] = useState([]);
   // State to indicate loading
@@ -32,12 +35,12 @@ const OngoingMatches = () => {
     }
   };
 
-  // Poll for updates every 5 seconds
+  // Poll for updates every 3 minutes
   useEffect(() => {
-    fetchOngoingMatches();
-    const interval = setInterval(fetchOngoingMatches, 5000);
-    return () => clearInterval(interval);
-  }, []);
+  fetchOngoingMatches();
+  const interval = setInterval(fetchOngoingMatches, 180000); // 3 minutes
+  return () => clearInterval(interval);
+}, []);
 
   // Helper to extract score, fouls, substitutions from match events
   const getMatchStats = (events = []) => {
@@ -46,20 +49,27 @@ const OngoingMatches = () => {
     let fouls = [];
     let substitutions = [];
 
-    // Loop through events to extract info
-    events.forEach(event => {
-      if (event.type === 'score') {
-        // Example: { type: 'score', home: 1, away: 0 }
-        if (typeof event.home === 'number') homeScore = event.home;
-        if (typeof event.away === 'number') awayScore = event.away;
-      }
-      if (event.type === 'foul') {
-        fouls.push(event);
-      }
-      if (event.type === 'substitution') {
-        substitutions.push(event);
-      }
-    });
+    if (Array.isArray(events)) {
+      // If events is an array, process as before
+      events.forEach(event => {
+        if (event.type === 'score') {
+          if (typeof event.home === 'number') homeScore = event.home;
+          if (typeof event.away === 'number') awayScore = event.away;
+        }
+        if (event.type === 'foul') {
+          fouls.push(event);
+        }
+        if (event.type === 'substitution') {
+          substitutions.push(event);
+        }
+      });
+    } else if (events && typeof events === 'object') {
+      // If events is an object, extract score, fouls, substitutions if present
+      if (typeof events.homeScore === 'number') homeScore = events.homeScore;
+      if (typeof events.awayScore === 'number') awayScore = events.awayScore;
+      if (Array.isArray(events.fouls)) fouls = events.fouls;
+      if (Array.isArray(events.substitutions)) substitutions = events.substitutions;
+    }
     return { homeScore, awayScore, fouls, substitutions };
   };
 
@@ -81,11 +91,27 @@ const OngoingMatches = () => {
   }
 
   return (
-    <div className="ongoing-matches-list">
+    <div className="ongoing-matches-container">
+      <button onClick={() => navigate(-1)} style={{ marginBottom: '1rem', padding: '0.5rem 1rem', borderRadius: '8px', border: 'none', color: '#0e0d0dff', cursor: 'pointer' }}>Back</button>
       <h2>Ongoing Matches</h2>
       {matches.map(match => {
-        // Extract stats from events
-        const { homeScore, awayScore, fouls, substitutions } = getMatchStats(match.events);
+        // Prefer backend-provided homeScore/awayScore, fallback to events
+        let homeScore = typeof match.homeScore === 'number' ? match.homeScore : undefined;
+        let awayScore = typeof match.awayScore === 'number' ? match.awayScore : undefined;
+        let fouls = [];
+        let substitutions = [];
+        if (homeScore === undefined || awayScore === undefined) {
+          const stats = getMatchStats(match.events);
+          if (homeScore === undefined) homeScore = stats.homeScore;
+          if (awayScore === undefined) awayScore = stats.awayScore;
+          fouls = stats.fouls;
+          substitutions = stats.substitutions;
+        } else {
+          // If scores are present, still try to get fouls/subs from events
+          const stats = getMatchStats(match.events);
+          fouls = stats.fouls;
+          substitutions = stats.substitutions;
+        }
         return (
           <div key={match.id} className="ongoing-match-card">
             <h3>{match.homeTeam} vs {match.awayTeam}</h3>
