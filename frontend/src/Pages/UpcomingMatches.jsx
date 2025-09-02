@@ -84,34 +84,52 @@ const API_KEY = "4399a3821d4ce5eb1a989436dc4e5303cf5e7176";
   }, [selectedLeague]); 
 
   if (loading) {
-    return <p>Loading matches...</p>;
+    return (
+      <div className="loading-container">
+        <p className="loading-text">Loading matches...</p>
+      </div>
+    );
   }
 
   return (
-    <div>
-      <h2>Upcoming Matches</h2>
+    <div className="live-api-container">
+      <div className="live-api-header">
+        <h2 className="live-api-title">Upcoming Matches</h2>
+        <p className="live-api-subtitle">Next 17 days of {selectedLeague} fixtures</p>
+      </div>
+      
       {matches.length > 0 ? (
-        matches.map((m) => (
-        
-          <div key={m.id}>
-            <p>
-              {m.teams.home?.name || "Unknown"} vs{" "}
-              {m.teams.away?.name || "Unknown"}
-            </p>
-            <p>
-              Kickoff:{" "}
-              {m.date && m.time
-                ? new Date(
-                    `${m.date.split("/")[2]}-${m.date.split("/")[1]}-${
-                      m.date.split("/")[0]
-                    }T${m.time}:00`
-                  ).toLocaleString()
-                : "Invalid Date"}
-            </p>
-          </div>
-        ))
+        <div className="matches-grid">
+          {matches.map((m) => (
+            <div key={m.id} className="match-card">
+              <div className="match-header">
+                <div className="match-teams">
+                  <span className="team-name">{m.teams.home?.name || "Unknown"}</span>
+                  <span className="vs-text">vs</span>
+                  <span className="team-name">{m.teams.away?.name || "Unknown"}</span>
+                </div>
+              </div>
+              
+              <div className="match-info">
+                <div className="match-datetime">
+                  <span>🕒</span>
+                  {m.date && m.time
+                    ? new Date(
+                        `${m.date.split("/")[2]}-${m.date.split("/")[1]}-${
+                          m.date.split("/")[0]
+                        }T${m.time}:00`
+                      ).toLocaleString()
+                    : "Invalid Date"}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
       ) : (
-        <p>No matches found from {selectedLeague}.</p>
+        <div className="no-matches">
+          <div className="no-matches-icon">⚽</div>
+          <p className="no-matches-text">No matches found from {selectedLeague}.</p>
+        </div>
       )}
     </div>
   );
