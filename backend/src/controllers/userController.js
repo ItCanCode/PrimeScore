@@ -27,13 +27,19 @@ export const createUser = (req, res) => {
 };
 // Only return matches with status 'scheduled' (i.e., upcoming)
 export const getMatches = async (req, res) => {
-  const usersSnapshot = await admin.firestore().collection("matches").where("status", "==", "scheduled").get();
-  const matches = usersSnapshot.docs.map(doc => ({
-    id: doc.id,
-    ...doc.data()
-  }));
-  return res.status(200).json(matches);
-}
+  try {
+    const matchesSnapshot = await admin.firestore().collection("matches").get(); // fetch all matches
+    const matches = matchesSnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+    return res.status(200).json(matches);
+  } catch (error) {
+    console.error("Error fetching matches:", error);
+    return res.status(500).json({ error: error.message });
+  }
+};
+
 /**
  * Get the currently authenticated user from Firestore
  * @route GET /users/me
