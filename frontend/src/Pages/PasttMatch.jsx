@@ -13,21 +13,27 @@ import "../Styles/LiveAPI.css"; // Import the CSS file
 // let selected_league = "Epl";
 
 
-const LiveApi = ({selected_league}) => {
+// const LiveApi = ({selected_league}) => {
 
 
-// const sec_API = "9705bc4a7c3976dd88ceb3410db328363e8abd87";
+// // const sec_API = "9705bc4a7c3976dd88ceb3410db328363e8abd87";
 
-const API_KEY = "4399a3821d4ce5eb1a989436dc4e5303cf5e7176";
-const Psl_id = "296";
-const serie_a = "253";
-const Epl_id = "228";
-const La_liga = "297";
-// const new_api="ffbf5998cd06786edb62bc17bd591e02649fdcfe"
-// let selected_league = "Epl";
-let league_id = "";
+// const API_KEY = "4399a3821d4ce5eb1a989436dc4e5303cf5e7176";
+// const Psl_id = "296";
+// const serie_a = "253";
+// const Epl_id = "228";
+// const La_liga = "297";
+// // const new_api="ffbf5998cd06786edb62bc17bd591e02649fdcfe"
+// // let selected_league = "Epl";
+// let league_id = "";
 
-const LiveApi = ({selected_league}) => {
+
+const LiveApi = () => {
+  const location = useLocation();
+  const selected_league = location.state?.selected_league || "Epl"; // Get from navigation state with fallback
+  
+  console.log("Selected league from navigation:", selected_league);
+
   const [matches, setMatches] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -99,7 +105,9 @@ const LiveApi = ({selected_league}) => {
     };
 
     fetchMatches();
-  }, [matches]);
+
+  }, [selected_league]); // Remove matches from dependency array to prevent infinite loop
+
 
   if (loading) {
     return (
