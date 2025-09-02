@@ -5,7 +5,7 @@ const SERIE_A = "253";
 const EPL = "228";
 const LA_LIGA = "297";
 const PSL = "296";
-const new_api="ffbf5998cd06786edb62bc17bd591e02649fdcfe"
+// const new_api="ffbf5998cd06786edb62bc17bd591e02649fdcfe"
 function addDays(date, days) {
   const result = new Date(date);
   result.setDate(result.getDate() + days);
@@ -44,7 +44,7 @@ const Upcoming = () => {
         const league_id = getLeagueId(selectedLeague);
 
         const response = await fetch(
-          `https://api.soccerdataapi.com/matches/?league_id=${league_id}&season=2025-2026&auth_token=${new_api}`,
+          `https://api.soccerdataapi.com/matches/?league_id=${league_id}&season=2025-2026&auth_token=${API_KEY}`,
           {
             method: "GET",
             headers: {
@@ -81,7 +81,7 @@ const Upcoming = () => {
     };
 
     fetchLive();
-  }, [selectedLeague, allowedDays,matches]); 
+  }, [selectedLeague]); 
 
   if (loading) {
     return <p>Loading matches...</p>;
