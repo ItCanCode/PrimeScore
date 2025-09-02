@@ -5,6 +5,10 @@ import '../Styles/SportsSelector.css';
 
 const SportsSelector = () => {
   const [showFootballModal, setShowFootballModal] = useState(false);
+  const [showLocalLeaguesChoice, setShowLocalLeaguesChoice] = useState(false);
+  /*const [showVolleyballModal, setShowVolleyballModal] = useState(false);
+  const [showBasketballModal, setShowBasketballModal] = useState(false);
+  const [showTennisModal, setShowTennisModal] = useState(false); */
   
   const sports = [
     { 
@@ -43,6 +47,7 @@ const SportsSelector = () => {
       icon: '🏐', 
       description: 'Teamwork and timing in every spike and block' 
     }
+
   ];
 
   const footballLeagues = [
@@ -52,20 +57,46 @@ const SportsSelector = () => {
     { id: 'local-leagues', name: 'Local Leagues', flag: '🌍' }
   ];
 
+  /* const volleyballLeagues = [
+    { id: 'Johannesburg Volleyball Union', name: 'JVU'},
+    { id: 'Volleyball Nations League', name: 'VNL'},
+    { id: 'Champions Cup', name: 'Champs Cup'},
+  ];
+
+  const basketballLeagues = [
+    { id: 'National Basketball Association', name: 'NBA'},
+    { id: 'Ashraf Tournament', name: 'Ashraf Tournament'}
+  ];
+
+  const tennisLeagues = [
+
+  ]; */
+
   const navigate = useNavigate();
 
   const handleSportClick = (sportId) => {
     if (sportId === 'football') {
       setShowFootballModal(true);
     }
-   
+    /*else if(sportId === 'volleyball') {
+      setShowVolleyballModal(true);
+    }
+    else if(sportId == 'tennis'){
+      setShowTennisModal(true);
+    }
+    else if (sportId == 'basketball'){
+      setShowBasketballModal(true);
+    }
+   */
   };
+
+  
 
 const handleLeagueSelection = (leagueId) => {
   setShowFootballModal(false);
   // Navigate based on league selection
   if(leagueId === "local-leagues"){
-    navigate("/user");
+    setShowLocalLeaguesChoice(true);
   }
   else if(leagueId === "PSL"){
     navigate("/past", { 
@@ -172,6 +203,48 @@ const handleLeagueSelection = (leagueId) => {
     </div>
   );
 
+  // Render the Local Leagues choice card
+  if (showLocalLeaguesChoice) {
+    return (
+      <div className="modal-overlay" onClick={() => setShowLocalLeaguesChoice(false)}>
+        <div className="modal-content" onClick={e => e.stopPropagation()}>
+          <div className="modal-header">
+            <h2 className="modal-title">
+              <span className="football-icon">🌍</span>
+              Select Match Type
+            </h2>
+            <button 
+              onClick={() => setShowLocalLeaguesChoice(false)}
+              className="modal-close-button"
+              aria-label="Close modal"
+            >
+              <X size={24} />
+            </button>
+          </div>
+          <div className="modal-body">
+            <div className="leagues-grid">
+              <button
+                className="league-option"
+                onClick={() => navigate('/upcoming')}
+              >
+                
+                <span className="league-name">Upcoming Matches</span>
+                <ChevronRight className="league-arrow" />
+              </button>
+              <button
+                className="league-option"
+                onClick={() => navigate('/ongoing')}
+              >
+                
+                <span className="league-name">Ongoing Matches</span>
+                <ChevronRight className="league-arrow" />
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
   return renderHomePage();
 };
 

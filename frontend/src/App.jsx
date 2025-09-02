@@ -14,6 +14,7 @@ import LiveApiPast7 from "./Pages/PasttMatch";
 import Upcoming from "./Pages/UpcomingMatches";
 import OngoingMatches from "./Pages/OngoingMatches";
 import { AuthProvider } from "./context/authContext.jsx";
+import UpcomingMatches from "./Components/upcomingMatches.jsx";
 
 function App() {
   return (
@@ -34,6 +35,7 @@ function App() {
         <Route path="/management" element={<TeamManagement />}/>
         <Route path="/match-admin" element={<MatchAdminInterface/>}/>
         <Route path="/ongoing" element={<OngoingMatches/>}/>
+        <Route path="/upcoming" element={<UpcomingMatches/>}/>
       </Routes>
       </AuthProvider>
     </>
