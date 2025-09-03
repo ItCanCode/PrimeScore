@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState, useRef, useCallback } from "react";
-
+import '../Styles/LiveAPI.css';
 const LiveApi = () => {
   const API_KEY = "4399a3821d4ce5eb1a989436dc4e5303cf5e7176";
   // Replace with your actual useLocation hook
