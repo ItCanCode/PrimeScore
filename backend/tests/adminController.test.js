@@ -7,15 +7,22 @@ jest.mock("../src/config/firebaseAdmin.js", () => {
   const addMock = jest.fn();
   const updateMock = jest.fn();
   const getMock = jest.fn();
+  const whereGetMock = jest.fn();
 
   const docMock = {
     get: getMock,
     update: updateMock,
   };
 
+  const whereMock = jest.fn(() => ({
+    get: whereGetMock,
+  }));
+
   const collectionMock = {
     add: addMock,
     doc: jest.fn(() => docMock),
+    get: getMock,
+    where: whereMock,
   };
 
   const firestoreMock = {
@@ -27,6 +34,8 @@ jest.mock("../src/config/firebaseAdmin.js", () => {
     __addMock: addMock,
     __updateMock: updateMock,
     __getMock: getMock,
+    __whereGetMock: whereGetMock,
+    __whereMock: whereMock,
     __docMock: docMock,
     __collectionMock: collectionMock,
     __firestoreMock: firestoreMock,
@@ -172,4 +181,79 @@ describe("adminController", () => {
     expect(res.status).toHaveBeenCalledWith(200);
     expect(res.json).toHaveBeenCalledWith({ message: "Event added" });
   });
+
+  // ---------------- ALL TEAMS ----------------
+  describe("adminController - allTeams", () => {
+    let req, res;
+
+    beforeEach(() => {
+      req = { query: {} };
+      res = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),
+      };
+      jest.clearAllMocks();
+    });
+
+    it("should return all teams when no sportType filter is applied", async () => {
+      const mockTeams = [
+        { id: "team1", teamName: "Team A", sportType: "Soccer" },
+        { id: "team2", teamName: "Team B", sportType: "Rugby" },
+      ];
+
+      admin.__getMock.mockResolvedValue({
+        empty: false,
+        docs: mockTeams.map(team => ({
+          id: team.id,
+          data: () => ({ teamName: team.teamName, sportType: team.sportType }),
+        })),
+      });
+
+      await adminController.allTeams(req, res);
+
+      expect(admin.__firestoreMock.collection).toHaveBeenCalledWith("teams");
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.json).toHaveBeenCalledWith({ teams: mockTeams });
+    });
+
+    it("should return filtered teams when sportType is provided", async () => {
+      const mockTeams = [
+        { id: "team1", teamName: "Soccer Team", sportType: "Soccer" },
+      ];
+
+      admin.__whereGetMock.mockResolvedValue({
+        empty: false,
+        docs: mockTeams.map(team => ({
+          id: team.id,
+          data: () => ({ teamName: team.teamName, sportType: team.sportType }),
+        })),
+      });
+
+      req.query = { sportType: "Soccer" };
+      await adminController.allTeams(req, res);
+
+      expect(admin.__whereMock).toHaveBeenCalledWith("sportType", "==", "Soccer");
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.json).toHaveBeenCalledWith({ teams: mockTeams });
+    });
+
+    it("should return empty array if no teams exist", async () => {
+      admin.__getMock.mockResolvedValue({ empty: true });
+
+      await adminController.allTeams(req, res);
+
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.json).toHaveBeenCalledWith({ teams: [] });
+    });
+
+    it("should handle Firestore errors", async () => {
+      admin.__getMock.mockRejectedValue(new Error("Firestore error"));
+
+      await adminController.allTeams(req, res);
+
+      expect(res.status).toHaveBeenCalledWith(500);
+      expect(res.json).toHaveBeenCalledWith({ error: "Firestore error" });
+    });
+  });
+
 });
