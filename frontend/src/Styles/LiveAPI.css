@@ -100,6 +100,25 @@
   padding: 0 10px;
 }
 
+.match-score {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin: 0 15px;
+}
+
+.home-score, .away-score {
+  color: #66cc99;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.dash {
+  color: #ffffff;
+  font-size: 1.3rem;
+  font-weight: 500;
+}
+
 .match-status {
   background: linear-gradient(135deg, #66cc99, #4db880);
   color: #ffffff;
@@ -221,6 +240,12 @@
   border: 2px dashed rgba(255, 255, 255, 0.2);
 }
 
+.no-matches-icon {
+  font-size: 3rem;
+  margin-bottom: 15px;
+  opacity: 0.6;
+}
+
 .no-matches-text {
   color: #94a3b8;
   font-size: 1.2rem;
@@ -228,10 +253,49 @@
   margin: 0;
 }
 
-.no-matches-icon {
-  font-size: 3rem;
-  margin-bottom: 15px;
-  opacity: 0.6;
+.no-matches-subtitle {
+  color: #64748b;
+  font-size: 1rem;
+  margin: 10px 0 0 0;
+  opacity: 0.8;
+}
+
+/* Error container styling */
+.error-container {
+  background: rgba(239, 68, 68, 0.1);
+  border-radius: 15px;
+  padding: 2rem;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  backdrop-filter: blur(10px);
+}
+
+.error-container h3 {
+  color: #fca5a5;
+  margin: 0 0 1rem 0;
+  font-size: 1.5rem;
+}
+
+.error-container p {
+  color: #fecaca;
+  margin: 0.5rem 0;
+  font-size: 1rem;
+}
+
+.error-container button {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.error-container button:hover {
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
 }
 
 /* Responsive Design */
@@ -263,6 +327,11 @@
     width: 100%;
   }
   
+  .match-score {
+    margin: 0;
+    align-self: center;
+  }
+  
   .team-name {
     font-size: 1.1rem;
   }
@@ -282,5 +351,13 @@
   
   .team-name {
     font-size: 1rem;
+  }
+  
+  .match-header {
+    align-items: center;
+  }
+  
+  .home-score, .away-score {
+    font-size: 1.3rem;
   }
 }

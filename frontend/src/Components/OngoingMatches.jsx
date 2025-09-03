@@ -376,7 +376,7 @@ const OngoingMatches = () => {
         background: 'rgba(255, 255, 255, 0.05)',
         borderRadius: '10px'
       }}>
-         Last updated: {new Date().toLocaleString()} • Updates every 3 minutes
+        Last updated: {new Date().toLocaleString()} • Updates every 3 minutes
       </div>
 
       {/* Add live pulse animation */}
