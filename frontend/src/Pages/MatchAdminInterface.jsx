@@ -373,17 +373,36 @@ export default function MatchAdminInterface() {
               homeScore: match.homeScore ?? 0,
               awayScore: match.awayScore ?? 0
             };
-            // Robustly handle different event structures and flatten nested arrays
+            // Enhanced: collect and label events from goals, fouls, substitutions, yellowCards, redCards arrays
             let eventsArr = [];
             if (match.events) {
-              if (Array.isArray(match.events)) {
-                // Flatten if nested arrays
+              // If Firestore doc structure (object with arrays)
+              if (typeof match.events === 'object' && !Array.isArray(match.events)) {
+                if (Array.isArray(match.events.goals)) {
+                  eventsArr = eventsArr.concat(match.events.goals.map(e => ({ ...e, _guessedType: 'Goal' })));
+                }
+                if (Array.isArray(match.events.fouls)) {
+                  eventsArr = eventsArr.concat(match.events.fouls.map(e => ({ ...e, _guessedType: 'Foul' })));
+                }
+                if (Array.isArray(match.events.substitutions)) {
+                  eventsArr = eventsArr.concat(match.events.substitutions.map(e => ({ ...e, _guessedType: 'Substitution' })));
+                }
+                if (Array.isArray(match.events.yellowCards)) {
+                  eventsArr = eventsArr.concat(match.events.yellowCards.map(e => ({ ...e, _guessedType: 'Yellow Card' })));
+                }
+                if (Array.isArray(match.events.redCards)) {
+                  eventsArr = eventsArr.concat(match.events.redCards.map(e => ({ ...e, _guessedType: 'Red Card' })));
+                }
+                // Add any other arrays as fallback
+                Object.entries(match.events).forEach(([key, value]) => {
+                  if (Array.isArray(value) && !['goals','fouls','substitutions','yellowCards','redCards'].includes(key)) {
+                    eventsArr = eventsArr.concat(value.map(e => ({ ...e, _guessedType: key.charAt(0).toUpperCase() + key.slice(1) })));
+                  }
+                });
+              } else if (Array.isArray(match.events)) {
                 eventsArr = match.events.flat(Infinity).filter(e => e && typeof e === 'object' && !e._seconds && !e._nanoseconds);
               } else if (Array.isArray(match.events.events)) {
                 eventsArr = match.events.events.flat(Infinity).filter(e => e && typeof e === 'object' && !e._seconds && !e._nanoseconds);
-              } else if (typeof match.events === 'object') {
-                // If events is an object, try to extract values and filter
-                eventsArr = Object.values(match.events).flat(Infinity).filter(e => e && typeof e === 'object' && !e._seconds && !e._nanoseconds);
               }
             }
             eventsMap[match.id] = eventsArr;
@@ -708,17 +727,26 @@ export default function MatchAdminInterface() {
                     <div className="mai-events-list">
                       <h5>Match Events:</h5>
                       {matchEvents[match.id] && matchEvents[match.id].length > 0 ? (
-                        matchEvents[match.id].map((event, eidx) => (
-                          <div key={event.id || eidx} className="mai-event-item">
-                            <span className="mai-event-time">{event.time ? `${event.time}'` : ''}</span>
-                            <span className="mai-event-type">
-                              {/* Always show event type, fallback to card or 'Unknown Event' */}
-                              {event.eventType || event.type || (event.card === 'yellow' ? 'Yellow Card' : event.card === 'red' ? 'Red Card' : event.card ? event.card : 'Unknown Event')}
-                            </span>
-                            {event.player && <span className="mai-event-player">{event.player}</span>}
-                            {event.team && <span className="mai-event-team">({event.team})</span>}
-                          </div>
-                        ))
+                        matchEvents[match.id].map((event, eidx) => {
+                          // Determine event label, especially for fouls with card type
+                          let eventLabel = event.eventType || event.type || event._guessedType;
+                          if (!eventLabel && event.card === 'yellow') eventLabel = 'Foul (Yellow Card)';
+                          else if (!eventLabel && event.card === 'red') eventLabel = 'Foul (Red Card)';
+                          else if (!eventLabel && event.card) eventLabel = `Foul (${event.card.charAt(0).toUpperCase() + event.card.slice(1)} Card)`;
+                          else if (!eventLabel) eventLabel = 'Unknown Event';
+                          // If it's a foul and has a card, always show the card type
+                          if ((eventLabel === 'Foul' || eventLabel === 'foul') && event.card) {
+                            eventLabel = `Foul (${event.card.charAt(0).toUpperCase() + event.card.slice(1)} Card)`;
+                          }
+                          return (
+                            <div key={event.id || eidx} className="mai-event-item">
+                              <span className="mai-event-time">{event.time ? `${event.time}'` : ''}</span>
+                              <span className="mai-event-type">{eventLabel}</span>
+                              {event.player && <span className="mai-event-player">{event.player}</span>}
+                              {event.team && <span className="mai-event-team">({event.team})</span>}
+                            </div>
+                          );
+                        })
                       ) : (
                         <div className="mai-event-item mai-event-empty">No events yet.</div>
                       )}
