@@ -49,10 +49,24 @@
         visualizations, and commentary feeds for ongoing games.
       </p>
       <ul class="bullets">
-        <li><strong>Match Viewer</strong> — View current score, game clock, possession, and key events (goals, fouls, etc.).</li>
-        <li><strong>Event Feed</strong> — Timeline of in-game events with timestamps (animate substitutions, cards).</li>
-        <li><strong>Match Setup</strong> — Create matches and add teams, players, and expected schedule.</li>
-        <li><strong>Live Input</strong> — Manually input events and score changes; supports pause/resume and timeline edits.</li>
+        <li><strong>Match Viewer</strong> — Instantly view the current score, 
+          live game clock, team lineups, and real-time updates on possession. 
+          Track all key events—such as goals, fouls, cards, and 
+          substitutions, presented with clear visuals and context.</li>
+        <li><strong>Event Feed & Timeline</strong> — Experience a detailed, animated timeline of in-game events,
+           each with precise timestamps. See substitutions, cards, goals, and other actions
+            as they happen, with smooth animations and color-coded highlights for easy tracking.</li>
+        <li><strong>Match Setup</strong> — Effortlessly create new matches, 
+          add or edit teams and players, and set up expected schedules. 
+          Organizers can manage rosters, assign roles, 
+          and configure match details before kickoff.</li>
+        <li><strong>Live Input</strong> — Enter events and update scores in real time with 
+          intuitive controls. Supports pausing and resuming the match clock, as well 
+          as editing the event timeline to correct or 
+          update past actions. All changes are reflected instantly for viewers.</li>
+        <li><strong>Interactive Commentary</strong>-Integrate live commentary feeds, fan polls, 
+          and reactions to keep the audience 
+          engaged and informed throughout the match.</li>
       </ul>
     </section>
 
@@ -106,16 +120,24 @@
 
   <dl class="definition-list">
     <dt><code>Live Update API</code></dt>
-    <dd>Receive and store stat events from external sources.</dd>
+    <dd>
+      Accepts real-time stat events (goals, fouls, substitutions, etc.) from external sources or manual input. Stores and timestamps each event, supporting both automated and manual feeds. Enables instant updates to the match timeline and stats.
+    </dd>
 
     <dt><code>Feed API</code></dt>
-    <dd>Retrieve current state of the match for front-end display.</dd>
+    <dd>
+      Provides the current state of a match, including live score, clock, possession, and all key events. Designed for front-end consumption, this API powers the live match viewer and event timeline, ensuring fans see up-to-the-second information.
+    </dd>
 
     <dt><code>Match Setup API</code></dt>
-    <dd>CRUD for game meta (teams, match time, venue).</dd>
+    <dd>
+      Full CRUD (Create, Read, Update, Delete) operations for game metadata: create matches, add/edit teams and players, set match times and venues. Used by admins and organizers to configure matches before they go live.
+    </dd>
 
     <dt><code>Display API</code></dt>
-    <dd>Serve structured game data to clients (scoreboards, overlays, etc.).</dd>
+    <dd>
+      Serves structured, presentation-ready game data to clients. Supports scoreboards, overlays, widgets, and third-party integrations. Ensures all viewers and broadcast tools receive consistent, real-time match data.
+    </dd>
   </dl>
 
   <section id="third-party" class="section" aria-labelledby="third-party-title">
@@ -180,12 +202,18 @@ const fetchLive = async () =&gt; {
         <h2 id="backlog-title">Current Sprint Backlog</h2>
       </header>
       <ul class="checklist">
-        <li>Implement user authentication (sign in as admin or as viewer)</li>
-        <li>Create a user homepage that shows upcoming matches</li>
-        <li>Create a user profile under the homepage where the user can edit personal details</li>
-        <li>Set up the documentation site on GitHub Pages and link it in the README</li>
-        <li>Set up backend testing and show a code coverage badge on the repo</li>
-        <li>Match creation form on the admin page that automatically reflects as an upcoming match on the user homepage</li>
+        <li>Implement real-time live score updates for ongoing matches</li>
+        <li>Build event timeline for match feeds (goals, fouls, substitutions, cards)</li>
+        <li>Enable match status transitions (upcoming → ongoing → completed) with admin controls</li>
+        <li>Allow managers to create/edit teams and assign player roles</li>
+        <li>Support manual event input and timeline editing for admins</li>
+        <li>Integrate live commentary and stats overlays for viewers</li>
+        <li>Enhance match setup: venue, time, teams, and player management</li>
+        <li>Improve authentication and role-based access (admin, manager, viewer)</li>
+        <li>Refactor API endpoints for clarity and RESTful design</li>
+        <li>Expand test coverage for backend </li>
+        <li>Polish UI/UX for match viewer and event feed (responsive, accessible)</li>
+        <li>Update documentation with new API details and setup instructions</li>
       </ul>
     </section>
 
@@ -214,8 +242,10 @@ const fetchLive = async () =&gt; {
       </header>
       <ol class="ordered">
         <li>As a viewer, I want to see the live score of my team, so that I can follow the match in real time.</li>
+        <li>As a viewer, I want to see the recent fouls and substitutions that have been made in the game</li>
         <li>As a manager, I want to create a new team, so that I can manage my players and participate in matches.</li>
         <li>As a manager, I want to add players to a team, so that I can build my roster.</li>
+        <li>As an admin, I want to see the scheduled matches so that im able to start the match at the right time and date</li>
         <li>As an admin, I want to update the status of a match from upcoming to ongoing, so that fans and players know the match has started.</li>
         <li>As an admin, I want to update the events of the matches, so that the viewers can see the events occuring in the match.</li>
       </ol>
@@ -227,20 +257,44 @@ const fetchLive = async () =&gt; {
         <h2 id="setup-title">Developer Setup Guide</h2>
       </header>
 
-      <pre class="code-block" aria-label="setup commands"><code>git clone https://github.com/your-repo/primescore.git
+  <pre class="code-block" aria-label="setup commands"><code>git clone https://github.com/your-repo/primescore.git
 
-# Terminal 1 (frontend)
+# Prerequisites
+# - Node.js (v18+ recommended)
+# - npm (v9+ recommended)
+# - (Optional) VS Code for best experience
+
+# 1. Set up the frontend
 cd frontend
 npm install
+# Create a .env file if you need to override API URLs or add keys
+# Example: VITE_API_BASE_URL, VITE_FIREBASE_API_KEY, etc.
 npm run dev
 
-# Terminal 2 (backend)
+# 2. Set up the backend (in a new terminal)
 cd backend
 npm install
+# Copy .env.example to .env and fill in Firebase credentials and any other secrets
 npm run dev
+
+# 3. Access the app
+# - Frontend: http://localhost:5173 (default Vite port)
+# - Backend: http://localhost:3000 (default Express port)
+
+# 4. (Optional) Run tests
+# In backend: npm test
 </code></pre>
 
-      <p class="note">Ensure you have Node.js and npm installed before running the commands above.</p>
+  <ul class="bullets">
+    <li><strong>Environment Variables:</strong> Both frontend and backend use <code>.env</code> files for secrets and config. Never commit secrets to git.</li>
+    <li><strong>Proxy Setup:</strong> The frontend is configured to proxy <code>/api</code> requests to the backend during development (see <code>vite.config.js</code>).</li>
+    <li><strong>Firebase:</strong> You need a Firebase project and service account for backend integration. Place your credentials in <code>backend/.env</code> as shown in <code>.env.example</code>.</li>
+    <li><strong>Common Issues:</strong> If you see CORS errors or API 404s, make sure both servers are running and the proxy is set up correctly.</li>
+    <li><strong>Recommended Tools:</strong> VS Code, Postman (for API testing), and GitHub Desktop or CLI for version control.</li>
+    <li><strong>Hot Reload:</strong> Both frontend and backend support hot reload for rapid development.</li>
+  </ul>
+
+  <p class="note">If you encounter issues, check the README files in each folder or contact the project maintainer.</p>
     </section>
 
     <!-- Git -->
@@ -293,7 +347,7 @@ npm run dev
           </ul>
         </li>
 
-        <li><strong>events</strong> (subcollection under matches)
+        <li><strong>match_events</strong> (subcollection under matches)
           <ul>
             <li><code>eventId</code> — unique identifier</li>
             <li><code>type</code> — goal, foul, substitution, etc.</li>
