@@ -1,11 +1,10 @@
-import React, { useEffect, useState, useRef, useCallback } from "react";
-import { useLocation } from "react-router-dom";
-import "../Styles/LiveAPI.css";
 
+import React, { useEffect, useState, useRef, useCallback } from "react";
+import '../Styles/LiveAPI.css';
 const LiveApi = () => {
   const API_KEY = "4399a3821d4ce5eb1a989436dc4e5303cf5e7176";
-  const location = useLocation();
-  const selected_league = location.state?.selected_league || "Epl";
+  // Replace with your actual useLocation hook
+  const selected_league = "Epl"; // location.state?.selected_league || "Epl";
 
   const [matches, setMatches] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -144,8 +143,7 @@ const LiveApi = () => {
                   <span className="team-name">{match.teams?.away?.name || "Unknown Away Team"}</span>
                 </div>
 
-                {/* CENTERED LARGE SCORE */}
-                <div className="match-score-centered">
+                <div className="match-score">
                   <span className="home-score">{match.goals?.home_ft_goals ?? 0}</span>
                   <span className="dash"> - </span>
                   <span className="away-score">{match.goals?.away_ft_goals ?? 0}</span>
@@ -156,6 +154,7 @@ const LiveApi = () => {
 
               <div className="match-info">
                 <p className="match-datetime">
+                  <span className="datetime-icon">🕒</span>
                   Kickoff:{" "}
                   {match.date && match.time
                     ? (() => {
@@ -169,6 +168,12 @@ const LiveApi = () => {
                       })()
                     : "Date/Time not available"}
                 </p>
+                {match.venue && (
+                  <p className="match-venue">
+                    <span className="venue-icon">📍</span>
+                    {match.venue}
+                  </p>
+                )}
               </div>
 
               {match.events && match.events.length > 0 && (
