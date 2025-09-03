@@ -150,7 +150,11 @@ export default function MatchAdminInterface() {
       alert("Please fill in all fields");
       return;
     }
-
+    
+    if (formData.homeTeam === formData.awayTeam) {
+      alert("Home and Away team must be different!");
+      return;
+    }
   // Removed unused matchData variable to fix ESLint error
 
     try {
@@ -628,7 +632,7 @@ export default function MatchAdminInterface() {
                 <label>away Team</label>
                 <select name="awayTeam" value={formData.awayTeam} onChange={handleInputChange}>
                   <option value="">Select away Team</option>
-                  {teams.map((team) => (
+                  {teams.filter((team) => team.name !== formData.homeTeam).map((team) => (
                     <option key={team.id} value={team.name}>{team.name}</option>
                   ))}
                 </select>
