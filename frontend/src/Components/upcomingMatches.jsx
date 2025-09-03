@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Calendar, Clock, MapPin, Trophy } from 'lucide-react';
-import '../Styles/upcomingMatches.css';
 
 const UpcomingMatches = () => {
   const [matches, setMatches] = useState([]);
+  const [loading, setLoading] = useState(true);
   
   useEffect(() => {
     const fetchMatches = async () => {
@@ -71,25 +71,13 @@ const UpcomingMatches = () => {
             status: "Confirmed"
           }
         ]);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchMatches();
   }, []);
-
-  // Utility function to map match status to CSS classes
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'Scheduled':
-        return 'status-scheduled';
-      case 'Confirmed':
-        return 'status-confirmed';
-      case 'Postponed':
-        return 'status-postponed';
-      default:
-        return 'status-default';
-    }
-  };
 
   // Emoji icons by sport type
   const getSportIcon = (sport) => {
@@ -112,97 +100,104 @@ const UpcomingMatches = () => {
       weekday: 'short',
       month: 'short',
       day: 'numeric',
+      year: 'numeric'
     });
     const timeStr = date.toLocaleTimeString('en-US', {
       hour: '2-digit',
       minute: '2-digit',
       hour12: false,
     });
-    return { dateStr, timeStr };
+    return `${dateStr} at ${timeStr}`;
   };
 
-  // Only show matches with status 'Scheduled'
-  const scheduledMatches = matches.filter(match => (match.status || '').toLowerCase() === 'scheduled');
+  // Only show matches with status 'Scheduled' or 'Confirmed'
+  const upcomingMatches = matches.filter(match => 
+    ['scheduled', 'confirmed'].includes((match.status || '').toLowerCase())
+  );
+
+  if (loading) {
+    return (
+      <div className="live-api-container">
+        <div className="loading-container">
+          <div className="loading-text">Loading upcoming matches...</div>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="upcoming-matches-container">
+    <div className="live-api-container">
       {/* Header */}
-      <div className="header-card">
-        <div className="header-content">
-          <h1 className="header-title">
-            <Trophy className="header-icon" size={36} />
-            Upcoming Matches
-          </h1>
-          <p className="header-subtitle">
-            Stay updated with the latest match schedules
-          </p>
-        </div>
+      <div className="live-api-header">
+        <h1 className="live-api-title">
+          <Trophy size={36} style={{ verticalAlign: 'middle', marginRight: '10px' }} />
+          Upcoming Matches
+        </h1>
+        <p className="live-api-subtitle">
+          Stay updated with the latest match schedules
+        </p>
       </div>
 
       {/* Matches Grid */}
-      <div className="matches-grid">
-        {scheduledMatches.map((match) => {
-          const { dateStr, timeStr } = formatDateTime(match.startTime);
+      {upcomingMatches.length > 0 ? (
+        <div className="matches-grid">
+          {upcomingMatches.map((match) => {
+            const formattedDateTime = formatDateTime(match.startTime);
 
-          return (
-            <div key={match.id} className="match-card">
-              {/* Sport Header */}
-              <div className="sport-header">
-                <div className="sport-header-content">
-                  <div className="sport-type">
-                    <span className="sport-icon">{getSportIcon(match.sportType)}</span>
-                    <span className="sport-name">{match.sportType}</span>
+            return (
+              <div key={match.id} className="match-card">
+                {/* Match Header with Teams and Status */}
+                <div className="match-header">
+                  <div className="match-teams">
+                    <div className="team-name">{match.homeTeam}</div>
+                    <div className="vs-text">VS</div>
+                    <div className="team-name">{match.awayTeam}</div>
                   </div>
-                  <span className="status-label-header">{match.status}</span>
-                </div>
-              </div>
-
-              {/* Match Content */}
-              <div className="match-content">
-                {/* Teams */}
-                <div className="teams">
-                  <div className="team-name">{match.homeTeam}</div>
-                  <div className="vs">VS</div>
-                  <div className="team-name">{match.awayTeam}</div>
+                  <div className="match-status">
+                    {getSportIcon(match.sportType)} {match.status}
+                  </div>
                 </div>
 
-                {/* Match Details */}
-                <div className="match-details">
+                {/* Match Info */}
+                <div className="match-info">
+                  {/* Date & Time */}
+                  <div className="match-datetime">
+                    <Calendar className="datetime-icon" />
+                    <span>{formattedDateTime}</span>
+                  </div>
+
                   {/* Venue */}
-                  <div className="detail-item venue">
-                    <MapPin size={18} className="icon-gray" />
+                  <div className="match-venue">
+                    <MapPin className="venue-icon" />
                     <span>{match.venue}</span>
                   </div>
+                </div>
 
-                  {/* Date & Time */}
-                  <div className="date-time-container">
-                    <div className="detail-item date">
-                      <Calendar size={18} className="icon-gray" />
-                      <span>{dateStr}</span>
-                    </div>
-                    <div className="detail-item time">
-                      <Clock size={18} className="icon-gray" />
-                      <span>{timeStr}</span>
-                    </div>
+                {/* Sport Type Section */}
+                <div className="events-section">
+                  <div className="events-title">
+                    <Trophy size={16} />
+                    Sport: {match.sportType}
+                  </div>
+                  <div className="event-item">
+                    <span className="event-type">Competition Match</span>
+                    <span className="event-player">
+                      {match.homeTeam} hosting {match.awayTeam}
+                    </span>
                   </div>
                 </div>
-
-                {/* Status Badge */}
-                <div className="status-badge-container">
-                  <span className={`status-badge ${getStatusColor(match.status)}`}>
-                    {match.status}
-                  </span>
-                </div>
               </div>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* Footer */}
-      <div className="footer">
-        Last updated: {new Date().toLocaleString()}
-      </div>
+            );
+          })}
+        </div>
+      ) : (
+        <div className="no-matches">
+          <div className="no-matches-icon">🏆</div>
+          <p className="no-matches-text">
+            No upcoming matches scheduled at the moment
+          </p>
+        </div>
+      )}
     </div>
   );
 };

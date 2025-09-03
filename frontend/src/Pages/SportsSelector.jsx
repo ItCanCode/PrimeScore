@@ -5,7 +5,8 @@ import '../Styles/SportsSelector.css';
 
 const SportsSelector = () => {
   const [showFootballModal, setShowFootballModal] = useState(false);
-  const [showLocalLeaguesChoice, setShowLocalLeaguesChoice] = useState(false);
+  const [showLeaguesChoice, setShowLeaguesChoice] = useState(false);
+  const [selectedLeague, setSelectedLeague] = useState(null);
   /*const [showVolleyballModal, setShowVolleyballModal] = useState(false);
   const [showBasketballModal, setShowBasketballModal] = useState(false);
   const [showTennisModal, setShowTennisModal] = useState(false); */
@@ -94,30 +95,39 @@ const SportsSelector = () => {
 
 const handleLeagueSelection = (leagueId) => {
   setShowFootballModal(false);
-  // Navigate based on league selection
-  if(leagueId === "local-leagues"){
-    setShowLocalLeaguesChoice(true);
+  setSelectedLeague(leagueId);
+  setShowLeaguesChoice(true);
+};
+
+const handleMatchTypeSelection = (matchType) => {
+  setShowLeaguesChoice(false);
+  if(selectedLeague == "local-leagues"){
+    navigate(`/${matchType}`)
   }
-  else if(leagueId === "PSL"){
-    navigate("/past", { 
-      state: { selected_league: "PSL" } 
+  else if (matchType === 'upcoming' || matchType === 'past') {
+    navigate(`/live/${matchType}`,{
+      state:{selected_league:selectedLeague}
     });
-    console.log(leagueId);
-  }
-  else if(leagueId === "serie_a"){
+  } else {
+  
+    let leagueParam = selectedLeague;
+    if (selectedLeague === "premier-league") {
+      leagueParam = "Epl";
+    }
+    
     navigate("/past", { 
-      state: { selected_league: "serie_a" } 
-    });
-  }
-  else if(leagueId === "premier-league"){ // Add this case
-    navigate("/past", { 
-      state: { selected_league: "Epl" } // Map to "Epl" to match PasttMatch logic
+      state: { selected_league: leagueParam } 
     });
   }
 };
 
   const closeModal = () => {
     setShowFootballModal(false);
+  };
+
+  const closeLeaguesChoice = () => {
+    setShowLeaguesChoice(false);
+    setSelectedLeague(null);
   };
 
   const renderHomePage = () => (
@@ -203,10 +213,10 @@ const handleLeagueSelection = (leagueId) => {
     </div>
   );
 
-  // Render the Local Leagues choice card
-  if (showLocalLeaguesChoice) {
+  // Render the Match Type selection for all leagues
+  if (showLeaguesChoice) {
     return (
-      <div className="modal-overlay" onClick={() => setShowLocalLeaguesChoice(false)}>
+      <div className="modal-overlay" onClick={closeLeaguesChoice}>
         <div className="modal-content" onClick={e => e.stopPropagation()}>
           <div className="modal-header">
             <h2 className="modal-title">
@@ -214,7 +224,7 @@ const handleLeagueSelection = (leagueId) => {
               Select Match Type
             </h2>
             <button 
-              onClick={() => setShowLocalLeaguesChoice(false)}
+              onClick={closeLeaguesChoice}
               className="modal-close-button"
               aria-label="Close modal"
             >
@@ -225,18 +235,23 @@ const handleLeagueSelection = (leagueId) => {
             <div className="leagues-grid">
               <button
                 className="league-option"
-                onClick={() => navigate('/upcoming')}
+                onClick={() => handleMatchTypeSelection('upcoming')}
               >
-                
                 <span className="league-name">Upcoming Matches</span>
                 <ChevronRight className="league-arrow" />
               </button>
               <button
                 className="league-option"
-                onClick={() => navigate('/ongoing')}
+                onClick={() => handleMatchTypeSelection('ongoing')}
               >
-                
                 <span className="league-name">Ongoing Matches</span>
+                <ChevronRight className="league-arrow" />
+              </button>
+              <button
+                className="league-option"
+                onClick={() => handleMatchTypeSelection('past')}
+              >
+                <span className="league-name">Past Matches</span>
                 <ChevronRight className="league-arrow" />
               </button>
             </div>

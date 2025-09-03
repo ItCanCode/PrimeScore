@@ -6,10 +6,10 @@ function addDays(date, days) {
   return result.toISOString().split("T")[0];
 }
 
-const Upcoming = () => {
+const Upcoming = ({selected_league}) => {
   const [matches, setMatches] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedLeague, _setSelectedLeague] = useState("PSL");
+  const [selectedLeague, _setSelectedLeague] = useState(selected_league);
 
   // create array of upcoming days
   const allowedDays = Array.from({ length: 17 }, (_, i) =>

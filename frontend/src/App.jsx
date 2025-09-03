@@ -21,9 +21,7 @@ function App() {
     <>
       <AuthProvider>
       <Routes>
-        <Route path="/err" element={<Upcoming/>}/>
-        <Route path='/past' element={<LiveApiPast7/>}/>
-        <Route path="/live" element={<OnGoing/>}/>
+
         <Route path="/" element={<WelcomePage />} />
         <Route path="/home" element={<HomePage />} />
         <Route path="/admin" element={<AdminHome/>}></Route>
@@ -34,6 +32,9 @@ function App() {
         <Route path="/sports" element={<SportsSelector/>}/>
         <Route path="/management" element={<TeamManagement />}/>
         <Route path="/match-admin" element={<MatchAdminInterface/>}/>
+        <Route path="/live/upcoming" element={<Upcoming/>}/>
+        <Route path='/live/past' element={<LiveApiPast7/>}/>
+        <Route path="/live/ongoing" element={<OnGoing/>}/>
         <Route path="/ongoing" element={<OngoingMatches/>}/>
         <Route path="/upcoming" element={<UpcomingMatches/>}/>
       </Routes>
