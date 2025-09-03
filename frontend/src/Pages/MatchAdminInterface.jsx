@@ -5,7 +5,8 @@ import "../Styles/MatchAdminInterface.css";
 export default function MatchAdminInterface() {
   const [matches, setMatches] = useState([]);
   const [showForm, setShowForm] = useState(false);
-  const [activeTab, setActiveTab] = useState('scheduled');
+  // Set default tab to 'ongoing' so ongoing matches are shown by default
+  const [activeTab, setActiveTab] = useState('ongoing');
   const [editingMatch, setEditingMatch] = useState(null);
   const [formData, setFormData] = useState({
     sportType: "",
@@ -78,7 +79,7 @@ export default function MatchAdminInterface() {
 
   const addMatchEvent = async () => {
     let endpoint = "";
-    let payload = { team: eventData.team, time: eventData.time };
+  let payload = { team: eventData.team, time: eventData.time, eventType: eventData.eventType };
 
     if (eventData.eventType === "Goal" || eventData.eventType === "Foul") {
       payload.player = eventData.player;
@@ -144,45 +145,36 @@ export default function MatchAdminInterface() {
       return;
     }
 
-    const matchData = {
-      ...formData,
-      status: 'scheduled',
-      homeScore: 0,
-      awayScore: 0,
-      createdAt: new Date().toISOString()
-    };
-
-    if (editingMatch) {
-      // Update existing match
-      setMatches((prev) => prev.map(match => 
-        match.id === editingMatch.id ? { ...match, ...matchData } : match
-      ));
-      setEditingMatch(null);
-    } else {
-      // Create new match
-      const newMatch = { id: Date.now(), ...matchData };
-      setMatches((prev) => [...prev, newMatch]);
-    }
+  // Removed unused matchData variable to fix ESLint error
 
     try {
       const endpoint = editingMatch 
         ? `https://prime-backend.azurewebsites.net/api/admin/updateMatch/${editingMatch.id}`
         : `https://prime-backend.azurewebsites.net/api/admin/createMatch`;
-      
       const method = editingMatch ? "PUT" : "POST";
-      
       const res = await fetch(endpoint, {
         method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
-
       const data = await res.json();
       if (!res.ok) {
         throw new Error(data?.error || data?.message || "Failed to save match");
       }
-      
       setMessage({ type: "success", text: `Match ${editingMatch ? 'updated' : 'created'} successfully` });
+
+      // Refetch matches from backend so UI is always up to date
+      const response = await fetch('https://prime-backend.azurewebsites.net/api/users/viewMatches');
+      const matchesData = await response.json();
+      const matchesWithStatus = matchesData.map(match => ({
+        ...match,
+        status: match.status || 'scheduled',
+        homeScore: match.homeScore || 0,
+        awayScore: match.awayScore || 0
+      }));
+      setMatches(matchesWithStatus);
+
+      setEditingMatch(null);
     } catch (err) {
       setMessage({ type: "error", text: err.message });
     } finally {
@@ -333,22 +325,53 @@ export default function MatchAdminInterface() {
   };
 
   useEffect(() => {
-    const fetchMatches = async () => {
+    const fetchMatchesAndStats = async () => {
       try {
+        // Fetch all matches (for admin controls)
         const response = await fetch('https://prime-backend.azurewebsites.net/api/users/viewMatches');
         const data = await response.json();
-
-        // Ensure all matches have a status field
         const matchesWithStatus = data.map(match => ({
           ...match,
           status: match.status || 'scheduled',
           homeScore: match.homeScore || 0,
           awayScore: match.awayScore || 0
         }));
-        console.log(matchesWithStatus)
         setMatches(matchesWithStatus);
+
+        // Fetch live stats (ongoing matches with scores and events)
+        const statsRes = await fetch('https://prime-backend.azurewebsites.net/api/display/display-matches');
+        if (statsRes.ok) {
+          const statsData = await statsRes.json();
+          // Debug: log the raw statsData to inspect event structure
+          console.log('Fetched display-matches:', statsData);
+          // Build a map of matchId -> { homeScore, awayScore } and matchId -> events
+          const statsMap = {};
+          const eventsMap = {};
+          statsData.forEach(match => {
+            statsMap[match.id] = {
+              homeScore: match.homeScore ?? 0,
+              awayScore: match.awayScore ?? 0
+            };
+            // Robustly handle different event structures and flatten nested arrays
+            let eventsArr = [];
+            if (match.events) {
+              if (Array.isArray(match.events)) {
+                // Flatten if nested arrays
+                eventsArr = match.events.flat(Infinity).filter(e => e && typeof e === 'object' && !e._seconds && !e._nanoseconds);
+              } else if (Array.isArray(match.events.events)) {
+                eventsArr = match.events.events.flat(Infinity).filter(e => e && typeof e === 'object' && !e._seconds && !e._nanoseconds);
+              } else if (typeof match.events === 'object') {
+                // If events is an object, try to extract values and filter
+                eventsArr = Object.values(match.events).flat(Infinity).filter(e => e && typeof e === 'object' && !e._seconds && !e._nanoseconds);
+              }
+            }
+            eventsMap[match.id] = eventsArr;
+          });
+          setMatchStats(statsMap);
+          setMatchEvents(eventsMap);
+        }
       } catch (error) {
-        console.error("Error fetching matches:", error);
+        console.error("Error fetching matches or live stats:", error);
         // Fallback to dummy data for development
         setMatches([
           {
@@ -359,7 +382,7 @@ export default function MatchAdminInterface() {
             startTime: "2025-08-20T15:00",
             sportType: "Football",
             matchName: "Premier League Match",
-            status: "scheduled", // FIXED: Changed from "upcoming" to "scheduled"
+            status: "scheduled",
             homeScore: 0,
             awayScore: 0
           },
@@ -390,8 +413,7 @@ export default function MatchAdminInterface() {
         ]);
       }
     };
-
-    fetchMatches();
+    fetchMatchesAndStats();
   }, []);
 
   return (
@@ -650,20 +672,25 @@ export default function MatchAdminInterface() {
 
                     {/* Score is now always calculated from events. No manual update. */}
 
-                    {/* Match Events Display */}
-                    {matchEvents[match.id] && matchEvents[match.id].length > 0 && (
-                      <div className="mai-events-list">
-                        <h5>Match Events:</h5>
-                        {matchEvents[match.id].map((event, eidx) => (
+                    {/* Match Events Display - always show section, even if empty */}
+                    <div className="mai-events-list">
+                      <h5>Match Events:</h5>
+                      {matchEvents[match.id] && matchEvents[match.id].length > 0 ? (
+                        matchEvents[match.id].map((event, eidx) => (
                           <div key={event.id || eidx} className="mai-event-item">
-                            <span className="mai-event-time">{event.time}'</span>
-                            <span className="mai-event-type">{event.eventType}</span>
-                            <span className="mai-event-player">{event.player}</span>
-                            <span className="mai-event-team">({event.team})</span>
+                            <span className="mai-event-time">{event.time ? `${event.time}'` : ''}</span>
+                            <span className="mai-event-type">
+                              {/* Always show event type, fallback to card or 'Unknown Event' */}
+                              {event.eventType || event.type || (event.card === 'yellow' ? 'Yellow Card' : event.card === 'red' ? 'Red Card' : event.card ? event.card : 'Unknown Event')}
+                            </span>
+                            {event.player && <span className="mai-event-player">{event.player}</span>}
+                            {event.team && <span className="mai-event-team">({event.team})</span>}
                           </div>
-                        ))}
-                      </div>
-                    )}
+                        ))
+                      ) : (
+                        <div className="mai-event-item mai-event-empty">No events yet.</div>
+                      )}
+                    </div>
 
                     {/* Status Management Controls */}
                     <div className="mai-status-controls">
