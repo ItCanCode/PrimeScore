@@ -76,27 +76,45 @@ const OngoingMatches = () => {
     return () => clearInterval(interval);
   }, []);
 
-  // Helper to extract score, fouls, substitutions from match events
+  
+  // Helper to extract score, fouls, substitutions, and goals
   const getMatchStats = (events = []) => {
     let homeScore = 0, awayScore = 0;
     let fouls = [];
     let substitutions = [];
+    let goals = [];
+    
     if (Array.isArray(events)) {
       events.forEach(event => {
+      
+        if (event.type === 'goal' || (event.player && event.team && event.time)) {
+          goals.push(event);
+          if (event.team?.toLowerCase() === 'home') homeScore++;
+          if (event.team?.toLowerCase() === 'away') awayScore++;
+        }
+
+        // Foul
+        if (event.type === 'foul') fouls.push(event);
+
+        // Substitution
+        if (event.type === 'substitution') substitutions.push(event);
+
+        // In case backend already provides scores
         if (event.type === 'score') {
           if (typeof event.home === 'number') homeScore = event.home;
           if (typeof event.away === 'number') awayScore = event.away;
         }
-        if (event.type === 'foul') fouls.push(event);
-        if (event.type === 'substitution') substitutions.push(event);
       });
     } else if (events && typeof events === 'object') {
+   
       if (typeof events.homeScore === 'number') homeScore = events.homeScore;
       if (typeof events.awayScore === 'number') awayScore = events.awayScore;
       if (Array.isArray(events.fouls)) fouls = events.fouls;
       if (Array.isArray(events.substitutions)) substitutions = events.substitutions;
+      if (Array.isArray(events.goals)) goals = events.goals;
     }
-    return { homeScore, awayScore, fouls, substitutions };
+    console.log(goals);
+    return { homeScore, awayScore, fouls, substitutions, goals };
   };
 
   // Emoji icons by sport type
@@ -219,7 +237,7 @@ const OngoingMatches = () => {
       {/* Header */}
       <div className="live-api-header">
         <h1 className="live-api-title">
-          🔴 Live Matches
+           Live Matches
         </h1>
         <p className="live-api-subtitle">
           Live scores, fouls, and substitutions for matches in progress
@@ -234,6 +252,7 @@ const OngoingMatches = () => {
           let awayScore = typeof match.awayScore === 'number' ? match.awayScore : undefined;
           let fouls = [];
           let substitutions = [];
+          let goals = [];
           
           if (homeScore === undefined || awayScore === undefined) {
             const stats = getMatchStats(match.events);
@@ -241,11 +260,13 @@ const OngoingMatches = () => {
             if (awayScore === undefined) awayScore = stats.awayScore;
             fouls = stats.fouls;
             substitutions = stats.substitutions;
+            goals = stats.goals;
           } else {
-            // If scores are present, still try to get fouls/subs from events
+            
             const stats = getMatchStats(match.events);
             fouls = stats.fouls;
             substitutions = stats.substitutions;
+            goals = stats.goals;
           }
           
           const formattedDateTime = formatDateTime(match.startTime);
@@ -334,6 +355,21 @@ const OngoingMatches = () => {
                   {fouls.length === 0 && substitutions.length === 0 && (
                     <div className="event-item">
                       <div className="event-player">No recent events to display</div>
+                    </div>
+                  )}
+
+                  {/* Goals */}
+                  {goals.length > 0 && (
+                    <div className="event-item">
+                      <Trophy size={14} style={{ color: '#3b82f6', marginRight: '8px' }} />
+                      <div>
+                        <div className="event-type">Goals</div>
+                        {goals.map((goal, idx) => (
+                          <div key={idx} className="event-player" style={{ fontSize: '0.85rem', marginLeft: '22px' }}>
+                            {goal.time}' – {goal.player} ({goal.team})
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   )}
                 </div>
