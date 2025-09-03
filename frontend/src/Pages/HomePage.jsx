@@ -93,7 +93,6 @@ function HomePage() {
                 </a>
               </li>
             )}
-
             {/* Manage Team for managers */}
             {isManager && (
               <li>
@@ -122,7 +121,10 @@ function HomePage() {
                   {isMobile ? "Admin" : "Manage Matches"}
                 </a>
               </li>
-            )}
+          
+            {/* <li>
+              <a href="#ongoing" onClick={() => navigate("/past")}>Past Matches</a>
+            </li> */}
           </ul>
 
           <div className="auth-buttons">

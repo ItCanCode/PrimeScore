@@ -4,9 +4,10 @@ import "../Styles/MatchAdminInterface.css";
 
 export default function MatchAdminInterface() {
   const [matches, setMatches] = useState([]);
+  const [teams, setTeams] = useState([]);
   const [showForm, setShowForm] = useState(false);
-  const [activeTab, setActiveTab] = useState('scheduled');
-  const [teams,setTeams] =useState([])
+  // Set default tab to 'ongoing' so ongoing matches are shown by default
+  const [activeTab, setActiveTab] = useState('ongoing');
   const [editingMatch, setEditingMatch] = useState(null);
   const [formData, setFormData] = useState({
     sportType: "",
@@ -84,7 +85,7 @@ export default function MatchAdminInterface() {
 
   const addMatchEvent = async () => {
     let endpoint = "";
-    let payload = { team: eventData.team, time: eventData.time };
+  let payload = { team: eventData.team, time: eventData.time, eventType: eventData.eventType };
 
     if (eventData.eventType === "Goal" || eventData.eventType === "Foul") {
       payload.player = eventData.player;
@@ -149,46 +150,41 @@ export default function MatchAdminInterface() {
       alert("Please fill in all fields");
       return;
     }
-
-    const matchData = {
-      ...formData,
-      status: 'scheduled',
-      homeScore: 0,
-      awayScore: 0,
-      createdAt: new Date().toISOString()
-    };
-
-    if (editingMatch) {
-      // Update existing match
-      setMatches((prev) => prev.map(match => 
-        match.id === editingMatch.id ? { ...match, ...matchData } : match
-      ));
-      setEditingMatch(null);
-    } else {
-      // Create new match
-      const newMatch = { id: Date.now(), ...matchData };
-      setMatches((prev) => [...prev, newMatch]);
+    
+    if (formData.homeTeam === formData.awayTeam) {
+      alert("Home and Away team must be different!");
+      return;
     }
+  // Removed unused matchData variable to fix ESLint error
 
     try {
       const endpoint = editingMatch 
         ? `https://prime-backend.azurewebsites.net/api/admin/updateMatch/${editingMatch.id}`
         : `https://prime-backend.azurewebsites.net/api/admin/createMatch`;
-      
       const method = editingMatch ? "PUT" : "POST";
-      
       const res = await fetch(endpoint, {
         method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
-
       const data = await res.json();
       if (!res.ok) {
         throw new Error(data?.error || data?.message || "Failed to save match");
       }
-      
       setMessage({ type: "success", text: `Match ${editingMatch ? 'updated' : 'created'} successfully` });
+
+      // Refetch matches from backend so UI is always up to date
+      const response = await fetch('https://prime-backend.azurewebsites.net/api/users/viewMatches');
+      const matchesData = await response.json();
+      const matchesWithStatus = matchesData.map(match => ({
+        ...match,
+        status: match.status || 'scheduled',
+        homeScore: match.homeScore || 0,
+        awayScore: match.awayScore || 0
+      }));
+      setMatches(matchesWithStatus);
+
+      setEditingMatch(null);
     } catch (err) {
       setMessage({ type: "error", text: err.message });
     } finally {
@@ -339,51 +335,88 @@ export default function MatchAdminInterface() {
   };
 
   useEffect(() => {
-
-    const getTeams=async()=>{
-       try {
-          const res=await fetch("https://prime-backend.azurewebsites.net/api/admin/allTeams");
-
-      if (!res.ok) {
-        throw new Error("Failed to fetch teams");
-      }
-          const data=await res.json();
-          const mappedTeams = data.teams.map(team => ({
-              id: team.id,
-              name: team.teamName,
-      }));
-
-      setTeams(mappedTeams);
-       } catch (error) {
+    // Unified function to fetch teams, matches, and live stats
+    const fetchMatchesAndStats = async () => {
+      // Fetch teams
+      try {
+        const res = await fetch("https://prime-backend.azurewebsites.net/api/admin/allTeams");
+        if (!res.ok) throw new Error("Failed to fetch teams");
+        const data = await res.json();
+        const mappedTeams = data.teams.map(team => ({
+          id: team.id,
+          name: team.teamName,
+        }));
+        setTeams(mappedTeams);
+      } catch (error) {
         console.error(`Failed to fetch teams, ${error}`);
-        
-       }
-      
-      
-      
-      
+      }
 
-  }
-
-
-
-
-    const fetchMatches = async () => {
+      // Fetch matches and live stats
       try {
         const response = await fetch('https://prime-backend.azurewebsites.net/api/users/viewMatches');
         const data = await response.json();
-
-        // Ensure all matches have a status field
         const matchesWithStatus = data.map(match => ({
           ...match,
           status: match.status || 'scheduled',
           homeScore: match.homeScore || 0,
           awayScore: match.awayScore || 0
         }));
-        console.log(matchesWithStatus)
         setMatches(matchesWithStatus);
+
+        // Fetch live stats (ongoing matches with scores and events)
+        const statsRes = await fetch('https://prime-backend.azurewebsites.net/api/display/display-matches');
+        if (statsRes.ok) {
+          const statsData = await statsRes.json();
+          // Debug: log the raw statsData to inspect event structure
+          console.log('Fetched display-matches:', statsData);
+          // Build a map of matchId -> { homeScore, awayScore } and matchId -> events
+          const statsMap = {};
+          const eventsMap = {};
+          statsData.forEach(match => {
+            statsMap[match.id] = {
+              homeScore: match.homeScore ?? 0,
+              awayScore: match.awayScore ?? 0
+            };
+            // Enhanced: collect and label events from goals, fouls, substitutions, yellowCards, redCards arrays
+            let eventsArr = [];
+            if (match.events) {
+              // If Firestore doc structure (object with arrays)
+              if (typeof match.events === 'object' && !Array.isArray(match.events)) {
+                if (Array.isArray(match.events.goals)) {
+                  eventsArr = eventsArr.concat(match.events.goals.map(e => ({ ...e, _guessedType: 'Goal' })));
+                }
+                if (Array.isArray(match.events.fouls)) {
+                  eventsArr = eventsArr.concat(match.events.fouls.map(e => ({ ...e, _guessedType: 'Foul' })));
+                }
+                if (Array.isArray(match.events.substitutions)) {
+                  eventsArr = eventsArr.concat(match.events.substitutions.map(e => ({ ...e, _guessedType: 'Substitution' })));
+                }
+                if (Array.isArray(match.events.yellowCards)) {
+                  eventsArr = eventsArr.concat(match.events.yellowCards.map(e => ({ ...e, _guessedType: 'Yellow Card' })));
+                }
+                if (Array.isArray(match.events.redCards)) {
+                  eventsArr = eventsArr.concat(match.events.redCards.map(e => ({ ...e, _guessedType: 'Red Card' })));
+                }
+                // Add any other arrays as fallback
+                Object.entries(match.events).forEach(([key, value]) => {
+                  if (Array.isArray(value) && !['goals','fouls','substitutions','yellowCards','redCards'].includes(key)) {
+                    eventsArr = eventsArr.concat(value.map(e => ({ ...e, _guessedType: key.charAt(0).toUpperCase() + key.slice(1) })));
+                  }
+                });
+              } else if (Array.isArray(match.events)) {
+                eventsArr = match.events.flat(Infinity).filter(e => e && typeof e === 'object' && !e._seconds && !e._nanoseconds);
+              } else if (Array.isArray(match.events.events)) {
+                eventsArr = match.events.events.flat(Infinity).filter(e => e && typeof e === 'object' && !e._seconds && !e._nanoseconds);
+              }
+            }
+            eventsMap[match.id] = eventsArr;
+          });
+          setMatchStats(statsMap);
+          setMatchEvents(eventsMap);
+        }
       } catch (error) {
         console.error("Error fetching matches:", error);
+        // Fallback to dummy data for development
         setMatches([
           {
             id: 1,
@@ -424,9 +457,7 @@ export default function MatchAdminInterface() {
         ]);
       }
     };
-    getTeams();
-
-    fetchMatches();
+    fetchMatchesAndStats();
   }, []);
 
   return (
@@ -601,7 +632,7 @@ export default function MatchAdminInterface() {
                 <label>away Team</label>
                 <select name="awayTeam" value={formData.awayTeam} onChange={handleInputChange}>
                   <option value="">Select away Team</option>
-                  {teams.map((team) => (
+                  {teams.filter((team) => team.name !== formData.homeTeam).map((team) => (
                     <option key={team.id} value={team.name}>{team.name}</option>
                   ))}
                 </select>
@@ -696,20 +727,34 @@ export default function MatchAdminInterface() {
 
                     {/* Score is now always calculated from events. No manual update. */}
 
-                    {/* Match Events Display */}
-                    {matchEvents[match.id] && matchEvents[match.id].length > 0 && (
-                      <div className="mai-events-list">
-                        <h5>Match Events:</h5>
-                        {matchEvents[match.id].map((event, eidx) => (
-                          <div key={event.id || eidx} className="mai-event-item">
-                            <span className="mai-event-time">{event.time}'</span>
-                            <span className="mai-event-type">{event.eventType}</span>
-                            <span className="mai-event-player">{event.player}</span>
-                            <span className="mai-event-team">({event.team})</span>
-                          </div>
-                        ))}
-                      </div>
-                    )}
+                    {/* Match Events Display - always show section, even if empty */}
+                    <div className="mai-events-list">
+                      <h5>Match Events:</h5>
+                      {matchEvents[match.id] && matchEvents[match.id].length > 0 ? (
+                        matchEvents[match.id].map((event, eidx) => {
+                          // Determine event label, especially for fouls with card type
+                          let eventLabel = event.eventType || event.type || event._guessedType;
+                          if (!eventLabel && event.card === 'yellow') eventLabel = 'Foul (Yellow Card)';
+                          else if (!eventLabel && event.card === 'red') eventLabel = 'Foul (Red Card)';
+                          else if (!eventLabel && event.card) eventLabel = `Foul (${event.card.charAt(0).toUpperCase() + event.card.slice(1)} Card)`;
+                          else if (!eventLabel) eventLabel = 'Unknown Event';
+                          // If it's a foul and has a card, always show the card type
+                          if ((eventLabel === 'Foul' || eventLabel === 'foul') && event.card) {
+                            eventLabel = `Foul (${event.card.charAt(0).toUpperCase() + event.card.slice(1)} Card)`;
+                          }
+                          return (
+                            <div key={event.id || eidx} className="mai-event-item">
+                              <span className="mai-event-time">{event.time ? `${event.time}'` : ''}</span>
+                              <span className="mai-event-type">{eventLabel}</span>
+                              {event.player && <span className="mai-event-player">{event.player}</span>}
+                              {event.team && <span className="mai-event-team">({event.team})</span>}
+                            </div>
+                          );
+                        })
+                      ) : (
+                        <div className="mai-event-item mai-event-empty">No events yet.</div>
+                      )}
+                    </div>
 
                     {/* Status Management Controls */}
                     <div className="mai-status-controls">
