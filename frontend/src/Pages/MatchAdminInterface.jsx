@@ -6,6 +6,7 @@ export default function MatchAdminInterface() {
   const [matches, setMatches] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [activeTab, setActiveTab] = useState('scheduled');
+  const [teams,setTeams] =useState([])
   const [editingMatch, setEditingMatch] = useState(null);
   const [formData, setFormData] = useState({
     sportType: "",
@@ -32,6 +33,11 @@ export default function MatchAdminInterface() {
   // setMatchStats({});
   console.log(setMatchStats);
   
+
+
+
+
+
   const sportTypes = [ "Football", "Basketball", "Tennis", "Cricket", "Baseball", "Hockey", "Rugby", "Volleyball", "Badminton", "Table Tennis"];
 
   const eventTypes = [
@@ -333,6 +339,35 @@ export default function MatchAdminInterface() {
   };
 
   useEffect(() => {
+
+    const getTeams=async()=>{
+       try {
+          const res=await fetch("https://prime-backend.azurewebsites.net/api/admin/allTeams");
+
+      if (!res.ok) {
+        throw new Error("Failed to fetch teams");
+      }
+          const data=await res.json();
+          const mappedTeams = data.teams.map(team => ({
+              id: team.id,
+              name: team.teamName,
+      }));
+
+      setTeams(mappedTeams);
+       } catch (error) {
+        console.error(`Failed to fetch teams, ${error}`);
+        
+       }
+      
+      
+      
+      
+
+  }
+
+
+
+
     const fetchMatches = async () => {
       try {
         const response = await fetch('https://prime-backend.azurewebsites.net/api/users/viewMatches');
@@ -349,7 +384,6 @@ export default function MatchAdminInterface() {
         setMatches(matchesWithStatus);
       } catch (error) {
         console.error("Error fetching matches:", error);
-        // Fallback to dummy data for development
         setMatches([
           {
             id: 1,
@@ -359,7 +393,7 @@ export default function MatchAdminInterface() {
             startTime: "2025-08-20T15:00",
             sportType: "Football",
             matchName: "Premier League Match",
-            status: "scheduled", // FIXED: Changed from "upcoming" to "scheduled"
+            status: "scheduled", 
             homeScore: 0,
             awayScore: 0
           },
@@ -390,6 +424,7 @@ export default function MatchAdminInterface() {
         ]);
       }
     };
+    getTeams();
 
     fetchMatches();
   }, []);
@@ -553,12 +588,23 @@ export default function MatchAdminInterface() {
 
               <div className="mai-form-group">
                 <label>Home Team</label>
-                <input type="text" name="homeTeam" placeholder="Enter home team name" value={formData.homeTeam} onChange={handleInputChange} />
+                <select name="homeTeam" value={formData.homeTeam} onChange={handleInputChange}>
+                  <option value="">Select Home Team</option>
+                  {teams.map((team) => (
+                    <option key={team.id} value={team.name}>{team.name}</option>
+                  ))}
+                </select>
+                {/* <input type="text" name="homeTeam" placeholder="Enter home team name" value={formData.homeTeam} onChange={handleInputChange} /> */}
               </div>
 
               <div className="mai-form-group">
-                <label>Away Team</label>
-                <input type="text" name="awayTeam" placeholder="Enter away team name" value={formData.awayTeam} onChange={handleInputChange} />
+                <label>away Team</label>
+                <select name="awayTeam" value={formData.awayTeam} onChange={handleInputChange}>
+                  <option value="">Select away Team</option>
+                  {teams.map((team) => (
+                    <option key={team.id} value={team.name}>{team.name}</option>
+                  ))}
+                </select>
               </div>
 
               <div className="mai-form-group">
