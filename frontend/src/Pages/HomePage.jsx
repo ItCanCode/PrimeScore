@@ -1,16 +1,31 @@
 import React, { useState, useEffect } from 'react';
 import '../Styles/Home.css';
 import Loading from '../Components/Loading.jsx';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 function HomePage() {
-  const [user, _setUser] = useState(null);
+  const location = useLocation();
+  const role = location.state?.role; // get role from navigation
+
+
   const [_error, _setError] = useState(null);
   const [loading, setLoading] = useState(true);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [_isTablet, setIsTablet] = useState(false);
   const navigate = useNavigate();
+
+  // Role-based booleans
+  const [isManager, setIsManager] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [isViewer, setIsViewer] = useState(false);
+
+  useEffect(() => {
+    
+    setIsManager(role === 'manager');
+    setIsAdmin(role === 'admin');
+    setIsViewer(role === 'viewer');
+  }, [role]);
 
   // Handle screen size detection
   useEffect(() => {
@@ -19,21 +34,14 @@ function HomePage() {
       setIsTablet(window.innerWidth > 768 && window.innerWidth <= 1024);
     };
 
-    // Initial check
     handleResize();
-
-    // Add event listener
     window.addEventListener('resize', handleResize);
-
-    // Cleanup
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  // Loading simulation
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 1500);
-
+    const timer = setTimeout(() => setLoading(false), 1500);
     return () => clearTimeout(timer);
   }, []);
 
@@ -46,17 +54,8 @@ function HomePage() {
     };
 
     document.addEventListener('click', handleClickOutside);
-    return () => {
-      document.removeEventListener('click', handleClickOutside);
-    };
+    return () => document.removeEventListener('click', handleClickOutside);
   }, [dropdownOpen]);
-
-  // Close dropdown when screen size changes to mobile
-  useEffect(() => {
-    if (isMobile && dropdownOpen) {
-      setDropdownOpen(true);
-    }
-  }, [isMobile, dropdownOpen]);
 
   const handleLogout = () => {
     localStorage.removeItem("authToken");
@@ -73,70 +72,59 @@ function HomePage() {
     return <Loading />;
   }
 
-  if (user) {
-    return (
-      <div className="home">
-        <div className="user-profile">
-          <h2>Welcome, {user.displayName}!</h2>
-          <p>Email: {user.email}</p>
-          {user.photoURL && (
-            <img src={user.photoURL} alt="profile" />
-          )}
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="home">
       <nav className="navbar">
         <div className="nav-container">
           <div className="logo">PrimeScore</div>
-          
+
           <ul className="nav-links">
-            <li>
-              <a 
-                href="#home" 
-                onClick={(e) => {
-                  e.preventDefault();
-                  handleNavigation("/sports");
-                }}
-              >
-                {isMobile ? "Matches" : "View Matches"}
-              </a>
-            </li>
-            <li>
-              <a 
-                href="#management" 
-                onClick={(e) => {
-                  e.preventDefault();
-                  handleNavigation("/management");
-                }}
-              >
-                {isMobile ? "Team" : "Manage Team"}
-              </a>
-            </li>
-            <li>
-              <a 
-                href="#match-admin" 
-                onClick={(e) => {
-                  e.preventDefault();
-                  handleNavigation("/match-admin");
-                }}
-              >
-                {isMobile ? "Admin" : "Manage Matches"}
-              </a>
-            </li>
+            {/* View Matches for all roles */}
+            {(isManager || isAdmin || isViewer) && (
+              <li>
+                <a
+                  href="#home"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleNavigation("/sports");
+                  }}
+                >
+                  {isMobile ? "Matches" : "View Matches"}
+                </a>
+              </li>
+            )}
 
-            <li>
-              <a href="#ongoing" onClick={() => navigate("/ongoing")}>Ongoing Matches</a>
-            </li>
+            {/* Manage Team for managers */}
+            {isManager && (
+              <li>
+                <a
+                  href="#management"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleNavigation("/management");
+                  }}
+                >
+                  {isMobile ? "Team" : "Manage Team"}
+                </a>
+              </li>
+            )}
 
-            {/* <li>
-              <a href="#ongoing" onClick={() => navigate("/past")}>Past Matches</a>
-            </li> */}
+            {/* Manage Matches for admins */}
+            {isAdmin && (
+              <li>
+                <a
+                  href="#match-admin"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleNavigation("/match-admin");
+                  }}
+                >
+                  {isMobile ? "Admin" : "Manage Matches"}
+                </a>
+              </li>
+            )}
           </ul>
-          
+
           <div className="auth-buttons">
             <button
               className="auth-btn login-btn"
@@ -158,7 +146,6 @@ function HomePage() {
                   className="dropdown-item" 
                   title="Notifications"
                   onClick={() => {
-                    // Add notifications functionality here
                     console.log("Notifications clicked");
                     setDropdownOpen(false);
                   }}
@@ -200,11 +187,9 @@ function HomePage() {
       </nav>
 
       <section className="hero" id="home">
-        <div className="hero-content">
-    
-        </div>
+        <div className="hero-content"></div>
 
-        {/* Floating Sports Icons - Hide some on mobile for better performance */}
+        {/* Floating Sports Icons */}
         <div className="floating-icon icon-1">⚽</div>
         <div className="floating-icon icon-2">🏀</div>
         {!isMobile && <div className="floating-icon icon-3">🏈</div>}
@@ -212,10 +197,6 @@ function HomePage() {
         {!isMobile && <div className="floating-icon icon-5">🏸</div>}
         <div className="floating-icon icon-6">🏓</div>
       </section>
-
-
-
-   
     </div>
   );
 }

@@ -30,7 +30,10 @@ function LoginModal ({ closeModal,setModalType }){
           localStorage.setItem("token", idToken);
           login(result.user, idToken);
           if(role){
-              navigate("/home");
+              console.log(role);
+              navigate("/home",{
+                state:{role : role}
+              });
           }
           // else if(role == "manager"){
           //   navigate("/home");
@@ -38,7 +41,7 @@ function LoginModal ({ closeModal,setModalType }){
           // else{
           //   navigate("/admin");
           // }
-          navigate("/home");
+          // navigate("/home");
         }
         else{
           alert("Login failed, sign up instead.");
