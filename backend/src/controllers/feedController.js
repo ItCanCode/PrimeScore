@@ -29,7 +29,7 @@ export const recordGoal = async (req, res) => {
     }
     try{
         const matchRef = db.collection("match_events").doc(matchId);
-
+        const teamKey = team.toLowerCase();
         await matchRef.update({
             goals: admin.firestore.FieldValue.arrayUnion({
                 time,
@@ -37,9 +37,10 @@ export const recordGoal = async (req, res) => {
                 player
             }),
             
-            [team === "home" ? "home_score" : "away_score"]: admin.firestore.FieldValue.increment(1),
+            [teamKey === "home" ? "home_score" : "away_score"]: admin.firestore.FieldValue.increment(1),
             
             updatedAt: admin.firestore.FieldValue.serverTimestamp()
+            
         });
 
         res.json({ success: true, message: "Goal recorded!" });
