@@ -16,7 +16,7 @@
 - Documentation site is live at https://itcancode.github.io/PrimeScore/
 
 ## Trello (Task Management tool)
-- Task management too is live at https://trello.com/b/STw3Qbto/primescore
+- Task management tool is live at https://trello.com/b/STw3Qbto/primescore
 
 ###  Match Viewer
 - Displays current **score**, **game clock**, **possession**, and **key events** (goals, fouls, etc.).
