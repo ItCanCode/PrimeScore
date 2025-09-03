@@ -6,7 +6,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 function HomePage() {
   const location = useLocation();
   const role = location.state?.role; // get role from navigation
-
+  console.log(role);
 
   const [_error, _setError] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -21,7 +21,6 @@ function HomePage() {
   const [isViewer, setIsViewer] = useState(false);
 
   useEffect(() => {
-    
     setIsManager(role === 'manager');
     setIsAdmin(role === 'admin');
     setIsViewer(role === 'viewer');
@@ -93,6 +92,7 @@ function HomePage() {
                 </a>
               </li>
             )}
+
             {/* Manage Team for managers */}
             {isManager && (
               <li>
@@ -121,10 +121,7 @@ function HomePage() {
                   {isMobile ? "Admin" : "Manage Matches"}
                 </a>
               </li>
-          
-            {/* <li>
-              <a href="#ongoing" onClick={() => navigate("/past")}>Past Matches</a>
-            </li> */}
+            )}
           </ul>
 
           <div className="auth-buttons">
