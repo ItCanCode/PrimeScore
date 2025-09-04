@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import "../Styles/LiveAPI.css";
 
 function addDays(date, days) {
   const result = new Date(date);
@@ -6,57 +7,39 @@ function addDays(date, days) {
   return result.toISOString().split("T")[0];
 }
 
-const Upcoming = ({selected_league}) => {
+const Upcoming = ({ selected_league }) => {
   const [matches, setMatches] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedLeague, _setSelectedLeague] = useState(selected_league);
 
-  // create array of upcoming days
+  // Upcoming 17 days
   const allowedDays = Array.from({ length: 17 }, (_, i) =>
     addDays(new Date(), i + 1)
   );
-const SERIE_A = "253";
-const EPL = "228";
-const LA_LIGA = "297";
-const PSL = "296";
-// const sec_API = "9705bc4a7c3976dd88ceb3410db328363e8abd87";
-const API_KEY = "4399a3821d4ce5eb1a989436dc4e5303cf5e7176";
 
-// const new_api="ffbf5998cd06786edb62bc17bd591e02649fdcfe"
-  const getLeagueId = (league) => {
-    switch (league) {
-      case "PSL":
-        return PSL;
-      case "Epl":
-        return EPL;
-      case "La_liga":
-        return LA_LIGA;
-      case "serie_a":
-        return SERIE_A;
-      default:
-        return EPL;
-    }
+  // League IDs
+  const LEAGUE_IDS = {
+    PSL: "296",
+    Epl: "228",
+    La_liga: "297",
+    serie_a: "253",
   };
+
+  const API_KEY = "4399a3821d4ce5eb1a989436dc4e5303cf5e7176";
+
+  const getLeagueId = (league) => LEAGUE_IDS[league] || LEAGUE_IDS.Epl;
 
   useEffect(() => {
     const fetchLive = async () => {
+      setLoading(true);
       try {
-        const league_id = getLeagueId(selectedLeague);
-
+        const league_id = getLeagueId(selected_league);
         const response = await fetch(
-          `https://api.soccerdataapi.com/matches/?league_id=${league_id}&season=2025-2026&auth_token=${API_KEY}`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              "Accept-Encoding": "gzip",
-            },
-          }
+          `https://api.soccerdataapi.com/matches/?league_id=${league_id}&season=2025-2026&auth_token=${API_KEY}`
         );
 
         if (!response.ok) {
-          console.error("Failed to fetch");
-          setLoading(false);
+          console.error("Failed to fetch matches");
+          setMatches([]);
           return;
         }
 
@@ -65,6 +48,7 @@ const API_KEY = "4399a3821d4ce5eb1a989436dc4e5303cf5e7176";
           data[0]?.stage?.flatMap((stage) => stage.matches) || [];
 
         const filtered = allMatches.filter((match) => {
+          if (!match.date) return false;
           const [day, month, year] = match.date.split("/");
           const isoDate = `${year}-${month}-${day}T${match.time}:00`;
           const matchDate = new Date(isoDate).toISOString().split("T")[0];
@@ -72,21 +56,21 @@ const API_KEY = "4399a3821d4ce5eb1a989436dc4e5303cf5e7176";
         });
 
         setMatches(filtered);
-        console.log(filtered);
       } catch (error) {
         console.error("Error fetching matches:", error);
+        setMatches([]);
       } finally {
         setLoading(false);
       }
     };
 
     fetchLive();
-  }, [selectedLeague]); 
+  }, [selected_league]);
 
   if (loading) {
     return (
       <div className="loading-container">
-        <p className="loading-text">Loading matches...</p>
+        <p className="loading-text">Loading {selected_league} matches...</p>
       </div>
     );
   }
@@ -95,9 +79,11 @@ const API_KEY = "4399a3821d4ce5eb1a989436dc4e5303cf5e7176";
     <div className="live-api-container">
       <div className="live-api-header">
         <h2 className="live-api-title">Upcoming Matches</h2>
-        <p className="live-api-subtitle">Next 17 days of {selectedLeague} fixtures</p>
+        <p className="live-api-subtitle">
+          Next 17 days of {selected_league} fixtures
+        </p>
       </div>
-      
+
       {matches.length > 0 ? (
         <div className="matches-grid">
           {matches.map((m) => (
@@ -108,11 +94,22 @@ const API_KEY = "4399a3821d4ce5eb1a989436dc4e5303cf5e7176";
                   <span className="vs-text">vs</span>
                   <span className="team-name">{m.teams.away?.name || "Unknown"}</span>
                 </div>
+
+                {/* Score below team names */}
+                <div className="match-score-teams">
+                  <span className="home-score">
+                    {m.goals?.home_ft_goals ?? 0}
+                  </span>
+                  <span className="dash"> - </span>
+                  <span className="away-score">
+                    {m.goals?.away_ft_goals ?? 0}
+                  </span>
+                </div>
               </div>
-              
+
               <div className="match-info">
                 <div className="match-datetime">
-                  <span>🕒</span>
+                  🕒{" "}
                   {m.date && m.time
                     ? new Date(
                         `${m.date.split("/")[2]}-${m.date.split("/")[1]}-${
@@ -128,7 +125,7 @@ const API_KEY = "4399a3821d4ce5eb1a989436dc4e5303cf5e7176";
       ) : (
         <div className="no-matches">
           <div className="no-matches-icon">⚽</div>
-          <p className="no-matches-text">No matches found from {selectedLeague}.</p>
+          <p className="no-matches-text">No matches found from {selected_league}.</p>
         </div>
       )}
     </div>
