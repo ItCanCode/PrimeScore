@@ -10,7 +10,7 @@ import OnGoing from "./Pages/LiveeMatches";
 import SportsSelector from "./Pages/SportsSelector";
 import TeamManagement from "./Pages/TeamManagement";
 import MatchAdminInterface from "./Pages/MatchAdminInterface";
-import LiveApiPast7 from "./Pages/PasttMatch";
+import LiveApi from "./Pages/PastMatch";
 import Upcoming from "./Pages/UpcomingMatches";
 import OngoingMatches from "./Pages/OngoingMatches";
 import { AuthProvider } from "./context/authContext.jsx";
@@ -32,7 +32,7 @@ function App() {
         <Route path="/management" element={<TeamManagement />}/>
         <Route path="/match-admin" element={<MatchAdminInterface/>}/>
         <Route path="/live/upcoming" element={<Upcoming/>}/>
-        <Route path='/live/past' element={<LiveApiPast7/>}/>
+        <Route path='/live/past' element={<LiveApi/>}/>
         <Route path="/live/ongoing" element={<OnGoing/>}/>
         <Route path="/ongoing" element={<OngoingMatches/>}/>
         <Route path="/upcoming" element={<UpcomingMatches/>}/>
