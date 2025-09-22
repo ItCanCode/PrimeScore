@@ -398,30 +398,82 @@ npm run dev
         <li><strong>Follow-up</strong> — Users are notified when their feedback results in an update.</li>
       </ol>
 
-      <h3>Automated Testing</h3>
-      <p>
-        Automated testing is set up to ensure system reliability and quick feedback during development.
-      </p>
-      <ul class="bullets">
-        <li><strong>Unit Testing</strong> — Jest (backend) Testing Library.</li>
-        <li><strong>Coverage</strong> — Code coverage reports are generated and displayed in the repository (via CI pipeline).</li>
-        <li><strong>Continuous Integration</strong> — Tests run automatically on GitHub Actions with every pull request.</li>
-      </ul>
+<h3>Automated Testing</h3>
+<p>
+  Automated testing is set up to ensure system reliability and quick feedback during development.
+</p>
+<ul class="bullets">
+  <li><strong>Unit Testing</strong> — Implemented with Jest (backend) and React Testing Library (frontend).</li>
+  <li><strong>Coverage</strong> — Code coverage reports are generated and displayed in the repository (via CI pipeline).</li>
+  <li><strong>Continuous Integration</strong> — Tests run automatically on GitHub Actions with every pull request.</li>
+</ul>
 
-      <pre class="code-block" aria-label="run tests"><code># Run backend tests
+<h4>Implemented Test Suites</h4>
+<ul class="bullets">
+  <li><strong>Authentication</strong>
+    <ul>
+      <li><code>verifyGoogleToken</code> service — validates Google tokens.</li>
+      <li><code>googleAuth</code> controller — signup, login, error handling.</li>
+    </ul>
+  </li>
+  <li><strong>Manager Controller</strong>
+    <ul>
+      <li><code>createTeam</code> — creates teams, handles Firestore errors.</li>
+      <li><code>addPlayers</code> — adds players, validates ownership, errors.</li>
+      <li><code>myTeam</code> — fetches team by user, handles missing/error cases.</li>
+    </ul>
+  </li>
+  <li><strong>Admin Controller</strong>
+    <ul>
+      <li><code>createMatch</code> — creates matches, error handling.</li>
+      <li><code>updateMatchStatus</code> — updates match status, not-found errors.</li>
+      <li><code>updateScore</code> — updates scores, records goals as events.</li>
+      <li><code>addMatchEvent</code> — adds events like cards or fouls.</li>
+      <li><code>allTeams</code> — fetches all teams, filters by sport type, handles errors.</li>
+    </ul>
+  </li>
+  <li><strong>LiveSport Controller</strong>
+    <ul>
+      <li>Adds upcoming matches in batch.</li>
+      <li>Handles empty or invalid requests.</li>
+    </ul>
+  </li>
+  <li><strong>Feed Controller</strong>
+    <ul>
+      <li><code>startMatch</code> — initializes match events.</li>
+      <li><code>recordGoal</code> — handles home/away goals, increments scores.</li>
+      <li><code>recordSubstitution</code> — adds substitutions, validates fields.</li>
+      <li><code>recordFoul</code> — records fouls with/without cards.</li>
+    </ul>
+  </li>
+  <li><strong>Display Controller</strong>
+    <ul>
+      <li><code>getMatchEventsById</code> — fetches specific match events.</li>
+      <li><code>getmatchEvents</code> — fetches all ongoing matches and events.</li>
+    </ul>
+  </li>
+</ul>
+
+<pre class="code-block" aria-label="run tests"><code># Run backend tests
 cd backend
+npm install
 npm test
 
 # Run frontend tests
 cd frontend
+npm install
 npm test
+
+# To view full coverage:
+npm test -- --coverage
 </code></pre>
 
-      <p class="note">
-        Developers are required to write tests for all new features and bug fixes before merging.  
-        This ensures that user feedback and automated verification work together to maintain quality.
-      </p>
-    </section>
+<p class="note">
+  Developers are required to write tests for all new features and bug fixes before merging.  
+  This ensures that user feedback and automated verification work together to maintain quality.
+</p>
+
+
 
 
   </main>
