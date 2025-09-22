@@ -71,6 +71,7 @@
 
 .home-header {
   text-align: center;
+  margin-top: 4rem;
   margin-bottom: 4rem;
 }
 
@@ -494,6 +495,7 @@
   .content-sections {
     grid-template-columns: 1fr 1fr;
   }
+
 }
 
 .news-section, .actions-section {
@@ -676,6 +678,12 @@
 
   .modal-body {
     padding: 1rem 1.5rem 1.5rem;
+  }
+
+  .home-header {
+    text-align: center;
+    margin-top: 6rem;
+    margin-bottom: 4rem;
   }
 }
 

@@ -1,11 +1,26 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect,useContext } from "react";
+import { useNavigate } from 'react-router-dom';
 import { Plus, Calendar, MapPin, Users, Trophy, Menu, Clock, Play, Square, Edit2, Trash2, X } from "lucide-react";
+import { AuthContext } from "../context/authContext.jsx";
+
 import "../Styles/MatchAdminInterface.css";
 
 export default function MatchAdminInterface() {
+  const { user} = useContext(AuthContext);
+  const role = user.role; 
+  console.log(role);
+  
   const [matches, setMatches] = useState([]);
   const [teams, setTeams] = useState([]);
   const [showForm, setShowForm] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+
+  const [isMobile, setIsMobile] = useState(false);
+  const [_isTablet, setIsTablet] = useState(false);
+  // Role-based booleans
+  const [isManager, setIsManager] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [isViewer, setIsViewer] = useState(false);
   // Set default tab to 'ongoing' so ongoing matches are shown by default
   const [activeTab, setActiveTab] = useState('ongoing');
   const [editingMatch, setEditingMatch] = useState(null);
@@ -40,8 +55,33 @@ export default function MatchAdminInterface() {
   
 
 
+    useEffect(() => {
+      setIsManager(role === 'manager');
+      setIsAdmin(role === 'admin');
+      setIsViewer(role === 'viewer');
+    }, [role]);
+  const navigate = useNavigate();
+    // Handle screen size detection
+    useEffect(() => {
+      const handleResize = () => {
+        setIsMobile(window.innerWidth <= 768);
+        setIsTablet(window.innerWidth > 768 && window.innerWidth <= 1024);
+      };
+  
+      handleResize();
+      window.addEventListener('resize', handleResize);
+      return () => window.removeEventListener('resize', handleResize);
+    }, []);
+  const handleLogout = () => {
+    localStorage.removeItem("authToken");
+    navigate("/");
+    setDropdownOpen(false);
+  };
 
-
+  const handleNavigation = (path) => {
+    navigate(path);
+    setDropdownOpen(false);
+  };
 
   const sportTypes = [ "Football", "Basketball", "Tennis", "Cricket", "Baseball", "Hockey", "Rugby", "Volleyball", "Badminton", "Table Tennis"];
 
@@ -104,7 +144,7 @@ export default function MatchAdminInterface() {
 
   const executeAddMatchEvent = async () => {
     let endpoint = "";
-  let payload = { team: eventData.team, time: eventData.time, eventType: eventData.eventType };
+    let payload = { team: eventData.team, time: eventData.time, eventType: eventData.eventType };
 
     if (eventData.eventType === "Goal" || eventData.eventType === "Foul") {
       payload.player = eventData.player;
@@ -115,7 +155,6 @@ export default function MatchAdminInterface() {
       payload.playerOut = eventData.playerOut;
       endpoint = `/api/feed/${selectedMatch.id}/substitution`;
     }
-
     else if (eventData.eventType === "Yellow Card") {
       payload.player = eventData.player;
       payload.card = "yellow";
@@ -139,10 +178,16 @@ export default function MatchAdminInterface() {
       setMessage({ type: "success", text: "Event added successfully" });
 
       const newEvent = { ...payload, id: Date.now(), timestamp: new Date().toISOString() };
-      setMatchEvents(prev => ({
-        ...prev,
-        [selectedMatch.id]: [...(prev[selectedMatch.id] || []), newEvent]
-      }));
+
+      // ✅ keep events sorted by time
+      setMatchEvents(prev => {
+        const updatedEvents = [...(prev[selectedMatch.id] || []), newEvent];
+        updatedEvents.sort((a, b) => parseInt(a.time, 10) - parseInt(b.time, 10));
+        return {
+          ...prev,
+          [selectedMatch.id]: updatedEvents,
+        };
+      });
     }
     catch (err) {
       setMessage({ type: "error", text: err.message });
@@ -152,6 +197,7 @@ export default function MatchAdminInterface() {
       setShowEventForm(false);
     }
   };
+
 
   const openEventForm = (match) => {
     setSelectedMatch(match);
@@ -209,7 +255,6 @@ export default function MatchAdminInterface() {
       }
       setMessage({ type: "success", text: `Match ${editingMatch ? 'updated' : 'created'} successfully` });
 
-      // Refetch matches from backend so UI is always up to date
       const response = await fetch('https://prime-backend.azurewebsites.net/api/users/viewMatches');
       const matchesData = await response.json();
       const matchesWithStatus = matchesData.map(match => ({
@@ -509,7 +554,130 @@ export default function MatchAdminInterface() {
           </div>
         </div>
       </nav>
+        <nav className="navbar">
+        <div className="nav-container">
+          <div className="logo">PrimeScore</div>
 
+          <ul className="nav-links">
+                        <li>
+              <a onClick={()=>{navigate("/home",{
+                state:{role : role}
+              });}} >News</a>
+            </li>
+            {/* View Matches for all roles */}
+            {(isManager || isAdmin || isViewer) && (
+              <li>
+                <a
+                  href="#home"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleNavigation("/sports");
+                  }}
+                >
+                  Sports
+                </a>
+              </li>
+            )}
+
+            <li>
+              <a href="#contact" >Contact</a>
+            </li>
+            {/* Manage Team for managers */}
+            {isManager && (
+              <li>
+                <a
+                  href="#management"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleNavigation("/management");
+                  }}
+                >
+                  {isMobile ? "Team" : "Manage Team"}
+                </a>
+              </li>
+            )}
+
+            {/* Manage Matches for admins */}
+            {isAdmin && (
+              <li>
+                <a
+                  href="#match-admin"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleNavigation("/match-admin");
+                  }}
+                >
+                  {"Manage Matches"}
+                </a>
+              </li>
+            )}
+          </ul>
+
+          <div className="auth-buttons">
+                      <div className="mai-nav-buttons">
+            <button className="mai-create-btn" onClick={() => setShowForm(!showForm)}>
+              <Plus size={18} /> Create Match
+            </button>
+          </div>
+            <button
+              className="auth-btn login-btn"
+              onClick={() => setDropdownOpen(prev => !prev)}
+              aria-expanded={dropdownOpen}
+              aria-haspopup="true"
+              aria-label="Open menu"
+            >
+              {isMobile ? "☰" : "Menu"} {!isMobile && "▼"}
+            </button>
+
+            {dropdownOpen && (
+              <div 
+                className="dropdown-content"
+                role="menu"
+                aria-label="User menu"
+              >
+                <button 
+                  className="dropdown-item" 
+                  title="Notifications"
+                  onClick={() => {
+                    console.log("Notifications clicked");
+                    setDropdownOpen(false);
+                  }}
+                  role="menuitem"
+                >
+                  🔔 Notifications
+                </button>
+
+                <button
+                  className="dropdown-item"
+                  title="Profile"
+                  onClick={() => handleNavigation("/profile")}
+                  role="menuitem"
+                >
+                  👤 Profile
+                </button>
+
+                <button 
+                  className="dropdown-item" 
+                  title="Settings"
+                  onClick={() => handleNavigation("/settings")}
+                  role="menuitem"
+                >
+                  ⚙️ Settings
+                </button>
+
+                <button 
+                  className="dropdown-item" 
+                  title="Logout" 
+                  onClick={handleLogout}
+                  role="menuitem"
+                >
+                  🚪 Logout
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      </nav>
       <div className="mai-container">
         <div className="mai-page-header">
           <h2>Match Administration</h2>
@@ -597,8 +765,11 @@ export default function MatchAdminInterface() {
                 <div className="mai-form-group">
                   <label>Time (Minutes)</label>
                   <input 
-                    type="text" 
+                    type="number" 
                     name="time" 
+                     min="0"
+                    max="120" 
+                    step="1"
                     placeholder="e.g., 45, 90+2" 
                     value={eventData.time} 
                     onChange={handleEventInputChange} 

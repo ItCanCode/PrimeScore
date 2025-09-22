@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Calendar, Clock, MapPin, Trophy } from 'lucide-react';
-
+import { useNavigate } from 'react-router-dom';
 const UpcomingMatches = () => {
+    const navigate = useNavigate();
+  
   const [matches, setMatches] = useState([]);
   const [loading, setLoading] = useState(true);
   
@@ -128,6 +130,7 @@ const UpcomingMatches = () => {
   return (
     <div className="live-api-container">
       {/* Header */}
+      <button onClick={() => navigate(-1)} style={{ marginBottom: '1rem', padding: '0.5rem 1rem', borderRadius: '8px', border: 'none', color: '#0e0d0dff', cursor: 'pointer' }}>Back</button>
       <div className="live-api-header">
         <h1 className="live-api-title">
           <Trophy size={36} style={{ verticalAlign: 'middle', marginRight: '10px' }} />

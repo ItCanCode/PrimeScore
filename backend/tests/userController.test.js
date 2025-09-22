@@ -98,7 +98,15 @@ describe("UserController", () => {
 
   describe("updateUser", () => {
     it("should update user profile successfully", async () => {
-      req.body = { username: "Bob", bio: "Hello", picture: "pic.jpg" };
+      req.body = {
+        username: "Bob",
+        bio: "Hello",
+        picture: "pic.jpg",
+        favoriteSports: ["Soccer", "Basketball"],
+        favoriteTeam: "Real Madrid",
+        favoritePlayer: "Ronaldo",
+      };
+
       const { firestore } = await import("../src/config/firebaseAdmin.js");
       firestore().collection().doc().get.mockResolvedValueOnce({ data: () => req.body });
 
@@ -108,7 +116,31 @@ describe("UserController", () => {
         username: "Bob",
         "profile.bio": "Hello",
         picture: "pic.jpg",
+        "profile.favoriteSports": ["Soccer", "Basketball"],
+        "profile.favoriteTeam": "Real Madrid",
+        "profile.favoritePlayer": "Ronaldo",
       });
+
+      expect(res.json).toHaveBeenCalledWith({
+        message: "Profile updated",
+        user: req.body,
+      });
+    });
+
+    it("should update profile with partial data", async () => {
+      req.body = { username: "Bob" }; 
+      const { firestore } = await import("../src/config/firebaseAdmin.js");
+      firestore().collection().doc().get.mockResolvedValueOnce({ data: () => req.body });
+
+      await updateUser(req, res);
+
+      expect(firestore().collection().doc().update).toHaveBeenCalledWith({
+        username: "Bob",
+        "profile.favoriteSports": [],
+        "profile.favoriteTeam": "",
+        "profile.favoritePlayer": "",
+      });
+
       expect(res.json).toHaveBeenCalledWith({
         message: "Profile updated",
         user: req.body,
@@ -123,7 +155,7 @@ describe("UserController", () => {
 
       expect(res.status).toHaveBeenCalledWith(500);
       expect(res.json).toHaveBeenCalledWith({
-        error: "Failed to update profile",
+        error: "Failed",
       });
     });
   });

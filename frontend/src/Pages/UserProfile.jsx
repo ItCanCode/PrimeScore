@@ -1,5 +1,7 @@
 import { useNavigate } from "react-router-dom";
+
 import ProfileCard from "../Components/ProfileCard"
+import ProfileDetails from "../Components/ProfileDetails";
 
 function UserProfile(){
     const navigate = useNavigate();
@@ -18,13 +20,15 @@ function UserProfile(){
                     cursor: 'pointer',
                     boxShadow: '0 2px 8px rgba(255,107,53,0.10)'
                 }}
-                onClick={() => navigate('/home')}
+                onClick={() => navigate(-1)}
             >
-                ← Back to Home
+                ← Back
             </button>
             <ProfileCard/>
+            <ProfileDetails/>
         </div>
     )
+
 }
 
 export default UserProfile;

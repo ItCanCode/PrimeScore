@@ -28,7 +28,8 @@ function LoginModal ({ closeModal,setModalType }){
         const role = data.user.role;
         if(data.message=="Login successful"){
           localStorage.setItem("token", idToken);
-          login(result.user, idToken);
+          console.log(data.user);
+          login(data.user, idToken);
           if(role){
               console.log(role);
               navigate("/home",{
@@ -109,14 +110,6 @@ function LoginModal ({ closeModal,setModalType }){
       <div className="social-login">
         <button className="social-btn" type="button" onClick={handleGoogleLogin} >
           <span> <FcGoogle size={20} style={{ marginRight: 8 }} /></span> Continue with Google
-        </button>
-        <button
-          className="social-btn"
-          type="button"
-          onClick={() => alert('Facebook login')}
-         style={{ color: '#1877F2' }}
-        >
-          <span><FaFacebookF size={20} style={{ marginRight: 8 }}/></span> Continue with Facebook
         </button>
       </div>
 
