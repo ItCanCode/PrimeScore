@@ -123,56 +123,62 @@ export default function MatchAdminInterface() {
     setEventData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const addMatchEvent = async () => {
-    let endpoint = "";
+const addMatchEvent = async () => {
+  let endpoint = "";
   let payload = { team: eventData.team, time: eventData.time, eventType: eventData.eventType };
 
-    if (eventData.eventType === "Goal" || eventData.eventType === "Foul") {
-      payload.player = eventData.player;
-      endpoint = `/api/feed/${selectedMatch.id}/${eventData.eventType.toLowerCase()}`;
-    } 
-    else if (eventData.eventType === "Substitution") {
-      payload.playerIn = eventData.playerIn;
-      payload.playerOut = eventData.playerOut;
-      endpoint = `/api/feed/${selectedMatch.id}/substitution`;
-    }
+  if (eventData.eventType === "Goal" || eventData.eventType === "Foul") {
+    payload.player = eventData.player;
+    endpoint = `/api/feed/${selectedMatch.id}/${eventData.eventType.toLowerCase()}`;
+  } 
+  else if (eventData.eventType === "Substitution") {
+    payload.playerIn = eventData.playerIn;
+    payload.playerOut = eventData.playerOut;
+    endpoint = `/api/feed/${selectedMatch.id}/substitution`;
+  }
+  else if (eventData.eventType === "Yellow Card") {
+    payload.player = eventData.player;
+    payload.card = "yellow";
+    endpoint = `/api/feed/${selectedMatch.id}/foul`;
+  } 
+  else if (eventData.eventType === "Red Card") {
+    payload.player = eventData.player;
+    payload.card = "red";
+    endpoint = `/api/feed/${selectedMatch.id}/foul`;
+  }
 
-    else if (eventData.eventType === "Yellow Card") {
-      payload.player = eventData.player;
-      payload.card = "yellow";
-      endpoint = `/api/feed/${selectedMatch.id}/foul`;
-    } 
-    else if (eventData.eventType === "Red Card") {
-      payload.player = eventData.player;
-      payload.card = "red";
-      endpoint = `/api/feed/${selectedMatch.id}/foul`;
-    }
+  try {
+    const res = await fetch(`https://prime-backend.azurewebsites.net${endpoint}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "x-user-role": "admin" },
+      body: JSON.stringify(payload),
+    });
 
-    try {
-      const res = await fetch(`https://prime-backend.azurewebsites.net${endpoint}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "x-user-role": "admin" },
-        body: JSON.stringify(payload),
-      });
+    if (!res.ok) throw new Error("Failed to add event");
 
-      if (!res.ok) throw new Error("Failed to add event");
+    setMessage({ type: "success", text: "Event added successfully" });
 
-      setMessage({ type: "success", text: "Event added successfully" });
+    const newEvent = { ...payload, id: Date.now(), timestamp: new Date().toISOString() };
 
-      const newEvent = { ...payload, id: Date.now(), timestamp: new Date().toISOString() };
-      setMatchEvents(prev => ({
+    // ✅ keep events sorted by time
+    setMatchEvents(prev => {
+      const updatedEvents = [...(prev[selectedMatch.id] || []), newEvent];
+      updatedEvents.sort((a, b) => parseInt(a.time, 10) - parseInt(b.time, 10));
+      return {
         ...prev,
-        [selectedMatch.id]: [...(prev[selectedMatch.id] || []), newEvent]
-      }));
-    }
-    catch (err) {
-      setMessage({ type: "error", text: err.message });
-    } 
-    finally {
-      setEventData({ eventType: "", team: "", player: "", time: "", playerIn: "", playerOut: "" });
-      setShowEventForm(false);
-    }
-  };
+        [selectedMatch.id]: updatedEvents,
+      };
+    });
+  }
+  catch (err) {
+    setMessage({ type: "error", text: err.message });
+  } 
+  finally {
+    setEventData({ eventType: "", team: "", player: "", time: "", playerIn: "", playerOut: "" });
+    setShowEventForm(false);
+  }
+};
+
 
   const openEventForm = (match) => {
     setSelectedMatch(match);
@@ -213,7 +219,6 @@ export default function MatchAdminInterface() {
       }
       setMessage({ type: "success", text: `Match ${editingMatch ? 'updated' : 'created'} successfully` });
 
-      // Refetch matches from backend so UI is always up to date
       const response = await fetch('https://prime-backend.azurewebsites.net/api/users/viewMatches');
       const matchesData = await response.json();
       const matchesWithStatus = matchesData.map(match => ({
@@ -724,8 +729,11 @@ export default function MatchAdminInterface() {
                 <div className="mai-form-group">
                   <label>Time (Minutes)</label>
                   <input 
-                    type="text" 
+                    type="number" 
                     name="time" 
+                     min="0"
+                    max="120" 
+                    step="1"
                     placeholder="e.g., 45, 90+2" 
                     value={eventData.time} 
                     onChange={handleEventInputChange} 

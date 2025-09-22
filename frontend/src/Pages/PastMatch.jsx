@@ -66,7 +66,9 @@ const LiveApi = () => {
           const [day, month, year] = match.date.split("/");
           const isoDate = `${year}-${month.padStart(2,"0")}-${day.padStart(2,"0")}`;
           const matchDate = new Date(isoDate);
-          return matchDate >= sevenDaysAgo && matchDate <= today;
+          const homeTeamName=match.teams.home.name;
+          const status=match.status;
+          return matchDate >= sevenDaysAgo && matchDate <= today && homeTeamName!="None" && status=="finished";
         } catch {
           return false;
         }
