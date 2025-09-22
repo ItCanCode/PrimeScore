@@ -36,6 +36,7 @@ function MatchState(){
             });
 
             const data = await res.json();
+            
             console.log("Match started:", data);
         }
         catch (err) {
