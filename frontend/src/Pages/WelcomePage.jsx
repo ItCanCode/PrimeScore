@@ -2,54 +2,67 @@ import React, { useState, useEffect } from 'react';
 import '../Styles/WelcomePage.css';
 import LoginModal from '../Components/LoginModal.jsx';
 import SignupModal from '../Components/SignupModal.jsx';
+import Loading from '../Components/Loading.jsx';
 
 function WelcomePage() {
-
   const [modalType, setModalType] = useState('none');
   const [user, _setUser] = useState(null);
   const [_error, _setError] = useState(null);
   const [loading, setLoading] = useState(true);
-    // Simulate loading
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  // Simulate loading
   useEffect(() => {
-    // Replace with actual loading logic (e.g., fetch user)
     const timer = setTimeout(() => {
       setLoading(false);
-    }, 1500); // 1.5 seconds delay for demo
+    }, 1500);
 
     return () => clearTimeout(timer);
   }, []);
 
+  // Close mobile menu when window resizes to larger screen
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth > 576) {
+        setMobileMenuOpen(false);
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Close mobile menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (mobileMenuOpen && !event.target.closest('nav')) {
+        setMobileMenuOpen(false);
+      }
+    };
+
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, [mobileMenuOpen]);
+
   if (loading) {
-    return (
-      <div className="loading-screen">
-        <div className="loading-container">
-          {/* Spinning loader */}
-          <div className="loader-wrapper">
-            <div className="loader main"></div>
-            <div className="loader overlay"></div>
-          </div>
-
-          {/* Loading text */}
-          <div className="loading-text">Loading ...</div>
-
-          {/* Animated dots */}
-          <div className="dots">
-            <div className="dot blue"></div>
-            <div className="dot purple"></div>
-            <div className="dot indigo"></div>
-          </div>
-        </div>
-      </div>
-    );
+    return <Loading />;
   }
- 
 
   const openModal = (type) => {
     setModalType(type);
+    setMobileMenuOpen(false); // Close mobile menu when opening modal
   };
 
   const closeModal = () => {
     setModalType('none');
+  };
+
+  const toggleMobileMenu = () => {
+    setMobileMenuOpen(!mobileMenuOpen);
+  };
+
+  const closeMobileMenu = () => {
+    setMobileMenuOpen(false);
   };
 
   if (user) {
@@ -66,26 +79,26 @@ function WelcomePage() {
     <div className="body">
       <nav>
         <div className="nav-container">
-          <div className="logo">PrimeScore</div>
+          <div className="nav-top">
+            <div className="logo">PrimeScore</div>
+            <button 
+              className="mobile-menu-toggle" 
+              onClick={toggleMobileMenu}
+              aria-label="Toggle mobile menu"
+            >
+              {mobileMenuOpen ? '✕' : '☰'}
+            </button>
+          </div>
 
-          <ul className="nav-links">
+          <ul className={`nav-links ${mobileMenuOpen ? 'mobile-nav-open' : ''}`}>
             <li>
-              <a href="#home">Home</a>
+              <a href="#sports" onClick={closeMobileMenu}>Sports</a>
             </li>
             <li>
-              <a href="#sports">Sports</a>
+              <a href="#news" onClick={closeMobileMenu}>News</a>
             </li>
             <li>
-              <a href="#news">News</a>
-            </li>
-            <li>
-              <a href="#events">Events</a>
-            </li>
-            <li>
-              <a href="#about">About</a>
-            </li>
-            <li>
-              <a href="#contact">Contact</a>
+              <a href="#contact" onClick={closeMobileMenu}>Contact</a>
             </li>
           </ul>
 
@@ -137,10 +150,11 @@ function WelcomePage() {
           </div>
           <div className="footer-section">
             <h4>Popular Sports</h4>
-            <a href="#">Football/Soccer</a>
             <a href="#">Basketball</a>
+            <a href="#">Football</a>
+            <a href='#'>Rugby</a>
             <a href="#">Tennis</a>
-            <a href="#">American Football</a>
+            <a href='#'>Volleyball</a>
           </div>
           <div className="footer-section">
             <h4>Community</h4>

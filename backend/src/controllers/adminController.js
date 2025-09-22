@@ -1,23 +1,135 @@
 import admin from "../config/firebaseAdmin.js";
-// adminController.js
-const adminController = {
-  createMatch: async (req, res) => {
-    try {
-      const { matchName, homeTeam, awayTeam, startTime, venue, sportType } = req.body;
-      await admin.firestore().collection("matches").add({
-        sportType,
-        matchName,
-        homeTeam,
-        awayTeam,
-        startTime,
-        status: "scheduled",
-        venue,
-      });
-      res.status(201).json({ message: "Match created" });
+const createMatch = async (req, res) => {
+  try {
+    const { matchName, homeTeam, awayTeam, startTime, venue, sportType } = req.body;
+    // Add match to Firestore and get the new document reference
+    const docRef = await admin.firestore().collection("matches").add({
+      sportType,
+      matchName,
+      homeTeam,
+      awayTeam,
+      startTime,
+      status: "scheduled",
+      venue,
+    });
+    // Return the Firestore document ID to the frontend
+    res.status(201).json({ message: "Match created", id: docRef.id });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// Update Match Status
+const updateMatchStatus = async (req, res) => {
+  try {
+    const matchId = req.params.id;
+    const { status } = req.body;
+    const db = admin.firestore();
+    const matchRef = db.collection('matches').doc(matchId);
+    const matchDoc = await matchRef.get();
+
+    if (!matchDoc.exists) {
+      return res.status(404).json({ error: 'Match not found in matches collection' });
+    }
+
+    // Just update the status in 'matches'
+    await matchRef.update({ status });
+
+    res.status(200).json({ message: `Match status updated to ${status}` });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+
+// Update Score (stub)
+const updateScore = async (req, res) => {
+  try {
+    const matchId = req.params.id;
+    const { homeScore, awayScore, eventType, team, player, time } = req.body;
+    const db = admin.firestore();
+    // Update score in both collections if exists
+    const matchRef = db.collection('matches').doc(matchId);
+    const ongoingRef = db.collection('ongoingMatches').doc(matchId);
+    const matchDoc = await matchRef.get();
+    const ongoingDoc = await ongoingRef.get();
+    if (matchDoc.exists) {
+      await matchRef.update({ homeScore, awayScore });
+    }
+    if (ongoingDoc.exists) {
+      await ongoingRef.update({ homeScore, awayScore });
+    }
+    // If eventType is 'Goal', add to flat match_events collection
+    if (eventType === 'Goal') {
+      const event = {
+        eventType,
+        team,
+        player,
+        time,
+        matchId,
+        timestamp: new Date().toISOString()
+      };
+      await db.collection('match_events').add(event);
+    }
+    res.status(200).json({ message: 'Score updated' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// Add Match Event (stub)
+const addMatchEvent = async (req, res) => {
+  try {
+    const matchId = req.params.id;
+    const { eventType, team, player, time } = req.body;
+    const db = admin.firestore();
+    const event = {
+      eventType,
+      team,
+      player,
+      time,
+      matchId,
+      timestamp: new Date().toISOString()
+    };
+    await db.collection('match_events').add(event);
+    res.status(200).json({ message: 'Event added' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+const allTeams = async (req, res) => {
+  try {
+      const { sportType } = req.query;
+      let teamsRef = admin.firestore().collection("teams");
+      let snapshot;
+
+      if (sportType) {
+        snapshot = await teamsRef.where("sportType", "==", sportType).get();
+      } else {
+        snapshot = await teamsRef.get();
+      }
+
+      if (snapshot.empty) {
+        return res.status(200).json({ teams: [] });
+      }
+
+      const teams = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+
+      return res.status(200).json({ teams });
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
-  },
-};
+  };
 
-export default adminController;
+
+export default {
+  createMatch,
+  updateMatchStatus,
+  updateScore,
+  addMatchEvent,
+  allTeams,
+};

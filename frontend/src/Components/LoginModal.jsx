@@ -4,38 +4,53 @@ import { FaFacebookF } from 'react-icons/fa';
 import { auth, provider } from "../firebase";
 import { signInWithPopup } from "firebase/auth";
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from "../context/useAuth.js";
 
 function LoginModal ({ closeModal,setModalType }){
     const navigate = useNavigate();
-  
-async function handleGoogleLogin() {
-  try {
-    
-    const result = await signInWithPopup(auth, provider);
-    const idToken = await result.user.getIdToken();
+    const { login } = useAuth();
+    async function handleGoogleLogin() {
+      try {
+        
+        const result = await signInWithPopup(auth, provider);
+        const idToken = await result.user.getIdToken();
 
-    const res = await fetch("http://localhost:3000/auth/google", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        idToken,
-        action: "login"
-      }),
-    });
-    console.log(idToken);
-    const data = await res.json();
-    console.log(data);
-    if(data.message=="Login successful"){
-      localStorage.setItem("token", idToken);
-      navigate("/admin");
+        const res = await fetch("https://prime-backend.azurewebsites.net/auth/google", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            idToken,
+            action: "login"
+          }),
+        });
+      
+        const data = await res.json();
+        const role = data.user.role;
+        if(data.message=="Login successful"){
+          localStorage.setItem("token", idToken);
+          console.log(data.user);
+          login(data.user, idToken);
+          if(role){
+              console.log(role);
+              navigate("/home",{
+                state:{role : role}
+              });
+          }
+          // else if(role == "manager"){
+          //   navigate("/home");
+          // }
+          // else{
+          //   navigate("/admin");
+          // }
+          // navigate("/home");
+        }
+        else{
+          alert("Login failed, sign up instead.");
+        }
+      } catch (err) {
+        console.error(err);
+      }
     }
-    else{
-      alert("Login failed, sign up instead.");
-    }
-  } catch (err) {
-    console.error(err);
-  }
-}
 
   return(
       
@@ -96,14 +111,6 @@ async function handleGoogleLogin() {
         <button className="social-btn" type="button" onClick={handleGoogleLogin} >
           <span> <FcGoogle size={20} style={{ marginRight: 8 }} /></span> Continue with Google
         </button>
-        <button
-          className="social-btn"
-          type="button"
-          onClick={() => alert('Facebook login')}
-         style={{ color: '#1877F2' }}
-        >
-          <span><FaFacebookF size={20} style={{ marginRight: 8 }}/></span> Continue with Facebook
-        </button>
       </div>
 
       <div className="modal-footer">
@@ -117,6 +124,7 @@ async function handleGoogleLogin() {
         </button>
       </div>
     </div>
+   
   </div>
   )
 
