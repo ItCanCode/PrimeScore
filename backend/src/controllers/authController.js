@@ -26,6 +26,7 @@ export async function googleAuth(req, res) {
 
       const newUser = {
         username: decodedUser.name || decodedUser.displayName || "Anonymous",
+        favoriteSport: [],
         profile: {},
         role: "viewer",
         email: decodedUser.email,
