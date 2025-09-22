@@ -31,6 +31,10 @@ export default function MatchAdminInterface() {
   const [matchEvents, setMatchEvents] = useState({});
   // Store live stats for each match (score, etc.)
   const [matchStats, setMatchStats] = useState({});
+  // Confirmation modal states
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [confirmAction, setConfirmAction] = useState(null);
+  const [confirmData, setConfirmData] = useState(null);
   // setMatchStats({});
   console.log(setMatchStats);
   
@@ -84,6 +88,21 @@ export default function MatchAdminInterface() {
   };
 
   const addMatchEvent = async () => {
+    // Show confirmation modal first
+    setConfirmData({
+      type: 'event',
+      eventType: eventData.eventType,
+      team: eventData.team,
+      player: eventData.player,
+      playerIn: eventData.playerIn,
+      playerOut: eventData.playerOut,
+      time: eventData.time
+    });
+    setConfirmAction(() => executeAddMatchEvent);
+    setShowConfirmModal(true);
+  };
+
+  const executeAddMatchEvent = async () => {
     let endpoint = "";
   let payload = { team: eventData.team, time: eventData.time, eventType: eventData.eventType };
 
@@ -155,6 +174,23 @@ export default function MatchAdminInterface() {
       alert("Home and Away team must be different!");
       return;
     }
+
+    // Show confirmation modal first
+    setConfirmData({
+      type: 'match',
+      action: editingMatch ? 'update' : 'create',
+      sportType: formData.sportType,
+      matchName: formData.matchName,
+      homeTeam: formData.homeTeam,
+      awayTeam: formData.awayTeam,
+      startTime: formData.startTime,
+      venue: formData.venue
+    });
+    setConfirmAction(() => executeHandleSubmit);
+    setShowConfirmModal(true);
+  };
+
+  const executeHandleSubmit = async() => {
   // Removed unused matchData variable to fix ESLint error
 
     try {
@@ -577,6 +613,62 @@ export default function MatchAdminInterface() {
                     Add Event
                   </button>
                 </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Confirmation Modal */}
+        {showConfirmModal && (
+          <div className="mai-modal-overlay">
+            <div className="mai-confirm-modal">
+              <div className="mai-confirm-modal-header">
+                <h3>Confirm Action</h3>
+                <button onClick={() => setShowConfirmModal(false)} className="mai-modal-close">
+                  <X size={20} />
+                </button>
+              </div>
+              
+              <div className="mai-confirm-modal-body">
+                <p>Are you sure you want to proceed with this action?</p>
+                {confirmData && confirmData.type === 'event' && (
+                  <div className="mai-confirm-details">
+                    <p><strong>Event Type:</strong> {confirmData.eventType}</p>
+                    <p><strong>Team:</strong> {confirmData.team}</p>
+                    {confirmData.player && <p><strong>Player:</strong> {confirmData.player}</p>}
+                    {confirmData.playerIn && <p><strong>Player In:</strong> {confirmData.playerIn}</p>}
+                    {confirmData.playerOut && <p><strong>Player Out:</strong> {confirmData.playerOut}</p>}
+                    <p><strong>Time:</strong> {confirmData.time}</p>
+                    <p><strong>Match:</strong> {selectedMatch?.homeTeam} vs {selectedMatch?.awayTeam}</p>
+                  </div>
+                )}
+                {confirmData && confirmData.type === 'match' && (
+                  <div className="mai-confirm-details">
+                    <p><strong>Action:</strong> {confirmData.action === 'create' ? 'Create' : 'Update'} Match</p>
+                    <p><strong>Sport:</strong> {confirmData.sportType}</p>
+                    <p><strong>Match:</strong> {confirmData.homeTeam} vs {confirmData.awayTeam}</p>
+                    <p><strong>Venue:</strong> {confirmData.venue}</p>
+                    <p><strong>Start Time:</strong> {new Date(confirmData.startTime).toLocaleString()}</p>
+                  </div>
+                )}
+              </div>
+              
+              <div className="mai-confirm-modal-actions">
+                <button 
+                  className="mai-cancel-btn" 
+                  onClick={() => setShowConfirmModal(false)}
+                >
+                  Cancel
+                </button>
+                <button 
+                  className="mai-create-btn mai-confirm-btn" 
+                  onClick={() => {
+                    setShowConfirmModal(false);
+                    if (confirmAction) confirmAction();
+                  }}
+                >
+                  Confirm
+                </button>
               </div>
             </div>
           </div>

@@ -19,29 +19,49 @@ const OngoingMatches = () => {
   const [loading, setLoading] = useState(true);
   // State for error handling
   const [error, setError] = useState(null);
+  // State to indicate background updates
+  const [isUpdating, setIsUpdating] = useState(false);
+  // State to track last update time
+  const [lastUpdated, setLastUpdated] = useState(new Date());
 
   // Function to fetch ongoing matches from backend
-  const fetchOngoingMatches = async () => {
+  const fetchOngoingMatches = async (isInitialLoad = false) => {
     try {
-      setLoading(true);
+      if (isInitialLoad) {
+        setLoading(true);
+      } else {
+        setIsUpdating(true);
+      }
       setError(null);
       const response = await fetch('https://prime-backend.azurewebsites.net/api/display/display-matches');
       if (!response.ok) throw new Error('Failed to fetch matches');
       const data = await response.json();
       // Only set matches that are truly ongoing (not scheduled/upcoming)
       const ongoing = Array.isArray(data) ? data.filter(m => m.status && m.status.toLowerCase() === 'ongoing') : [];
-      setMatches(ongoing);
+      
+      // Only update state if data has actually changed
+      setMatches(prevMatches => {
+        const hasChanged = JSON.stringify(prevMatches) !== JSON.stringify(ongoing);
+        if (hasChanged) {
+          setLastUpdated(new Date());
+        }
+        return ongoing;
+      });
     } catch (err) {
       setError(err.message);
     } finally {
-      setLoading(false);
+      if (isInitialLoad) {
+        setLoading(false);
+      } else {
+        setIsUpdating(false);
+      }
     }
   };
 
   // Poll for updates every 3 minutes
   useEffect(() => {
-  fetchOngoingMatches();
-  const interval = setInterval(fetchOngoingMatches, 180000); // 3 minutes
+  fetchOngoingMatches(true); // Initial load
+  const interval = setInterval(() => fetchOngoingMatches(false), 180000); // Background updates every 3 minutes
   return () => clearInterval(interval);
 }, []);
 
@@ -138,6 +158,11 @@ const OngoingMatches = () => {
           <h1 className="ongoing-header-title">
             <Trophy className="ongoing-header-icon" size={36} />
             Ongoing Matches
+            {isUpdating && (
+              <span style={{ marginLeft: '10px', fontSize: '14px', color: '#163453ff', opacity: 0.8 }}>
+                🔄  {/*i added this loading icon instead, so that the loading doesnt happen for the whole page but only happens here*/ }
+              </span>
+            )}
           </h1>
           <p className="ongoing-header-subtitle">
             Live scores, fouls, and substitutions for matches in progress
@@ -254,7 +279,12 @@ const OngoingMatches = () => {
 
       {/* Footer */}
       <div className="ongoing-footer">
-        Last updated: {new Date().toLocaleString()}
+        Last updated: {lastUpdated.toLocaleString()}
+        {isUpdating && (
+          <span style={{ marginLeft: '10px', color: '#007bff', fontSize: '12px' }}>
+            • Refreshing data...
+          </span>
+        )}
       </div>
     </div>
   );
