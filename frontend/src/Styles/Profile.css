@@ -94,3 +94,128 @@ body {
 	border-color: #f7931e;
 		background: rgba(26,26,46,0.7);
 }
+
+.profile-details {
+  width: 100%;
+  max-width: 700px; /* wider than ProfileCard */
+  margin: 3rem auto;
+  padding: 2.5rem 2rem;
+  border-radius: 24px;
+  background: linear-gradient(135deg, #181828 0%, #23234a 100%);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.25),
+              0 1.5px 0 rgba(255,255,255,0.08) inset;
+  border: 1.5px solid rgba(255, 107, 53, 0.18);
+  backdrop-filter: blur(18px);
+  color: #fff;
+  font-family: 'Arial', sans-serif;
+}
+
+.profile-details header {
+  font-size: 1.8rem;
+  font-weight: 900;
+  text-align: center;
+  margin-bottom: 1.5rem;
+  color: #ff6b35;
+  letter-spacing: 1px;
+}
+
+.profile-details p {
+  font-size: 1.05rem;
+  margin: 0.5rem 0;
+  color: #ffbd69;
+}
+
+.selection-group {
+  margin-bottom: 1.5rem;
+}
+
+.selection-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #ff6b35;
+}
+
+.selection-group input.input-field {
+  width: 90%;
+  margin-bottom: 0.5rem;
+  padding: 8px 12px;
+  border-radius: 7px;
+  border: 1.5px solid #ff6b35;
+  background: rgba(26,26,46,0.5);
+  color: #fff;
+  font-size: 1rem;
+}
+
+.selection-group input.input-field:focus {
+  outline: none;
+  border-color: #f7931e;
+  background: rgba(26,26,46,0.7);
+}
+
+/* Buttons for sports selection */
+.selection-group button {
+  margin: 4px 4px 4px 0;
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid #ff6b35;
+  background: rgba(26,26,46,0.5);
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.selection-group button:hover {
+  background: #ff6b35;
+  color: #fff;
+}
+
+.selection-group button.selected {
+  background: #ff6b35;
+  color: #fff;
+  font-weight: bold;
+  box-shadow: 0 2px 6px rgba(255,107,53,0.3);
+}
+
+/* Others section */
+.selection-group ul {
+  list-style-type: disc;
+  margin-left: 20px;
+  margin-top: 5px;
+  color: #ffd369;
+}
+
+.selection-group .add-btn {
+  margin-left: 8px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: none;
+  background: linear-gradient(45deg, #ff6b35, #f7931e);
+  color: #fff;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.selection-group .add-btn:hover {
+  background: #ff6b35;
+}
+
+/* Save / Cancel buttons */
+.save-btn, .cancel-btn, .edit-btn {
+  padding: 10px 18px;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(45deg, #ff6b35, #f7931e);
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 8px;
+  font-size: 1rem;
+  transition: background 0.2s, box-shadow 0.2s;
+  box-shadow: 0 2px 8px rgba(255,107,53,0.10);
+}
+
+.save-btn:hover, .cancel-btn:hover, .edit-btn:hover {
+  background: #ff6b35;
+  color: #fff;
+}
