@@ -12,7 +12,7 @@ const Upcoming = ({ selected_league }) => {
   const [loading, setLoading] = useState(true);
 
   // Upcoming 17 days
-  const allowedDays = Array.from({ length: 17 }, (_, i) =>
+  const allowedDays = Array.from({ length: 7 }, (_, i) =>
     addDays(new Date(), i + 1)
   );
 
@@ -52,7 +52,9 @@ const Upcoming = ({ selected_league }) => {
           const [day, month, year] = match.date.split("/");
           const isoDate = `${year}-${month}-${day}T${match.time}:00`;
           const matchDate = new Date(isoDate).toISOString().split("T")[0];
-          return allowedDays.includes(matchDate);
+          const homeTeamName=match.teams.home.name;
+          const status=match.status;
+          return allowedDays.includes(matchDate) && homeTeamName!="None" && status=="pre-match";
         });
 
         setMatches(filtered);
@@ -80,7 +82,7 @@ const Upcoming = ({ selected_league }) => {
       <div className="live-api-header">
         <h2 className="live-api-title">Upcoming Matches</h2>
         <p className="live-api-subtitle">
-          Next 17 days of {selected_league} fixtures
+          Next 10 days of {selected_league} fixtures
         </p>
       </div>
 

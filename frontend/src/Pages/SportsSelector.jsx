@@ -103,6 +103,8 @@ const handleMatchTypeSelection = (matchType) => {
   setShowLeaguesChoice(false);
   if(selectedLeague == "local-leagues"){
     navigate(`/${matchType}`)
+    console.log(matchType);
+    
   }
   else if (matchType === 'upcoming' || matchType === 'past') {
     navigate(`/live/${matchType}`,{
