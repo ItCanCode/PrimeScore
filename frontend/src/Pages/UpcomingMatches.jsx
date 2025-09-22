@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "../Styles/LiveAPI.css";
+import { useNavigate } from 'react-router-dom';
 
 function addDays(date, days) {
   const result = new Date(date);
@@ -10,7 +11,7 @@ function addDays(date, days) {
 const Upcoming = ({ selected_league }) => {
   const [matches, setMatches] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  const navigate = useNavigate();
   // Upcoming 17 days
   const allowedDays = Array.from({ length: 17 }, (_, i) =>
     addDays(new Date(), i + 1)
@@ -77,6 +78,8 @@ const Upcoming = ({ selected_league }) => {
 
   return (
     <div className="live-api-container">
+            {/* Back Button */}
+      <button onClick={() => navigate(-1)} style={{ marginBottom: '1rem', padding: '0.5rem 1rem', borderRadius: '8px', border: 'none', color: '#0e0d0dff', cursor: 'pointer' }}>Back</button>
       <div className="live-api-header">
         <h2 className="live-api-title">Upcoming Matches</h2>
         <p className="live-api-subtitle">
@@ -86,6 +89,7 @@ const Upcoming = ({ selected_league }) => {
 
       {matches.length > 0 ? (
         <div className="matches-grid">
+
           {matches.map((m) => (
             <div key={m.id} className="match-card">
               <div className="match-header">

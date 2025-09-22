@@ -1,10 +1,12 @@
-
 import React, { useEffect, useState, useRef, useCallback } from "react";
+import { useNavigate } from 'react-router-dom';
 import '../Styles/LiveAPI.css';
 const LiveApi = () => {
   const API_KEY = "4399a3821d4ce5eb1a989436dc4e5303cf5e7176";
   // Replace with your actual useLocation hook
   const selected_league = "Epl"; // location.state?.selected_league || "Epl";
+
+  const navigate = useNavigate();
 
   const [matches, setMatches] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -127,6 +129,7 @@ const LiveApi = () => {
 
   return (
     <div className="live-api-container">
+        <button onClick={() => navigate(-1)} style={{ marginBottom: '1rem', padding: '0.5rem 1rem', borderRadius: '8px', border: 'none', color: '#0e0d0dff', cursor: 'pointer' }}>Back</button>
       <div className="live-api-header">
         <h2 className="live-api-title">{selected_league.toUpperCase()} Matches in the Last 7 Days</h2>
         <p className="live-api-subtitle">Recent football matches ({matches.length} matches found)</p>

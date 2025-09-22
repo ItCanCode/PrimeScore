@@ -92,19 +92,10 @@ function WelcomePage() {
 
           <ul className={`nav-links ${mobileMenuOpen ? 'mobile-nav-open' : ''}`}>
             <li>
-              <a href="#home" onClick={closeMobileMenu}>Home</a>
-            </li>
-            <li>
               <a href="#sports" onClick={closeMobileMenu}>Sports</a>
             </li>
             <li>
               <a href="#news" onClick={closeMobileMenu}>News</a>
-            </li>
-            <li>
-              <a href="#events" onClick={closeMobileMenu}>Events</a>
-            </li>
-            <li>
-              <a href="#about" onClick={closeMobileMenu}>About</a>
             </li>
             <li>
               <a href="#contact" onClick={closeMobileMenu}>Contact</a>
