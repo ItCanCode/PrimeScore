@@ -1,26 +1,16 @@
-
-// OngoingMatches.jsx
-// Displays ongoing matches with live score, fouls, and substitutions.
-// Fetches data from backend API and polls for updates.
-
-
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Calendar, Clock, MapPin, Trophy, Flag, User } from 'lucide-react';
 import Loading from './Loading';
 import '../Styles/OngoingMatches.css';
 
-// Main component
 const OngoingMatches = () => {
   const navigate = useNavigate();
-  // State to hold ongoing matches
+
   const [matches, setMatches] = useState([]);
-  // State to indicate loading
   const [loading, setLoading] = useState(true);
-  // State for error handling
   const [error, setError] = useState(null);
 
-  // Function to fetch ongoing matches from backend
   const fetchOngoingMatches = async () => {
     try {
       setLoading(true);
@@ -191,15 +181,13 @@ const OngoingMatches = () => {
                   <span className="ongoing-score">{homeScore} - {awayScore}</span>
                 </div>
 
-                {/* Match Details */}
                 <div className="ongoing-match-details">
-                  {/* Venue */}
+
                   <div className="ongoing-detail-item ongoing-venue">
                     <MapPin size={18} className="ongoing-icon-gray" />
                     <span>{match.venue}</span>
                   </div>
 
-                  {/* Date & Time */}
                   <div className="ongoing-date-time-container">
                     <div className="ongoing-detail-item ongoing-date">
                       <Calendar size={18} className="ongoing-icon-gray" />
@@ -212,14 +200,13 @@ const OngoingMatches = () => {
                   </div>
                 </div>
 
-                {/* Status Badge */}
                 <div className="ongoing-status-badge-container">
                   <span className={`ongoing-status-badge ${getStatusColor(match.status)}`}>
                     {match.status}
                   </span>
                 </div>
 
-                {/* Extra Stats: Fouls & Substitutions */}
+
                 <div className="ongoing-extra-stats">
                   <div className="ongoing-match-fouls">
                     <strong>Fouls:</strong>

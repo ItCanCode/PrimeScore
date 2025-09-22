@@ -5,7 +5,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 
 function HomePage() {
   const location = useLocation();
-  const role = location.state?.role; // get role from navigation
+  const role = location.state?.role;
   console.log(role);
 
   const [_error, _setError] = useState(null);
@@ -68,7 +68,7 @@ function HomePage() {
   };
 
   if (loading) {
-    return <Loading />;
+    // return <Loading />;
   }
 
   return (
@@ -78,6 +78,11 @@ function HomePage() {
           <div className="logo">PrimeScore</div>
 
           <ul className="nav-links">
+                        <li>
+              <a onClick={()=>{navigate("/home",{
+                state:{role : role}
+              });}} >News</a>
+            </li>
             {/* View Matches for all roles */}
             {(isManager || isAdmin || isViewer) && (
               <li>
@@ -88,11 +93,14 @@ function HomePage() {
                     handleNavigation("/sports");
                   }}
                 >
-                  {isMobile ? "Matches" : "View Matches"}
+                  Sports
                 </a>
               </li>
             )}
 
+            <li>
+              <a>Contact</a>
+            </li>
             {/* Manage Team for managers */}
             {isManager && (
               <li>
@@ -118,7 +126,7 @@ function HomePage() {
                     handleNavigation("/match-admin");
                   }}
                 >
-                  {isMobile ? "Admin" : "Manage Matches"}
+                  {"Manage Matches"}
                 </a>
               </li>
             )}

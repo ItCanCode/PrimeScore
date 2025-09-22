@@ -1,16 +1,32 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState ,useEffect,useContext} from 'react';
+import { useNavigate,Link  } from 'react-router-dom';
 import { ChevronRight, Home, Trophy, Users, Calendar, X } from 'lucide-react';
+import { AuthContext } from "../context/authContext.jsx";
 import '../Styles/SportsSelector.css';
 
 const SportsSelector = () => {
+  const { user} = useContext(AuthContext);
+  const role = user.role; 
+  console.log(role);
+
   const [showFootballModal, setShowFootballModal] = useState(false);
   const [showLeaguesChoice, setShowLeaguesChoice] = useState(false);
+
   const [selectedLeague, setSelectedLeague] = useState(null);
-  /*const [showVolleyballModal, setShowVolleyballModal] = useState(false);
-  const [showBasketballModal, setShowBasketballModal] = useState(false);
-  const [showTennisModal, setShowTennisModal] = useState(false); */
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const [_isTablet, setIsTablet] = useState(false);
+  // Role-based booleans
+  const [isManager, setIsManager] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [isViewer, setIsViewer] = useState(false);
   
+  useEffect(() => {
+      setIsManager(role === 'manager');
+      setIsAdmin(role === 'admin');
+      setIsViewer(role === 'viewer');
+    }, [role]);
+
   const sports = [
     { 
       id: 'football', 
@@ -58,37 +74,34 @@ const SportsSelector = () => {
     { id: 'local-leagues', name: 'Local Leagues', flag: '🌍' }
   ];
 
-  /* const volleyballLeagues = [
-    { id: 'Johannesburg Volleyball Union', name: 'JVU'},
-    { id: 'Volleyball Nations League', name: 'VNL'},
-    { id: 'Champions Cup', name: 'Champs Cup'},
-  ];
-
-  const basketballLeagues = [
-    { id: 'National Basketball Association', name: 'NBA'},
-    { id: 'Ashraf Tournament', name: 'Ashraf Tournament'}
-  ];
-
-  const tennisLeagues = [
-
-  ]; */
 
   const navigate = useNavigate();
 
+    useEffect(() => {
+      const handleResize = () => {
+        setIsMobile(window.innerWidth <= 768);
+        setIsTablet(window.innerWidth > 768 && window.innerWidth <= 1024);
+      };
+  
+      handleResize();
+      window.addEventListener('resize', handleResize);
+      return () => window.removeEventListener('resize', handleResize);
+    }, []);
+  const handleLogout = () => {
+    localStorage.removeItem("authToken");
+    navigate("/");
+    setDropdownOpen(false);
+  };
+
+  const handleNavigation = (path) => {
+    navigate(path);
+    setDropdownOpen(false);
+  };
   const handleSportClick = (sportId) => {
     if (sportId === 'football') {
       setShowFootballModal(true);
     }
-    /*else if(sportId === 'volleyball') {
-      setShowVolleyballModal(true);
-    }
-    else if(sportId == 'tennis'){
-      setShowTennisModal(true);
-    }
-    else if (sportId == 'basketball'){
-      setShowBasketballModal(true);
-    }
-   */
+
   };
 
   
@@ -134,15 +147,127 @@ const handleMatchTypeSelection = (matchType) => {
 
   const renderHomePage = () => (
     <div className="home-bg">
-      <div className="home-nav">
-        <button 
-          onClick={() => navigate("/home")}
-          className="home-nav-button"
-          aria-label="Navigate to home"
-        >
-          <Home className="home-nav-icon" />
-        </button>
-      </div>
+   
+        <nav className="navbar">
+        <div className="nav-container">
+          <div className="logo">PrimeScore</div>
+
+          <ul className="nav-links">
+            <li>
+              <a onClick={()=>{              navigate("/home",{
+                state:{role : role}
+              });}} >News</a>
+            </li>
+            {/* View Matches for all roles */}
+            {(isManager || isAdmin || isViewer) && (
+              <li>
+                <a
+                  href="#home"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleNavigation("/sports");
+                  }}
+                >
+                  Sports
+                </a>
+              </li>
+            )}
+
+            <li>
+              <a href="#contact" >Contact</a>
+            </li>
+            {/* Manage Team for managers */}
+            {isManager && (
+              <li>
+                <a
+                  href="#management"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleNavigation("/management");
+                  }}
+                >
+                  {isMobile ? "Team" : "Manage Team"}
+                </a>
+              </li>
+            )}
+
+            {/* Manage Matches for admins */}
+            {isAdmin && (
+              <li>
+                <a
+                  href="#match-admin"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleNavigation("/match-admin");
+                  }}
+                >
+                  {"Manage Matches"}
+                </a>
+              </li>
+            )}
+          </ul>
+
+          <div className="auth-buttons">
+            <button
+              className="auth-btn login-btn"
+              onClick={() => setDropdownOpen(prev => !prev)}
+              aria-expanded={dropdownOpen}
+              aria-haspopup="true"
+              aria-label="Open menu"
+            >
+              {isMobile ? "☰" : "Menu"} {!isMobile && "▼"}
+            </button>
+
+            {dropdownOpen && (
+              <div 
+                className="dropdown-content"
+                role="menu"
+                aria-label="User menu"
+              >
+                <button 
+                  className="dropdown-item" 
+                  title="Notifications"
+                  onClick={() => {
+                    console.log("Notifications clicked");
+                    setDropdownOpen(false);
+                  }}
+                  role="menuitem"
+                >
+                  🔔 Notifications
+                </button>
+
+                <button
+                  className="dropdown-item"
+                  title="Profile"
+                  onClick={() => handleNavigation("/profile")}
+                  role="menuitem"
+                >
+                  👤 Profile
+                </button>
+
+                <button 
+                  className="dropdown-item" 
+                  title="Settings"
+                  onClick={() => handleNavigation("/settings")}
+                  role="menuitem"
+                >
+                  ⚙️ Settings
+                </button>
+
+                <button 
+                  className="dropdown-item" 
+                  title="Logout" 
+                  onClick={handleLogout}
+                  role="menuitem"
+                >
+                  🚪 Logout
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      </nav>
+
       <div className="container-wrapper">
         <div className="home-header">
           <h1 className="home-title">Choose Your Sport</h1>
