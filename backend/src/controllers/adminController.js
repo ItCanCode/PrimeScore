@@ -125,6 +125,41 @@ const allTeams = async (req, res) => {
     }
   };
 
+// Get players by team name
+const getPlayersByTeamName = async (req, res) => {
+  try {
+    const { teamName } = req.params; // coming from /api/teams/:teamName/players
+    const db = admin.firestore();
+
+    // Step 1: Find the team by name
+    const teamSnapshot = await db.collection("teams")
+      .where("teamName", "==", teamName)
+      .limit(1)
+      .get();
+
+    if (teamSnapshot.empty) {
+      return res.status(404).json({ error: "Team not found" });
+    }
+
+    const teamDoc = teamSnapshot.docs[0];
+    const teamId = teamDoc.id;
+
+    // Step 2: Get players for this team
+    const playersSnapshot = await db.collection("players")
+      .where("teamId", "==", teamId)
+      .get();
+
+    const players = playersSnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
+    return res.status(200).json({ teamId, players });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 
 export default {
   createMatch,
@@ -132,4 +167,5 @@ export default {
   updateScore,
   addMatchEvent,
   allTeams,
+  getPlayersByTeamName,
 };

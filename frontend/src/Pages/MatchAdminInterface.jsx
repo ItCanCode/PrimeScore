@@ -10,6 +10,7 @@ export default function MatchAdminInterface() {
   const role = user.role; 
   console.log(role);
   
+  const [players, setPlayers] = useState({});
   const [matches, setMatches] = useState([]);
   const [teams, setTeams] = useState([]);
   const [showForm, setShowForm] = useState(false);
@@ -273,6 +274,30 @@ export default function MatchAdminInterface() {
       setShowForm(false);
     }
   };
+
+  useEffect(() => {
+    if (!selectedMatch) return;
+
+    const { homeTeam, awayTeam } = selectedMatch;
+
+    Promise.all([
+      fetch(`https://prime-backend.azurewebsites.net/api/admin/teams/${homeTeam}/players`),
+      fetch(`https://prime-backend.azurewebsites.net/api/admin/teams/${awayTeam}/players`)
+    ])
+      .then(async ([resHome, resAway]) => {
+        const homePlayers = await resHome.json();
+        const awayPlayers = await resAway.json();
+
+        setPlayers(prev => ({
+          ...prev,
+          [homeTeam]: homePlayers.players || [],
+          [awayTeam]: awayPlayers.players || []
+        }));
+      })
+      .catch(err => {
+        console.error("Failed to fetch players", err);
+      });
+  }, [selectedMatch]);
 
   const updateMatchStatus = async (matchId, newStatus) => {
     setMatches(prev => prev.map(match => 
@@ -724,43 +749,80 @@ export default function MatchAdminInterface() {
                   </select>
                 </div>
 
-                {eventData.eventType !== "Substitution" && (
+              {eventData.eventType !== "Substitution" && (
+                <div className="mai-form-group">
+                  <label>Player Responsible</label>
+                  <select
+                    name="player"
+                    value={eventData.player}
+                    onChange={handleEventInputChange}
+                  >
+                    <option value="">Select player</option>
+                    {eventData.team === "Home" &&
+                      players[selectedMatch.homeTeam]?.map((p) => (
+                        <option key={p.playerId} value={p.name}>
+                          {p.name}
+                        </option>
+                      ))}
+                    {eventData.team === "Away" &&
+                      players[selectedMatch.awayTeam]?.map((p) => (
+                        <option key={p.playerId} value={p.name}>
+                          {p.name}
+                        </option>
+                      ))}
+                  </select>
+                </div>
+              )}
+
+              {eventData.eventType === "Substitution" && (
+                <>
                   <div className="mai-form-group">
-                    <label>Player Responsible</label>
-                    <input 
-                      type="text" 
-                      name="player" 
-                      placeholder="Enter player name" 
-                      value={eventData.player} 
-                      onChange={handleEventInputChange} 
-                    />
+                    <label>Player In</label>
+                    <select
+                      name="playerIn"
+                      value={eventData.playerIn}
+                      onChange={handleEventInputChange}
+                    >
+                      <option value="">Select player</option>
+                      {eventData.team === "Home" &&
+                        players[selectedMatch.homeTeam]?.map((p) => (
+                          <option key={p.playerId} value={p.name}>
+                            {p.name}
+                          </option>
+                        ))}
+                      {eventData.team === "Away" &&
+                        players[selectedMatch.awayTeam]?.map((p) => (
+                          <option key={p.playerId} value={p.name}>
+                            {p.name}
+                          </option>
+                        ))}
+                    </select>
                   </div>
-                )}
-                
-                {eventData.eventType === "Substitution" && (
-                  <>
-                    <div className="mai-form-group">
-                      <label>Player In</label>
-                      <input 
-                        type="text" 
-                        name="playerIn" 
-                        value={eventData.playerIn} 
-                        onChange={handleEventInputChange} 
-                        placeholder="Enter player coming in"
-                      />
-                    </div>
-                    <div className="mai-form-group">
-                      <label>Player Out</label>
-                      <input 
-                        type="text" 
-                        name="playerOut" 
-                        value={eventData.playerOut} 
-                        onChange={handleEventInputChange} 
-                        placeholder="Enter player going out"
-                      />
-                    </div>
-                  </>
-                )}
+
+                  <div className="mai-form-group">
+                    <label>Player Out</label>
+                    <select
+                      name="playerOut"
+                      value={eventData.playerOut}
+                      onChange={handleEventInputChange}
+                    >
+                      <option value="">Select player</option>
+                      {eventData.team === "Home" &&
+                        players[selectedMatch.homeTeam]?.map((p) => (
+                          <option key={p.playerId} value={p.name}>
+                            {p.name}
+                          </option>
+                        ))}
+                      {eventData.team === "Away" &&
+                        players[selectedMatch.awayTeam]?.map((p) => (
+                          <option key={p.playerId} value={p.name}>
+                            {p.name}
+                          </option>
+                        ))}
+                    </select>
+                  </div>
+                </>
+              )}
 
                 <div className="mai-form-group">
                   <label>Time (Minutes)</label>
