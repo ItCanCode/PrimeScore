@@ -538,6 +538,76 @@
   box-shadow: 0 4px 12px rgba(249, 115, 22, 0.4);
 }
 
+/* Match Clock Styles */
+.mai-clock-container {
+  background: rgba(55, 65, 81, 0.5);
+  border: 1px solid rgba(156, 163, 175, 0.3);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.mai-clock-display {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #e2e8f0;
+}
+
+.mai-clock-display svg {
+  color: #f97316;
+}
+
+.mai-clock-time {
+  font-family: 'Courier New', monospace;
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #22c55e;
+  background: rgba(34, 197, 94, 0.1);
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(34, 197, 94, 0.2);
+}
+
+.mai-clock-controls {
+  display: flex;
+  gap: 8px;
+}
+
+.mai-clock-btn {
+  background: rgba(31, 41, 55, 0.8);
+  border: 1px solid rgba(156, 163, 175, 0.3);
+  color: #cbd5e1;
+  padding: 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  width: 36px;
+  height: 36px;
+}
+
+.mai-pause-btn:hover {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: rgba(239, 68, 68, 0.5);
+  color: #ef4444;
+}
+
+.mai-resume-btn:hover {
+  background: rgba(34, 197, 94, 0.2);
+  border-color: rgba(34, 197, 94, 0.5);
+  color: #22c55e;
+}
+
+.mai-clock-btn:hover {
+  transform: scale(1.05);
+}
+
 /* Status controls */
 .mai-status-controls {
   display: flex;
