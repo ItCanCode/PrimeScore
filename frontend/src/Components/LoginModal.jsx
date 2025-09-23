@@ -4,11 +4,11 @@ import { FaFacebookF } from 'react-icons/fa';
 import { auth, provider } from "../firebase";
 import { signInWithPopup } from "firebase/auth";
 import { useNavigate } from 'react-router-dom';
-
+import { useAuth } from "../context/useAuth.js";
 
 function LoginModal ({ closeModal,setModalType }){
     const navigate = useNavigate();
-  
+    const { login } = useAuth();
     async function handleGoogleLogin() {
       try {
         
@@ -28,8 +28,13 @@ function LoginModal ({ closeModal,setModalType }){
         const role = data.user.role;
         if(data.message=="Login successful"){
           localStorage.setItem("token", idToken);
+          console.log(data.user);
+          login(data.user, idToken);
           if(role){
-              navigate("/home");
+              console.log(role);
+              navigate("/home",{
+                state:{role : role}
+              });
           }
           // else if(role == "manager"){
           //   navigate("/home");
@@ -37,7 +42,7 @@ function LoginModal ({ closeModal,setModalType }){
           // else{
           //   navigate("/admin");
           // }
-          navigate("/home");
+          // navigate("/home");
         }
         else{
           alert("Login failed, sign up instead.");
@@ -105,14 +110,6 @@ function LoginModal ({ closeModal,setModalType }){
       <div className="social-login">
         <button className="social-btn" type="button" onClick={handleGoogleLogin} >
           <span> <FcGoogle size={20} style={{ marginRight: 8 }} /></span> Continue with Google
-        </button>
-        <button
-          className="social-btn"
-          type="button"
-          onClick={() => alert('Facebook login')}
-         style={{ color: '#1877F2' }}
-        >
-          <span><FaFacebookF size={20} style={{ marginRight: 8 }}/></span> Continue with Facebook
         </button>
       </div>
 

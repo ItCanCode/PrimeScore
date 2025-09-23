@@ -1,45 +1,25 @@
 import admin from "../config/firebaseAdmin.js";
+import cloudinary from "../config/cloudinary.js";
 
 const db = admin.firestore();
 
-// In-memory users array for demonstration purposes
-let users = [{ id: 1, name: 'John Doe' }];
 
-/**
- * Get all users (from in-memory array)
- * @route GET /users
- */
-export const getAllUsers = (req, res) => {
-  res.json(users);
-};
-
-/**
- * Create a new user (adds to in-memory array)
- * @route POST /users
- */
-export const createUser = (req, res) => {
-  const newUser = {
-    id: users.length + 1,
-    name: req.body.name
-  };
-  users.push(newUser);
-  res.status(201).json(newUser);
-};
-export const getMatches =async (req,res)=>{
-  const usersSnapshot = await admin.firestore().collection("matches").get();
-  usersSnapshot.forEach(doc => {
-  console.log(doc.id, doc.data().sportType);
-  
-});
-
-    const matches = usersSnapshot.docs.map(doc => ({
-      id: doc.id,             
-      ...doc.data()           
+export const getMatches = async (req, res) => {
+  try {
+    const matchesSnapshot = await admin.firestore().collection("matches").get(); // fetch all matches
+    const matches = matchesSnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
     }));
-     return res.status(200).json(matches);
-}
+    return res.status(200).json(matches);
+  } catch (error) {
+    console.error("Error fetching matches:", error);
+    return res.status(500).json({ error: error.message });
+  }
+};
+
 /**
- * Get the currently authenticated user from Firestore
+
  * @route GET /users/me
  */
 export const getCurrentUser = async (req, res) => {
@@ -70,24 +50,67 @@ export const getCurrentUser = async (req, res) => {
  */
 export const updateUser = async (req, res) => {
   try {
-    const { username, bio, picture } = req.body;
-    // Assumes req.user.uid is set by authentication middleware
-    const userId = req.user.uid; 
+    const {
+      username,
+      bio,
+      picture,
+      location,
+      favoriteSports = [],   
+      favoriteTeam = "",     
+      favoritePlayer = ""    
+    } = req.body;
 
-    const userRef = db.collection('users').doc(userId);
+    const userId = req.user.uid;
+    const userRef = db.collection("users").doc(userId);
 
-    // Update profile fields
-    await userRef.update({
-      "username": username,
-      "profile.bio": bio,
-      "picture": picture,
-    });
+    const updateData = {};
+    if (username !== undefined) updateData.username = username;
+    if (picture !== undefined) updateData.picture = picture;
+    if (bio !== undefined) updateData["profile.bio"] = bio;
+    if (location !== undefined) updateData["profile.location"] = location;
+    if (favoriteSports) updateData["profile.favoriteSports"] = favoriteSports;
+    if (favoriteTeam !== undefined) updateData["profile.favoriteTeam"] = favoriteTeam;
+    if (favoritePlayer !== undefined) updateData["profile.favoritePlayer"] = favoritePlayer;
 
-    // Return updated user data
+    await userRef.update(updateData);
+
     const updatedUser = await userRef.get();
     res.json({ message: "Profile updated", user: updatedUser.data() });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Failed to update profile" });
+    res.status(500).json({ error: error.message || "Failed to update profile" });
+  }
+};
+
+
+export const uploadImage = async (req, res) => {
+  try {
+    if (!req.file) {
+      console.error("No file received");
+      return res.status(400).json({ error: "No file uploaded" });
+    }
+
+    console.log("Uploading file:", req.file.originalname);
+
+    const result = await new Promise((resolve, reject) => {
+      const stream = cloudinary.uploader.upload_stream(
+        { folder: "test_uploads" },
+        (error, result) => {
+          if (error) {
+            console.error("Cloudinary error:", error);
+            reject(error);
+          } else {
+            console.log("Uploaded successfully:", result.secure_url);
+            resolve(result);
+          }
+        }
+      );
+      stream.end(req.file.buffer);
+    });
+
+    res.json({ url: result.secure_url });
+  } catch (err) {
+    console.error("Upload failed:", err);
+    res.status(500).json({ error: "Image upload failed" });
   }
 };

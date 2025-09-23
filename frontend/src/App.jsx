@@ -5,27 +5,39 @@ import { Routes, Route, Link } from 'react-router-dom';
 import Dashboard from "./Pages/DashBoard";
 import UserProfile from "./Pages/UserProfile"
 import UserHomepage from "./Pages/UserHomepage";
-import LiveApi from "./Pages/Liveaapi";
+import ManageMatchPage from "./Pages/ManageMatchPage";
+import OnGoing from "./Pages/LiveeMatches";
 import SportsSelector from "./Pages/SportsSelector";
 import TeamManagement from "./Pages/TeamManagement";
 import MatchAdminInterface from "./Pages/MatchAdminInterface";
+import LiveApi from "./Pages/PastMatch";
+import Upcoming from "./Pages/UpcomingMatches";
+import OngoingMatches from "./Pages/OngoingMatches";
+import { AuthProvider } from "./context/authContext.jsx";
+import UpcomingMatches from "./Components/upcomingMatches.jsx";
 
 function App() {
   return (
     <>
+      <AuthProvider>
       <Routes>
-        <Route path="/err" element={<LiveApi/>}/>
         <Route path="/" element={<WelcomePage />} />
         <Route path="/home" element={<HomePage />} />
-        <Route path="/admin" element={<AdminHome/>}/>
+        <Route path="/admin" element={<AdminHome/>}></Route>
+        <Route path="/admin/match" element={<ManageMatchPage/>}></Route>
         <Route path="/dashboard" element={<Dashboard/>} />
         <Route path="/profile" element={<UserProfile/>} />
         <Route path="/user" element={<UserHomepage />} />
         <Route path="/sports" element={<SportsSelector/>}/>
         <Route path="/management" element={<TeamManagement />}/>
         <Route path="/match-admin" element={<MatchAdminInterface/>}/>
+        <Route path="/live/upcoming" element={<Upcoming/>}/>
+        <Route path='/live/past' element={<LiveApi/>}/>
+        <Route path="/live/ongoing" element={<OnGoing/>}/>
+        <Route path="/ongoing" element={<OngoingMatches/>}/>
+        <Route path="/upcoming" element={<UpcomingMatches/>}/>
       </Routes>
-
+      </AuthProvider>
     </>
   )
 }

@@ -32,6 +32,8 @@
         <li><a href="#stories">User Stories</a></li>
         <li><a href="#setup">Setup Guide</a></li>
         <li><a href="#git">Git Workflow</a></li>
+        <li><a href="#database">Database</a></li>
+        <li><a href="#testing">Testing</a></li>
       </ul>
     </div>
   </nav>
@@ -47,10 +49,24 @@
         visualizations, and commentary feeds for ongoing games.
       </p>
       <ul class="bullets">
-        <li><strong>Match Viewer</strong> — View current score, game clock, possession, and key events (goals, fouls, etc.).</li>
-        <li><strong>Event Feed</strong> — Timeline of in-game events with timestamps (animate substitutions, cards).</li>
-        <li><strong>Match Setup</strong> — Create matches and add teams, players, and expected schedule.</li>
-        <li><strong>Live Input</strong> — Manually input events and score changes; supports pause/resume and timeline edits.</li>
+        <li><strong>Match Viewer</strong> — Instantly view the current score, 
+          live game clock, team lineups, and real-time updates on possession. 
+          Track all key events—such as goals, fouls, cards, and 
+          substitutions, presented with clear visuals and context.</li>
+        <li><strong>Event Feed & Timeline</strong> — Experience a detailed, animated timeline of in-game events,
+           each with precise timestamps. See substitutions, cards, goals, and other actions
+            as they happen, with smooth animations and color-coded highlights for easy tracking.</li>
+        <li><strong>Match Setup</strong> — Effortlessly create new matches, 
+          add or edit teams and players, and set up expected schedules. 
+          Organizers can manage rosters, assign roles, 
+          and configure match details before kickoff.</li>
+        <li><strong>Live Input</strong> — Enter events and update scores in real time with 
+          intuitive controls. Supports pausing and resuming the match clock, as well 
+          as editing the event timeline to correct or 
+          update past actions. All changes are reflected instantly for viewers.</li>
+        <li><strong>Interactive Commentary</strong>-Integrate live commentary feeds, fan polls, 
+          and reactions to keep the audience 
+          engaged and informed throughout the match.</li>
       </ul>
     </section>
 
@@ -80,11 +96,11 @@
       <h3>UML Diagrams</h3>
       <div class="media-grid">
         <figure class="figure">
-          <img src="PrimeScore(use_cases).png" alt="PrimeScore use case diagram" />
+          <img src="PrimeScore(use_cases)_sprint_2.png" alt="PrimeScore use case diagram" />
           <figcaption>Use Case Diagram</figcaption>
         </figure>
         <figure class="figure">
-          <img src="PrimeScore(state_diagram).png" alt="PrimeScore state diagram" />
+          <img src="PrimeScore(state_diagram)_sprint_2.png" alt="PrimeScore state diagram" />
           <figcaption>State Diagram</figcaption>
         </figure>
       </div>
@@ -97,25 +113,91 @@
     </section>
 
     <!-- APIs -->
-    <section id="api" class="section" aria-labelledby="api-title">
-      <header class="section-header">
-        <h2 id="api-title">API List</h2>
-      </header>
+<section id="api" class="section" aria-labelledby="api-title">
+  <header class="section-header">
+    <h2 id="api-title">API List</h2>
+  </header>
 
-      <dl class="definition-list">
-        <dt><code>Live Update API</code></dt>
-        <dd>Receive and store stat events from external sources.</dd>
+  <dl class="definition-list">
+    <dt><code>Live Update API</code></dt>
+    <dd>
+      Accepts real-time stat events (goals, fouls, substitutions, etc.) from external sources or manual input. Stores and timestamps each event, supporting both automated and manual feeds. Enables instant updates to the match timeline and stats.
+    </dd>
 
-        <dt><code>Feed API</code></dt>
-        <dd>Retrieve current state of the match for front-end display.</dd>
+    <dt><code>Feed API</code></dt>
+    <dd>
+      Provides the current state of a match, including live score, clock, possession, and all key events. Designed for front-end consumption, this API powers the live match viewer and event timeline, ensuring fans see up-to-the-second information.
+    </dd>
 
-        <dt><code>Match Setup API</code></dt>
-        <dd>CRUD for game meta (teams, match time, venue).</dd>
+    <dt><code>Match Setup API</code></dt>
+    <dd>
+      Full CRUD (Create, Read, Update, Delete) operations for game metadata: create matches, add/edit teams and players, set match times and venues. Used by admins and organizers to configure matches before they go live.
+    </dd>
 
-        <dt><code>Display API</code></dt>
-        <dd>Serve structured game data to clients (scoreboards, overlays, etc.).</dd>
-      </dl>
-    </section>
+    <dt><code>Display API</code></dt>
+    <dd>
+      Serves structured, presentation-ready game data to clients. Supports scoreboards, overlays, widgets, and third-party integrations. Ensures all viewers and broadcast tools receive consistent, real-time match data.
+    </dd>
+    <dd>
+      https://prime-backend.azurewebsites.net/api/display/display-matches
+    </dd>
+  </dl>
+
+  <section id="third-party" class="section" aria-labelledby="third-party-title">
+    <header class="section-header">
+      <h2 id="third-party-title">Third-Party Code Documentation</h2>
+    </header>
+
+    <p>
+      For the live soccer data feature, we integrated <strong>SoccerDataAPI</strong>, a third-party API providing real-time and seasonal soccer match data. This allowed our application to display ongoing matches and key events such as goals, substitutions, and cards.
+    </p>
+
+    <h3>API Endpoints Used</h3>
+    <ul>
+      <li><strong>livescores endpoint</strong> – Provides current live matches across multiple leagues.</li>
+      <li><strong>matches endpoint</strong> – Provides all matches for a league season, which we filtered to show relevant matches in South Africa.</li>
+    </ul>
+
+    <h3>League Coverage</h3>
+    <ul>
+      <li>English Premier League (EPL)</li>
+      <li>Serie A (Italy)</li>
+      <li>La Liga (Spain)</li>
+      <li>South African Premier Soccer League (PSL)</li>
+    </ul>
+
+    <h3>Integration and Challenges</h3>
+    <ul>
+      <li><strong>League Selection:</strong> Each league has a unique ID. Our component dynamically sets <code>League_id</code> based on the selected league.</li>
+      <li><strong>Data Structure Complexity:</strong> The API returns nested structures (<code>stage → matches</code>), requiring <code>flatMap</code> and conditional checks to extract match data.</li>
+      <li><strong>Event Mapping:</strong> Each match can have multiple event types (<code>goal</code>, <code>penalty_goal</code>, <code>yellow_card</code>, <code>red_card</code>, <code>substitution</code>), and our app had to map them to user-readable formats.</li>
+      <li><strong>Date & Time Handling:</strong> The API returns date and time separately in <code>dd/mm/yyyy</code> format, which we transform to JavaScript <code>Date</code> objects for proper display.</li>
+      <li><strong>Error Handling & Loading States:</strong> Network failures, empty results, or invalid responses were handled gracefully to ensure UI stability.</li>
+    </ul>
+
+    <h4>Example: Fetching Live Matches</h4>
+    <pre><code class="language-javascript">
+const fetchLive = async () =&gt; {
+  try {
+    const response = await fetch(
+      `https://api.soccerdataapi.com/livescores/?auth_token=${API_KEY}`
+    );
+    const data = await response.json();
+
+    const leagueMatches =
+      data.results
+        .find((league) =&gt; league.league_id === League_id)
+        ?.stage.flatMap((stage) =&gt; stage.matches) || [];
+
+    setMatches(leagueMatches);
+  } catch (error) {
+    console.error("Error fetching matches:", error);
+  }
+};
+    </code></pre>
+  </section>
+</section>
+
 
     <!-- Backlog -->
     <section id="backlog" class="section" aria-labelledby="backlog-title">
@@ -123,12 +205,18 @@
         <h2 id="backlog-title">Current Sprint Backlog</h2>
       </header>
       <ul class="checklist">
-        <li>Implement user authentication (sign in as admin or as viewer)</li>
-        <li>Create a user homepage that shows upcoming matches</li>
-        <li>Create a user profile under the homepage where the user can edit personal details</li>
-        <li>Set up the documentation site on GitHub Pages and link it in the README</li>
-        <li>Set up backend testing and show a code coverage badge on the repo</li>
-        <li>Match creation form on the admin page that automatically reflects as an upcoming match on the user homepage</li>
+        <li>Implement real-time live score updates for ongoing matches</li>
+        <li>Build event timeline for match feeds (goals, fouls, substitutions, cards)</li>
+        <li>Enable match status transitions (upcoming → ongoing → completed) with admin controls</li>
+        <li>Allow managers to create/edit teams and assign player roles</li>
+        <li>Support manual event input and timeline editing for admins</li>
+        <li>Integrate live commentary and stats overlays for viewers</li>
+        <li>Enhance match setup: venue, time, teams, and player management</li>
+        <li>Improve authentication and role-based access (admin, manager, viewer)</li>
+        <li>Refactor API endpoints for clarity and RESTful design</li>
+        <li>Expand test coverage for backend </li>
+        <li>Polish UI/UX for match viewer and event feed (responsive, accessible)</li>
+        <li>Update documentation with new API details and setup instructions</li>
       </ul>
     </section>
 
@@ -151,26 +239,65 @@
       </ol>
     </section>
 
+    <section id="stories" class="section" aria-labelledby="stories-title">
+      <header class="section-header">
+        <h2 id="stories-title">Sprint 2 User Stories</h2>
+      </header>
+      <ol class="ordered">
+        <li>As a viewer, I want to see the live score of my team, so that I can follow the match in real time.</li>
+        <li>As a viewer, I want to see the recent fouls and substitutions that have been made in the game</li>
+        <li>As a manager, I want to create a new team, so that I can manage my players and participate in matches.</li>
+        <li>As a manager, I want to add players to a team, so that I can build my roster.</li>
+        <li>As an admin, I want to see the scheduled matches so that im able to start the match at the right time and date</li>
+        <li>As an admin, I want to update the status of a match from upcoming to ongoing, so that fans and players know the match has started.</li>
+        <li>As an admin, I want to update the events of the matches, so that the viewers can see the events occuring in the match.</li>
+      </ol>
+    </section>
+
     <!-- Setup -->
     <section id="setup" class="section" aria-labelledby="setup-title">
       <header class="section-header">
         <h2 id="setup-title">Developer Setup Guide</h2>
       </header>
 
-      <pre class="code-block" aria-label="setup commands"><code>git clone https://github.com/your-repo/primescore.git
+  <pre class="code-block" aria-label="setup commands"><code>git clone https://github.com/your-repo/primescore.git
 
-# Terminal 1 (frontend)
+# Prerequisites
+# - Node.js (v18+ recommended)
+# - npm (v9+ recommended)
+# - (Optional) VS Code for best experience
+
+# 1. Set up the frontend
 cd frontend
 npm install
+# Create a .env file if you need to override API URLs or add keys
+# Example: VITE_API_BASE_URL, VITE_FIREBASE_API_KEY, etc.
 npm run dev
 
-# Terminal 2 (backend)
+# 2. Set up the backend (in a new terminal)
 cd backend
 npm install
+# Copy .env.example to .env and fill in Firebase credentials and any other secrets
 npm run dev
+
+# 3. Access the app
+# - Frontend: http://localhost:5173 (default Vite port)
+# - Backend: http://localhost:3000 (default Express port)
+
+# 4. (Optional) Run tests
+# In backend: npm test
 </code></pre>
 
-      <p class="note">Ensure you have Node.js and npm installed before running the commands above.</p>
+  <ul class="bullets">
+    <li><strong>Environment Variables:</strong> Both frontend and backend use <code>.env</code> files for secrets and config. Never commit secrets to git.</li>
+    <li><strong>Proxy Setup:</strong> The frontend is configured to proxy <code>/api</code> requests to the backend during development (see <code>vite.config.js</code>).</li>
+    <li><strong>Firebase:</strong> You need a Firebase project and service account for backend integration. Place your credentials in <code>backend/.env</code> as shown in <code>.env.example</code>.</li>
+    <li><strong>Common Issues:</strong> If you see CORS errors or API 404s, make sure both servers are running and the proxy is set up correctly.</li>
+    <li><strong>Recommended Tools:</strong> VS Code, Postman (for API testing), and GitHub Desktop or CLI for version control.</li>
+    <li><strong>Hot Reload:</strong> Both frontend and backend support hot reload for rapid development.</li>
+  </ul>
+
+  <p class="note">If you encounter issues, check the README files in each folder or contact the project maintainer.</p>
     </section>
 
     <!-- Git -->
@@ -185,6 +312,170 @@ npm run dev
         <li><strong>Commit messages:</strong> Conventional commits: <code>type(scope): short description</code>.</li>
       </ul>
     </section>
+
+        <!-- Database -->
+    <section id="database" class="section" aria-labelledby="db-title">
+      <header class="section-header">
+        <h2 id="db-title">Database Documentation</h2>
+      </header>
+
+      <h3>Schema Overview</h3>
+      <ul class="bullets">
+        <li><strong>teams</strong> (collection)
+          <ul>
+            <li><code>teamId</code> — unique identifier (auto-generated)</li>
+            <li><code>teamName</code> — full name of the team</li>
+            <li><code>shortName</code> — abbreviation for displays</li>
+            <li><code>sportType</code> — e.g. Football, Basketball</li>
+            <li><code>city</code> — home city</li>
+            <li><code>createdBy</code> — UID of the manager who created the team</li>
+          </ul>
+        </li>
+
+        <li><strong>players</strong> (collection)
+          <ul>
+            <li><code>playerId</code> — unique identifier (auto-generated)</li>
+            <li><code>name</code> — player’s full name</li>
+            <li><code>teamId</code> — reference to <code>teams.teamId</code></li>
+          </ul>
+        </li>
+
+        <li><strong>matches</strong> (collection)
+          <ul>
+            <li><code>matchId</code> — unique identifier</li>
+            <li><code>homeTeamId</code> — reference to <code>teams.teamId</code></li>
+            <li><code>awayTeamId</code> — reference to <code>teams.teamId</code></li>
+            <li><code>dateTime</code> — scheduled start time</li>
+            <li><code>status</code> — upcoming | ongoing | completed</li>
+          </ul>
+        </li>
+
+        <li><strong>match_events</strong> (subcollection under matches)
+          <ul>
+            <li><code>eventId</code> — unique identifier</li>
+            <li><code>type</code> — goal, foul, substitution, etc.</li>
+            <li><code>timestamp</code> — game clock / real time</li>
+            <li><code>playerId</code> — reference to <code>players.playerId</code></li>
+          </ul>
+        </li>
+      </ul>
+
+      <h3>Deployment Info</h3>
+      <p>
+        The database is deployed on <strong>Firebase Firestore</strong>, which provides:
+      </p>
+      <ul class="bullets">
+        <li>Global availability and auto-scaling</li>
+        <li>Real-time synchronization for instant updates across clients</li>
+        <li>Seamless integration with Firebase Authentication and Cloud Functions</li>
+      </ul>
+
+      <h3>Choice Justification</h3>
+      <p>
+        Firestore was chosen over traditional SQL databases because of its ability to handle 
+        real-time data streams, which are critical for sports event updates. Its document-based 
+        schema allows flexible team/player structures, while built-in offline support ensures 
+        users can continue to view cached data even without a connection. Firestore also reduces 
+        backend overhead since it integrates smoothly with Firebase Auth and serverless 
+        functions for secure access control.
+      </p>
+    </section>
+
+        <!-- Testing -->
+    <section id="testing" class="section" aria-labelledby="testing-title">
+      <header class="section-header">
+        <h2 id="testing-title">Testing Documentation</h2>
+      </header>
+
+      <h3>User Feedback Process</h3>
+      <p>
+        We follow a structured process to collect and integrate user feedback:
+      </p>
+      <ol class="ordered">
+        <li><strong>Feedback Collection</strong> — Users submit feedback via a google form.</li>
+        <li><strong>Review</strong> — The development team reviews and categorizes feedback (bug, feature request, usability).</li>
+        <li><strong>Prioritization</strong> — Items are logged into the product backlog and tagged for the appropriate sprint.</li>
+        <li><strong>Follow-up</strong> — Users are notified when their feedback results in an update.</li>
+      </ol>
+
+<h3>Automated Testing</h3>
+<p>
+  Automated testing is set up to ensure system reliability and quick feedback during development.
+</p>
+<ul class="bullets">
+  <li><strong>Unit Testing</strong> — Implemented with Jest (backend) and React Testing Library (frontend).</li>
+  <li><strong>Coverage</strong> — Code coverage reports are generated and displayed in the repository (via CI pipeline).</li>
+  <li><strong>Continuous Integration</strong> — Tests run automatically on GitHub Actions with every pull request.</li>
+</ul>
+
+<h4>Implemented Test Suites</h4>
+<ul class="bullets">
+  <li><strong>Authentication</strong>
+    <ul>
+      <li><code>verifyGoogleToken</code> service — validates Google tokens.</li>
+      <li><code>googleAuth</code> controller — signup, login, error handling.</li>
+    </ul>
+  </li>
+  <li><strong>Manager Controller</strong>
+    <ul>
+      <li><code>createTeam</code> — creates teams, handles Firestore errors.</li>
+      <li><code>addPlayers</code> — adds players, validates ownership, errors.</li>
+      <li><code>myTeam</code> — fetches team by user, handles missing/error cases.</li>
+    </ul>
+  </li>
+  <li><strong>Admin Controller</strong>
+    <ul>
+      <li><code>createMatch</code> — creates matches, error handling.</li>
+      <li><code>updateMatchStatus</code> — updates match status, not-found errors.</li>
+      <li><code>updateScore</code> — updates scores, records goals as events.</li>
+      <li><code>addMatchEvent</code> — adds events like cards or fouls.</li>
+      <li><code>allTeams</code> — fetches all teams, filters by sport type, handles errors.</li>
+    </ul>
+  </li>
+  <li><strong>LiveSport Controller</strong>
+    <ul>
+      <li>Adds upcoming matches in batch.</li>
+      <li>Handles empty or invalid requests.</li>
+    </ul>
+  </li>
+  <li><strong>Feed Controller</strong>
+    <ul>
+      <li><code>startMatch</code> — initializes match events.</li>
+      <li><code>recordGoal</code> — handles home/away goals, increments scores.</li>
+      <li><code>recordSubstitution</code> — adds substitutions, validates fields.</li>
+      <li><code>recordFoul</code> — records fouls with/without cards.</li>
+    </ul>
+  </li>
+  <li><strong>Display Controller</strong>
+    <ul>
+      <li><code>getMatchEventsById</code> — fetches specific match events.</li>
+      <li><code>getmatchEvents</code> — fetches all ongoing matches and events.</li>
+    </ul>
+  </li>
+</ul>
+
+<pre class="code-block" aria-label="run tests"><code># Run backend tests
+cd backend
+npm install
+npm test
+
+# Run frontend tests
+cd frontend
+npm install
+npm test
+
+# To view full coverage:
+npm test -- --coverage
+</code></pre>
+
+<p class="note">
+  Developers are required to write tests for all new features and bug fixes before merging.  
+  This ensures that user feedback and automated verification work together to maintain quality.
+</p>
+
+
+
+
   </main>
 
   <footer class="site-footer" role="contentinfo">
