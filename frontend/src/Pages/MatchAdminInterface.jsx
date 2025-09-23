@@ -51,6 +51,12 @@ export default function MatchAdminInterface() {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [confirmAction, setConfirmAction] = useState(null);
   const [confirmData, setConfirmData] = useState(null);
+  
+  // Match clock states
+  const [matchClockTimes, setMatchClockTimes] = useState({});
+  const [clockRunning, setClockRunning] = useState({});
+  const [_clockHistory, setClockHistory] = useState({}); // Future use: audit trail
+  
   // setMatchStats({});
   console.log(setMatchStats);
   
@@ -73,6 +79,42 @@ export default function MatchAdminInterface() {
       window.addEventListener('resize', handleResize);
       return () => window.removeEventListener('resize', handleResize);
     }, []);
+
+  // Load clock state from localStorage on component mount
+  useEffect(() => {
+    try {
+      const savedClockTimes = localStorage.getItem('matchClockTimes');
+      const savedClockRunning = localStorage.getItem('clockRunning');
+      const savedClockHistory = localStorage.getItem('clockHistory');
+
+      if (savedClockTimes) {
+        const parsedTimes = JSON.parse(savedClockTimes);
+        if (typeof parsedTimes === 'object' && parsedTimes !== null) {
+          setMatchClockTimes(parsedTimes);
+        }
+      }
+
+      if (savedClockRunning) {
+        const parsedRunning = JSON.parse(savedClockRunning);
+        if (typeof parsedRunning === 'object' && parsedRunning !== null) {
+          setClockRunning(parsedRunning);
+        }
+      }
+
+      if (savedClockHistory) {
+        const parsedHistory = JSON.parse(savedClockHistory);
+        if (typeof parsedHistory === 'object' && parsedHistory !== null) {
+          setClockHistory(parsedHistory);
+        }
+      }
+    } catch (error) {
+      console.error('Error loading clock state from localStorage:', error);
+      // Clear corrupted data
+      localStorage.removeItem('matchClockTimes');
+      localStorage.removeItem('clockRunning');
+      localStorage.removeItem('clockHistory');
+    }
+  }, []);
   const handleLogout = () => {
     localStorage.removeItem("authToken");
     navigate("/");
@@ -111,6 +153,9 @@ export default function MatchAdminInterface() {
       });
 
       updateMatchStatus(matchId, 'ongoing');
+      
+      // Initialize the match clock when starting
+      initializeMatchClock(matchId);
 
     } catch (err) {
       console.error("Failed to start match", err);
@@ -202,13 +247,27 @@ export default function MatchAdminInterface() {
 
   const openEventForm = (match) => {
     setSelectedMatch(match);
+    
+    // Auto-populate time with current clock time
+    const currentClockTime = matchClockTimes[match.id] || 0;
+    const currentMinutes = Math.floor(currentClockTime / 60);
+    
+    setEventData({ 
+      eventType: "", 
+      team: "", 
+      player: "", 
+      time: currentMinutes.toString(), // Set current clock minutes
+      playerIn: "", 
+      playerOut: "" 
+    });
+    
     setShowEventForm(true);
   };
 
   const closeEventForm = () => {
     setSelectedMatch(null);
     setShowEventForm(false);
-    setEventData({ eventType: "", team: "", player: "", time: "" });
+    setEventData({ eventType: "", team: "", player: "", time: "", playerIn: "", playerOut: "" });
   };
 
   const handleSubmit = async() => {
@@ -303,6 +362,34 @@ export default function MatchAdminInterface() {
     setMatches(prev => prev.map(match => 
       match.id === matchId ? { ...match, status: newStatus } : match
     ));
+
+    // Clean up clock state when match is no longer ongoing
+    if (newStatus !== 'ongoing') {
+      setMatchClockTimes(prev => {
+        const { [matchId]: _removed, ...rest } = prev;
+        // Update localStorage
+        if (Object.keys(rest).length > 0) {
+          localStorage.setItem('matchClockTimes', JSON.stringify(rest));
+        } else {
+          localStorage.removeItem('matchClockTimes');
+        }
+        return rest;
+      });
+      setClockRunning(prev => {
+        const { [matchId]: _removed, ...rest } = prev;
+        // Update localStorage
+        if (Object.keys(rest).length > 0) {
+          localStorage.setItem('clockRunning', JSON.stringify(rest));
+        } else {
+          localStorage.removeItem('clockRunning');
+        }
+        return rest;
+      });
+      // Keep clock history for reference
+    } else if (newStatus === 'ongoing' && !matchClockTimes[matchId]) {
+      // Re-initialize clock when resuming a finished match
+      initializeMatchClock(matchId);
+    }
 
     try {
       const res = await fetch(`https://prime-backend.azurewebsites.net/api/admin/updateMatchStatus/${matchId}`, {
@@ -407,6 +494,68 @@ export default function MatchAdminInterface() {
   const filteredMatches = matches.filter(match =>  
     match.status === activeTab || (!match.status && activeTab === 'scheduled')
   );
+
+  // Clock utility functions
+  const initializeMatchClock = (matchId) => {
+    setMatchClockTimes(prev => ({
+      ...prev,
+      [matchId]: 0
+    }));
+    setClockRunning(prev => ({
+      ...prev,
+      [matchId]: true
+    }));
+    setClockHistory(prev => ({
+      ...prev,
+      [matchId]: [{
+        action: 'started',
+        timestamp: new Date().toISOString(),
+        time: 0
+      }]
+    }));
+  };
+
+  const pauseMatchClock = (matchId) => {
+    setClockRunning(prev => ({
+      ...prev,
+      [matchId]: false
+    }));
+    setClockHistory(prev => ({
+      ...prev,
+      [matchId]: [
+        ...(prev[matchId] || []),
+        {
+          action: 'paused',
+          timestamp: new Date().toISOString(),
+          time: matchClockTimes[matchId] || 0
+        }
+      ]
+    }));
+  };
+
+  const resumeMatchClock = (matchId) => {
+    setClockRunning(prev => ({
+      ...prev,
+      [matchId]: true
+    }));
+    setClockHistory(prev => ({
+      ...prev,
+      [matchId]: [
+        ...(prev[matchId] || []),
+        {
+          action: 'resumed',
+          timestamp: new Date().toISOString(),
+          time: matchClockTimes[matchId] || 0
+        }
+      ]
+    }));
+  };
+
+  const formatClockTime = (seconds) => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+  };
 
   
   const ScoreInput = ({ match }) => {
@@ -565,6 +714,66 @@ export default function MatchAdminInterface() {
     };
     fetchMatchesAndStats();
   }, []);
+
+  // Auto-initialize clocks when matches become ongoing
+  useEffect(() => {
+    matches.forEach(match => {
+      if (match.status === 'ongoing' && !(match.id in matchClockTimes)) {
+        initializeMatchClock(match.id);
+      }
+    });
+  }, [matches, matchClockTimes]);
+
+  // Clock interval - increment time every second for running clocks
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setMatchClockTimes(prev => {
+        const newTimes = { ...prev };
+        Object.keys(clockRunning).forEach(matchId => {
+          if (clockRunning[matchId] && newTimes[matchId] !== undefined) {
+            newTimes[matchId] = newTimes[matchId] + 1;
+          }
+        });
+        return newTimes;
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [clockRunning]);
+
+  // Update event time when clock changes (if event form is open)
+  useEffect(() => {
+    if (showEventForm && selectedMatch && matchClockTimes[selectedMatch.id] !== undefined) {
+      const currentClockTime = matchClockTimes[selectedMatch.id] || 0;
+      const currentMinutes = Math.floor(currentClockTime / 60);
+      
+      setEventData(prev => ({
+        ...prev,
+        time: currentMinutes.toString()
+      }));
+    }
+  }, [matchClockTimes, showEventForm, selectedMatch]);
+
+  // Persist clock times to localStorage
+  useEffect(() => {
+    if (Object.keys(matchClockTimes).length > 0) {
+      localStorage.setItem('matchClockTimes', JSON.stringify(matchClockTimes));
+    }
+  }, [matchClockTimes]);
+
+  // Persist clock running states to localStorage
+  useEffect(() => {
+    if (Object.keys(clockRunning).length > 0) {
+      localStorage.setItem('clockRunning', JSON.stringify(clockRunning));
+    }
+  }, [clockRunning]);
+
+  // Persist clock history to localStorage
+  useEffect(() => {
+    if (Object.keys(_clockHistory).length > 0) {
+      localStorage.setItem('clockHistory', JSON.stringify(_clockHistory));
+    }
+  }, [_clockHistory]);
 
   return (
     <div className="mai-root">
@@ -825,17 +1034,26 @@ export default function MatchAdminInterface() {
               )}
 
                 <div className="mai-form-group">
-                  <label>Time (Minutes)</label>
+                  <label>Time (Minutes) - Auto-filled from Clock</label>
                   <input 
                     type="number" 
                     name="time" 
                      min="0"
                     max="120" 
                     step="1"
-                    placeholder="e.g., 45, 90+2" 
+                    placeholder="Auto-filled from match clock" 
                     value={eventData.time} 
-                    onChange={handleEventInputChange} 
+                    onChange={handleEventInputChange}
+                    readOnly
+                    style={{ 
+                      backgroundColor: 'rgba(34, 197, 94, 0.1)', 
+                      border: '1px solid rgba(34, 197, 94, 0.3)',
+                      color: '#22c55e'
+                    }}
                   />
+                  <small style={{ color: '#94a3b8', fontSize: '0.75rem' }}>
+                    Time automatically set to current match clock: {selectedMatch && matchClockTimes[selectedMatch.id] ? formatClockTime(matchClockTimes[selectedMatch.id]) : '00:00'}
+                  </small>
                 </div>
 
                 <div className="mai-event-form-actions">
@@ -1041,6 +1259,37 @@ export default function MatchAdminInterface() {
                       )}
                       <span>{match.awayTeam}</span>
                     </div>
+
+                    {/* Match Clock Display - only for ongoing matches */}
+                    {match.status === 'ongoing' && matchClockTimes[match.id] !== undefined && (
+                      <div className="mai-clock-container">
+                        <div className="mai-clock-display">
+                          <Clock size={18} />
+                          <span className="mai-clock-time">
+                            {formatClockTime(matchClockTimes[match.id] || 0)}
+                          </span>
+                        </div>
+                        <div className="mai-clock-controls">
+                          {clockRunning[match.id] ? (
+                            <button
+                              onClick={() => pauseMatchClock(match.id)}
+                              className="mai-clock-btn mai-pause-btn"
+                              title="Pause Clock"
+                            >
+                              <Square size={16} />
+                            </button>
+                          ) : (
+                            <button
+                              onClick={() => resumeMatchClock(match.id)}
+                              className="mai-clock-btn mai-resume-btn"
+                              title="Resume Clock"
+                            >
+                              <Play size={16} />
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    )}
                     <div className="mai-match-meta">
                       <div>
                         <Calendar size={16} /> {formatDateTime(match.startTime)}
