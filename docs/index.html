@@ -113,90 +113,113 @@
     </section>
 
     <!-- APIs -->
-<section id="api" class="section" aria-labelledby="api-title">
+<section id="third-party" class="section" aria-labelledby="third-party-title">
   <header class="section-header">
-    <h2 id="api-title">API List</h2>
+    <h2 id="third-party-title">Third-Party Code Documentation</h2>
   </header>
 
-  <dl class="definition-list">
-    <dt><code>Live Update API</code></dt>
-    <dd>
-      Accepts real-time stat events (goals, fouls, substitutions, etc.) from external sources or manual input. Stores and timestamps each event, supporting both automated and manual feeds. Enables instant updates to the match timeline and stats.
-    </dd>
+  <p>
+    This project uses multiple third-party <strong>frameworks, libraries, developer tools, and external APIs</strong>.
+    These components were carefully selected to accelerate development, ensure reliability, and support real-time sports data integration.
+  </p>
 
-    <dt><code>Feed API</code></dt>
-    <dd>
-      Provides the current state of a match, including live score, clock, possession, and all key events. Designed for front-end consumption, this API powers the live match viewer and event timeline, ensuring fans see up-to-the-second information.
-    </dd>
+  <h3>Frameworks & Libraries</h3>
 
-    <dt><code>Match Setup API</code></dt>
-    <dd>
-      Full CRUD (Create, Read, Update, Delete) operations for game metadata: create matches, add/edit teams and players, set match times and venues. Used by admins and organizers to configure matches before they go live.
-    </dd>
+  <h4>Backend</h4>
+  <ul>
+    <li><strong>Express.js (v5.1.0)</strong>
+      <ul>
+        <li>Purpose: Web framework for building RESTful APIs.</li>
+        <li>Why Used: Handles routing, middleware, and HTTP request/response handling.</li>
+        <li>Challenges: Migration from Express 4 to 5 required adapting middleware.</li>
+      </ul>
+    </li>
+    <li><strong>Cloudinary (v2.7.0)</strong>
+      <ul>
+        <li>Purpose: Cloud storage for media uploads.</li>
+        <li>Why Used: Stores match-related images (logos, banners) with fast delivery.</li>
+        <li>Challenges: Authentication via API key and secure URL handling.</li>
+      </ul>
+    </li>
+    <li><strong>CORS (v2.8.5)</strong>
+      <ul>
+        <li>Purpose: Cross-Origin Resource Sharing middleware.</li>
+        <li>Why Used: Allows the frontend (React) to interact with backend APIs securely.</li>
+        <li>Challenges: Configuring allowed origins without overexposing endpoints.</li>
+      </ul>
+    </li>
+    <li><strong>Dotenv (v17.2.2)</strong>
+      <ul>
+        <li>Purpose: Loads environment variables.</li>
+        <li>Why Used: Secures API keys (Firebase, SoccerDataAPI, Rugby API).</li>
+        <li>Challenges: Ensuring `.env` files are excluded from Git.</li>
+      </ul>
+    </li>
+    <li><strong>Firebase-Admin (v13.4.0)</strong>
+      <ul>
+        <li>Purpose: Server-side SDK for Firebase Auth & Firestore.</li>
+        <li>Why Used: Validates tokens and enforces role-based access (admin, official, resident).</li>
+        <li>Challenges: Token verification in middleware and syncing with client Firebase SDK.</li>
+      </ul>
+    </li>
+    <li><strong>Multer (v2.0.2)</strong>
+      <ul>
+        <li>Purpose: Middleware for file uploads.</li>
+        <li>Why Used: Handles user uploads (team logos, documents).</li>
+        <li>Challenges: Managing file storage before pushing to Cloudinary.</li>
+      </ul>
+    </li>
+  </ul>
 
-    <dt><code>Display API</code></dt>
-    <dd>
-      Serves structured, presentation-ready game data to clients. Supports scoreboards, overlays, widgets, and third-party integrations. Ensures all viewers and broadcast tools receive consistent, real-time match data.
-    </dd>
-    <dd>
-      https://prime-backend.azurewebsites.net/api/display/display-matches
-    </dd>
-  </dl>
+  <h4>Frontend</h4>
+  <ul>
+    <li><strong>React (v19.1.0)</strong> — Frontend library for building UI; dynamic rendering of live match data and dashboards.</li>
+    <li><strong>React-DOM (v19.1.0)</strong> — Integrates React components with the DOM.</li>
+    <li><strong>React-Router-DOM (v7.8.0)</strong> — Client-side routing; protects routes with Firebase authentication.</li>
+    <li><strong>Lucide-React (v0.541.0)</strong> — Lightweight icon set for React.</li>
+    <li><strong>React-Icons (v5.5.0)</strong> — Additional icons for UI.</li>
+    <li><strong>Firebase (v12.1.0)</strong> — Client SDK for Firebase Auth & Firestore; handles login, token issuance, and Firestore reads/writes.</li>
+  </ul>
 
-  <section id="third-party" class="section" aria-labelledby="third-party-title">
-    <header class="section-header">
-      <h2 id="third-party-title">Third-Party Code Documentation</h2>
-    </header>
+  <h3>Testing & Developer Tools</h3>
+  <ul>
+    <li><strong>Jest (v30.0.5)</strong> — Testing framework for unit/integration/coverage tests.</li>
+    <li><strong>Supertest (v7.1.4)</strong> — HTTP assertions for Express apps.</li>
+    <li><strong>Nodemon (v3.1.10)</strong> — Auto-restarts Node.js server during development.</li>
+    <li><strong>Babel</strong> — Transpiles ES6+ syntax for Jest/Node.</li>
+    <li><strong>ESLint (v9.30.1 + plugins)</strong> — Enforces coding standards (with React Hooks & refresh plugins).</li>
+    <li><strong>Vite (v6.3.5)</strong> — Frontend bundler & dev server with HMR support.</li>
+    <li><strong>Rollup (v4.46.2)</strong> — Bundler used internally by Vite.</li>
+    <li><strong>Codecov Vite Plugin (v1.9.1)</strong> — Coverage reporting.</li>
+  </ul>
 
-    <p>
-      For the live soccer data feature, we integrated <strong>SoccerDataAPI</strong>, a third-party API providing real-time and seasonal soccer match data. This allowed our application to display ongoing matches and key events such as goals, substitutions, and cards.
-    </p>
+  <h3>Third-Party APIs</h3>
+  <h4>SoccerDataAPI</h4>
+  <ul>
+    <li>Purpose: Real-time and seasonal soccer data.</li>
+    <li>Endpoints Used: livescores, matches</li>
+    <li>Coverage: EPL, La Liga, Serie A, PSL</li>
+    <li>Challenges: Nested JSON, league ID mapping, date/time parsing.</li>
+  </ul>
 
-    <h3>API Endpoints Used</h3>
-    <ul>
-      <li><strong>livescores endpoint</strong> – Provides current live matches across multiple leagues.</li>
-      <li><strong>matches endpoint</strong> – Provides all matches for a league season, which we filtered to show relevant matches in South Africa.</li>
-    </ul>
+  <h4>ScoreDataAPI (Rugby)</h4>
+  <ul>
+    <li>Purpose: Real-time rugby match data.</li>
+    <li>Endpoints Used: competitions, matches, livescores</li>
+    <li>Coverage: Rugby World Cup, Rugby Championship, URC, Currie Cup</li>
+    <li>Challenges: Mapping rugby-specific events (try, conversion) to UI.</li>
+  </ul>
 
-    <h3>League Coverage</h3>
-    <ul>
-      <li>English Premier League (EPL)</li>
-      <li>Serie A (Italy)</li>
-      <li>La Liga (Spain)</li>
-      <li>South African Premier Soccer League (PSL)</li>
-    </ul>
-
-    <h3>Integration and Challenges</h3>
-    <ul>
-      <li><strong>League Selection:</strong> Each league has a unique ID. Our component dynamically sets <code>League_id</code> based on the selected league.</li>
-      <li><strong>Data Structure Complexity:</strong> The API returns nested structures (<code>stage → matches</code>), requiring <code>flatMap</code> and conditional checks to extract match data.</li>
-      <li><strong>Event Mapping:</strong> Each match can have multiple event types (<code>goal</code>, <code>penalty_goal</code>, <code>yellow_card</code>, <code>red_card</code>, <code>substitution</code>), and our app had to map them to user-readable formats.</li>
-      <li><strong>Date & Time Handling:</strong> The API returns date and time separately in <code>dd/mm/yyyy</code> format, which we transform to JavaScript <code>Date</code> objects for proper display.</li>
-      <li><strong>Error Handling & Loading States:</strong> Network failures, empty results, or invalid responses were handled gracefully to ensure UI stability.</li>
-    </ul>
-
-    <h4>Example: Fetching Live Matches</h4>
-    <pre><code class="language-javascript">
-const fetchLive = async () =&gt; {
-  try {
-    const response = await fetch(
-      `https://api.soccerdataapi.com/livescores/?auth_token=${API_KEY}`
-    );
-    const data = await response.json();
-
-    const leagueMatches =
-      data.results
-        .find((league) =&gt; league.league_id === League_id)
-        ?.stage.flatMap((stage) =&gt; stage.matches) || [];
-
-    setMatches(leagueMatches);
-  } catch (error) {
-    console.error("Error fetching matches:", error);
-  }
-};
-    </code></pre>
-  </section>
+  <h3>Summary</h3>
+  <ul>
+    <li>Build scalable backend (Express, Firebase-Admin) and frontend (React, Vite).</li>
+    <li>Implement secure authentication and role-based access.</li>
+    <li>Provide real-time sports data (soccer & rugby) via APIs.</li>
+    <li>Maintain code quality with testing and linting tools.</li>
+    <li>Deliver polished UX with icons and fast builds.</li>
+  </ul>
 </section>
+
 
 
     <!-- Backlog -->
