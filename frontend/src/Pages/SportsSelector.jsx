@@ -36,7 +36,7 @@ const SportsSelector = () => {
     },
     { 
       id: 'basketball', 
-      name: 'Basketball', 
+      name: 'BaskeRutball', 
       icon: '🏀', 
       description: ' ' 
     },
@@ -59,8 +59,8 @@ const SportsSelector = () => {
       description: 'Ice-cold competition with lightning-fast gameplay' 
     },
     { 
-      id: 'volleyball', 
-      name: 'Volleyball', 
+      id: 'rugby', 
+      name: 'Rugby', 
       icon: '🏐', 
       description: 'Teamwork and timing in every spike and block' 
     }
@@ -101,6 +101,10 @@ const SportsSelector = () => {
     if (sportId === 'football') {
       setShowFootballModal(true);
     }
+      
+      else if (sportId === 'rugby') { 
+    navigate('/rugby'); 
+  } 
 
   };
 
