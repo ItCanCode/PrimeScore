@@ -50,25 +50,32 @@ export const getCurrentUser = async (req, res) => {
  */
 export const updateUser = async (req, res) => {
   try {
-    const {
-      username,
-      bio,
-      picture,
-      location,
-      favoriteSports = [],   
-      favoriteTeam = "",     
-      favoritePlayer = ""    
-    } = req.body;
-
     const userId = req.user.uid;
     const userRef = db.collection("users").doc(userId);
 
+    const {
+      username,
+      picture,
+      profile = {}
+    } = req.body;
+
+    const {
+      bio,
+      location,
+      favoriteSports,
+      favoriteTeam,
+      favoritePlayer
+    } = profile;
+
     const updateData = {};
+
+
     if (username !== undefined) updateData.username = username;
     if (picture !== undefined) updateData.picture = picture;
+
     if (bio !== undefined) updateData["profile.bio"] = bio;
     if (location !== undefined) updateData["profile.location"] = location;
-    if (favoriteSports) updateData["profile.favoriteSports"] = favoriteSports;
+    if (favoriteSports !== undefined) updateData["profile.favoriteSports"] = favoriteSports;
     if (favoriteTeam !== undefined) updateData["profile.favoriteTeam"] = favoriteTeam;
     if (favoritePlayer !== undefined) updateData["profile.favoritePlayer"] = favoritePlayer;
 
@@ -76,11 +83,13 @@ export const updateUser = async (req, res) => {
 
     const updatedUser = await userRef.get();
     res.json({ message: "Profile updated", user: updatedUser.data() });
+
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: error.message || "Failed to update profile" });
   }
 };
+
 
 
 export const uploadImage = async (req, res) => {

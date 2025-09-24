@@ -104,6 +104,7 @@ function ProfileCard() {
       <section className="profile-info">
         {isEditing ? (
           <>
+            <label>username:</label>
             <input
               type="text"
               value={username}
@@ -113,6 +114,7 @@ function ProfileCard() {
               autoComplete="username"
               className="input-field"
             />
+            <label>bio:</label>
             <textarea
               value={bio}
               onChange={(e) => setBio(e.target.value)}
@@ -121,6 +123,7 @@ function ProfileCard() {
               autoComplete="bio"
               className="input-field"
             />
+            <label>location:</label>
              <input
               type="text"
               value={location}
@@ -134,10 +137,11 @@ function ProfileCard() {
           </>
         ) : (
           <>
+          
             <h1 className="display-name">{username}</h1>
-            <p className="bio">{bio || "No bio yet"}</p>
-            <p className="location"> {location || "Unknown"}</p>
-            <p className="member-since"> Member since: {memberSince}</p>
+            <h2 className="bio">{bio || "No bio yet"}</h2>
+            <h2 className="location"> {location || "Unknown"}</h2>
+            <h4 className="member-since"> Member since: {memberSince}</h4>
           </>
         )}
       </section>
