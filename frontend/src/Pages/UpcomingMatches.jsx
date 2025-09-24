@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "../Styles/LiveAPI.css";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate,useLocation } from 'react-router-dom';
 
 function addDays(date, days) {
   const result = new Date(date);
@@ -8,7 +8,14 @@ function addDays(date, days) {
   return result.toISOString().split("T")[0];
 }
 
-const Upcoming = ({ selected_league }) => {
+const Upcoming = () => {
+
+
+   const location = useLocation();
+  const selected_league_2=location.state.selected_league;
+  console.log(location.state.selected_league);
+
+  
   const [matches, setMatches] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
@@ -17,7 +24,7 @@ const Upcoming = ({ selected_league }) => {
     addDays(new Date(), i + 1)
   );
 
-  // League IDs
+
   const LEAGUE_IDS = {
     PSL: "296",
     Epl: "228",
@@ -33,7 +40,7 @@ const Upcoming = ({ selected_league }) => {
     const fetchLive = async () => {
       setLoading(true);
       try {
-        const league_id = getLeagueId(selected_league);
+        const league_id = getLeagueId(selected_league_2);
         const response = await fetch(
           `https://api.soccerdataapi.com/matches/?league_id=${league_id}&season=2025-2026&auth_token=${API_KEY}`
         );
@@ -68,12 +75,12 @@ const Upcoming = ({ selected_league }) => {
     };
 
     fetchLive();
-  }, [selected_league]);
+  }, [selected_league_2]);
 
   if (loading) {
     return (
       <div className="loading-container">
-        <p className="loading-text">Loading {selected_league} matches...</p>
+        <p className="loading-text">Loading {selected_league_2} matches...</p>
       </div>
     );
   }
@@ -85,7 +92,7 @@ const Upcoming = ({ selected_league }) => {
       <div className="live-api-header">
         <h2 className="live-api-title">Upcoming Matches</h2>
         <p className="live-api-subtitle">
-          Next 10 days of {selected_league} fixtures
+          Next 10 days of {selected_league_2} fixtures
         </p>
       </div>
 
@@ -131,7 +138,7 @@ const Upcoming = ({ selected_league }) => {
       ) : (
         <div className="no-matches">
           <div className="no-matches-icon">⚽</div>
-          <p className="no-matches-text">No matches found from {selected_league}.</p>
+          <p className="no-matches-text">No matches found from {selected_league_2}.</p>
         </div>
       )}
     </div>
