@@ -10,6 +10,7 @@ export default function MatchAdminInterface() {
   const role = user.role; 
   console.log(role);
   
+  const [players, setPlayers] = useState({});
   const [matches, setMatches] = useState([]);
   const [teams, setTeams] = useState([]);
   const [showForm, setShowForm] = useState(false);
@@ -46,6 +47,16 @@ export default function MatchAdminInterface() {
   const [matchEvents, setMatchEvents] = useState({});
   // Store live stats for each match (score, etc.)
   const [matchStats, setMatchStats] = useState({});
+  // Confirmation modal states
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [confirmAction, setConfirmAction] = useState(null);
+  const [confirmData, setConfirmData] = useState(null);
+  
+  // Match clock states
+  const [matchClockTimes, setMatchClockTimes] = useState({});
+  const [clockRunning, setClockRunning] = useState({});
+  const [_clockHistory, setClockHistory] = useState({}); // Future use: audit trail
+  
   // setMatchStats({});
   console.log(setMatchStats);
   
@@ -68,6 +79,42 @@ export default function MatchAdminInterface() {
       window.addEventListener('resize', handleResize);
       return () => window.removeEventListener('resize', handleResize);
     }, []);
+
+  // Load clock state from localStorage on component mount
+  useEffect(() => {
+    try {
+      const savedClockTimes = localStorage.getItem('matchClockTimes');
+      const savedClockRunning = localStorage.getItem('clockRunning');
+      const savedClockHistory = localStorage.getItem('clockHistory');
+
+      if (savedClockTimes) {
+        const parsedTimes = JSON.parse(savedClockTimes);
+        if (typeof parsedTimes === 'object' && parsedTimes !== null) {
+          setMatchClockTimes(parsedTimes);
+        }
+      }
+
+      if (savedClockRunning) {
+        const parsedRunning = JSON.parse(savedClockRunning);
+        if (typeof parsedRunning === 'object' && parsedRunning !== null) {
+          setClockRunning(parsedRunning);
+        }
+      }
+
+      if (savedClockHistory) {
+        const parsedHistory = JSON.parse(savedClockHistory);
+        if (typeof parsedHistory === 'object' && parsedHistory !== null) {
+          setClockHistory(parsedHistory);
+        }
+      }
+    } catch (error) {
+      console.error('Error loading clock state from localStorage:', error);
+      // Clear corrupted data
+      localStorage.removeItem('matchClockTimes');
+      localStorage.removeItem('clockRunning');
+      localStorage.removeItem('clockHistory');
+    }
+  }, []);
   const handleLogout = () => {
     localStorage.removeItem("authToken");
     navigate("/");
@@ -106,6 +153,9 @@ export default function MatchAdminInterface() {
       });
 
       updateMatchStatus(matchId, 'ongoing');
+      
+      // Initialize the match clock when starting
+      initializeMatchClock(matchId);
 
     } catch (err) {
       console.error("Failed to start match", err);
@@ -123,72 +173,101 @@ export default function MatchAdminInterface() {
     setEventData((prev) => ({ ...prev, [name]: value }));
   };
 
-const addMatchEvent = async () => {
-  let endpoint = "";
-  let payload = { team: eventData.team, time: eventData.time, eventType: eventData.eventType };
-
-  if (eventData.eventType === "Goal" || eventData.eventType === "Foul") {
-    payload.player = eventData.player;
-    endpoint = `/api/feed/${selectedMatch.id}/${eventData.eventType.toLowerCase()}`;
-  } 
-  else if (eventData.eventType === "Substitution") {
-    payload.playerIn = eventData.playerIn;
-    payload.playerOut = eventData.playerOut;
-    endpoint = `/api/feed/${selectedMatch.id}/substitution`;
-  }
-  else if (eventData.eventType === "Yellow Card") {
-    payload.player = eventData.player;
-    payload.card = "yellow";
-    endpoint = `/api/feed/${selectedMatch.id}/foul`;
-  } 
-  else if (eventData.eventType === "Red Card") {
-    payload.player = eventData.player;
-    payload.card = "red";
-    endpoint = `/api/feed/${selectedMatch.id}/foul`;
-  }
-
-  try {
-    const res = await fetch(`https://prime-backend.azurewebsites.net${endpoint}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "x-user-role": "admin" },
-      body: JSON.stringify(payload),
+  const addMatchEvent = async () => {
+    // Show confirmation modal first
+    setConfirmData({
+      type: 'event',
+      eventType: eventData.eventType,
+      team: eventData.team,
+      player: eventData.player,
+      playerIn: eventData.playerIn,
+      playerOut: eventData.playerOut,
+      time: eventData.time
     });
+    setConfirmAction(() => executeAddMatchEvent);
+    setShowConfirmModal(true);
+  };
 
-    if (!res.ok) throw new Error("Failed to add event");
+  const executeAddMatchEvent = async () => {
+    let endpoint = "";
+    let payload = { team: eventData.team, time: eventData.time, eventType: eventData.eventType };
 
-    setMessage({ type: "success", text: "Event added successfully" });
+    if (eventData.eventType === "Goal" || eventData.eventType === "Foul") {
+      payload.player = eventData.player;
+      endpoint = `/api/feed/${selectedMatch.id}/${eventData.eventType.toLowerCase()}`;
+    } 
+    else if (eventData.eventType === "Substitution") {
+      payload.playerIn = eventData.playerIn;
+      payload.playerOut = eventData.playerOut;
+      endpoint = `/api/feed/${selectedMatch.id}/substitution`;
+    }
+    else if (eventData.eventType === "Yellow Card") {
+      payload.player = eventData.player;
+      payload.card = "yellow";
+      endpoint = `/api/feed/${selectedMatch.id}/foul`;
+    } 
+    else if (eventData.eventType === "Red Card") {
+      payload.player = eventData.player;
+      payload.card = "red";
+      endpoint = `/api/feed/${selectedMatch.id}/foul`;
+    }
 
-    const newEvent = { ...payload, id: Date.now(), timestamp: new Date().toISOString() };
+    try {
+      const res = await fetch(`https://prime-backend.azurewebsites.net${endpoint}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-user-role": "admin" },
+        body: JSON.stringify(payload),
+      });
 
-    // ✅ keep events sorted by time
-    setMatchEvents(prev => {
-      const updatedEvents = [...(prev[selectedMatch.id] || []), newEvent];
-      updatedEvents.sort((a, b) => parseInt(a.time, 10) - parseInt(b.time, 10));
-      return {
-        ...prev,
-        [selectedMatch.id]: updatedEvents,
-      };
-    });
-  }
-  catch (err) {
-    setMessage({ type: "error", text: err.message });
-  } 
-  finally {
-    setEventData({ eventType: "", team: "", player: "", time: "", playerIn: "", playerOut: "" });
-    setShowEventForm(false);
-  }
-};
+      if (!res.ok) throw new Error("Failed to add event");
+
+      setMessage({ type: "success", text: "Event added successfully" });
+
+      const newEvent = { ...payload, id: Date.now(), timestamp: new Date().toISOString() };
+
+      // ✅ keep events sorted by time
+      setMatchEvents(prev => {
+        const updatedEvents = [...(prev[selectedMatch.id] || []), newEvent];
+        updatedEvents.sort((a, b) => parseInt(a.time, 10) - parseInt(b.time, 10));
+        return {
+          ...prev,
+          [selectedMatch.id]: updatedEvents,
+        };
+      });
+    }
+    catch (err) {
+      setMessage({ type: "error", text: err.message });
+    } 
+    finally {
+      setEventData({ eventType: "", team: "", player: "", time: "", playerIn: "", playerOut: "" });
+      setShowEventForm(false);
+    }
+  };
 
 
   const openEventForm = (match) => {
     setSelectedMatch(match);
+    
+    // Auto-populate time with current clock time
+    const currentClockTime = matchClockTimes[match.id] || 0;
+    const currentMinutes = Math.floor(currentClockTime / 60);
+    
+    setEventData({ 
+      eventType: "", 
+      team: "", 
+      player: "", 
+      time: currentMinutes.toString(), // Set current clock minutes
+      playerIn: "", 
+      playerOut: "" 
+    });
+    
     setShowEventForm(true);
   };
 
   const closeEventForm = () => {
     setSelectedMatch(null);
     setShowEventForm(false);
-    setEventData({ eventType: "", team: "", player: "", time: "" });
+    setEventData({ eventType: "", team: "", player: "", time: "", playerIn: "", playerOut: "" });
   };
 
   const handleSubmit = async() => {
@@ -201,6 +280,23 @@ const addMatchEvent = async () => {
       alert("Home and Away team must be different!");
       return;
     }
+
+    // Show confirmation modal first
+    setConfirmData({
+      type: 'match',
+      action: editingMatch ? 'update' : 'create',
+      sportType: formData.sportType,
+      matchName: formData.matchName,
+      homeTeam: formData.homeTeam,
+      awayTeam: formData.awayTeam,
+      startTime: formData.startTime,
+      venue: formData.venue
+    });
+    setConfirmAction(() => executeHandleSubmit);
+    setShowConfirmModal(true);
+  };
+
+  const executeHandleSubmit = async() => {
   // Removed unused matchData variable to fix ESLint error
 
     try {
@@ -238,10 +334,62 @@ const addMatchEvent = async () => {
     }
   };
 
+  useEffect(() => {
+    if (!selectedMatch) return;
+
+    const { homeTeam, awayTeam } = selectedMatch;
+
+    Promise.all([
+      fetch(`https://prime-backend.azurewebsites.net/api/admin/teams/${homeTeam}/players`),
+      fetch(`https://prime-backend.azurewebsites.net/api/admin/teams/${awayTeam}/players`)
+    ])
+      .then(async ([resHome, resAway]) => {
+        const homePlayers = await resHome.json();
+        const awayPlayers = await resAway.json();
+
+        setPlayers(prev => ({
+          ...prev,
+          [homeTeam]: homePlayers.players || [],
+          [awayTeam]: awayPlayers.players || []
+        }));
+      })
+      .catch(err => {
+        console.error("Failed to fetch players", err);
+      });
+  }, [selectedMatch]);
+
   const updateMatchStatus = async (matchId, newStatus) => {
     setMatches(prev => prev.map(match => 
       match.id === matchId ? { ...match, status: newStatus } : match
     ));
+
+    // Clean up clock state when match is no longer ongoing
+    if (newStatus !== 'ongoing') {
+      setMatchClockTimes(prev => {
+        const { [matchId]: _removed, ...rest } = prev;
+        // Update localStorage
+        if (Object.keys(rest).length > 0) {
+          localStorage.setItem('matchClockTimes', JSON.stringify(rest));
+        } else {
+          localStorage.removeItem('matchClockTimes');
+        }
+        return rest;
+      });
+      setClockRunning(prev => {
+        const { [matchId]: _removed, ...rest } = prev;
+        // Update localStorage
+        if (Object.keys(rest).length > 0) {
+          localStorage.setItem('clockRunning', JSON.stringify(rest));
+        } else {
+          localStorage.removeItem('clockRunning');
+        }
+        return rest;
+      });
+      // Keep clock history for reference
+    } else if (newStatus === 'ongoing' && !matchClockTimes[matchId]) {
+      // Re-initialize clock when resuming a finished match
+      initializeMatchClock(matchId);
+    }
 
     try {
       const res = await fetch(`https://prime-backend.azurewebsites.net/api/admin/updateMatchStatus/${matchId}`, {
@@ -346,6 +494,68 @@ const addMatchEvent = async () => {
   const filteredMatches = matches.filter(match =>  
     match.status === activeTab || (!match.status && activeTab === 'scheduled')
   );
+
+  // Clock utility functions
+  const initializeMatchClock = (matchId) => {
+    setMatchClockTimes(prev => ({
+      ...prev,
+      [matchId]: 0
+    }));
+    setClockRunning(prev => ({
+      ...prev,
+      [matchId]: true
+    }));
+    setClockHistory(prev => ({
+      ...prev,
+      [matchId]: [{
+        action: 'started',
+        timestamp: new Date().toISOString(),
+        time: 0
+      }]
+    }));
+  };
+
+  const pauseMatchClock = (matchId) => {
+    setClockRunning(prev => ({
+      ...prev,
+      [matchId]: false
+    }));
+    setClockHistory(prev => ({
+      ...prev,
+      [matchId]: [
+        ...(prev[matchId] || []),
+        {
+          action: 'paused',
+          timestamp: new Date().toISOString(),
+          time: matchClockTimes[matchId] || 0
+        }
+      ]
+    }));
+  };
+
+  const resumeMatchClock = (matchId) => {
+    setClockRunning(prev => ({
+      ...prev,
+      [matchId]: true
+    }));
+    setClockHistory(prev => ({
+      ...prev,
+      [matchId]: [
+        ...(prev[matchId] || []),
+        {
+          action: 'resumed',
+          timestamp: new Date().toISOString(),
+          time: matchClockTimes[matchId] || 0
+        }
+      ]
+    }));
+  };
+
+  const formatClockTime = (seconds) => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+  };
 
   
   const ScoreInput = ({ match }) => {
@@ -504,6 +714,66 @@ const addMatchEvent = async () => {
     };
     fetchMatchesAndStats();
   }, []);
+
+  // Auto-initialize clocks when matches become ongoing
+  useEffect(() => {
+    matches.forEach(match => {
+      if (match.status === 'ongoing' && !(match.id in matchClockTimes)) {
+        initializeMatchClock(match.id);
+      }
+    });
+  }, [matches, matchClockTimes]);
+
+  // Clock interval - increment time every second for running clocks
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setMatchClockTimes(prev => {
+        const newTimes = { ...prev };
+        Object.keys(clockRunning).forEach(matchId => {
+          if (clockRunning[matchId] && newTimes[matchId] !== undefined) {
+            newTimes[matchId] = newTimes[matchId] + 1;
+          }
+        });
+        return newTimes;
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [clockRunning]);
+
+  // Update event time when clock changes (if event form is open)
+  useEffect(() => {
+    if (showEventForm && selectedMatch && matchClockTimes[selectedMatch.id] !== undefined) {
+      const currentClockTime = matchClockTimes[selectedMatch.id] || 0;
+      const currentMinutes = Math.floor(currentClockTime / 60);
+      
+      setEventData(prev => ({
+        ...prev,
+        time: currentMinutes.toString()
+      }));
+    }
+  }, [matchClockTimes, showEventForm, selectedMatch]);
+
+  // Persist clock times to localStorage
+  useEffect(() => {
+    if (Object.keys(matchClockTimes).length > 0) {
+      localStorage.setItem('matchClockTimes', JSON.stringify(matchClockTimes));
+    }
+  }, [matchClockTimes]);
+
+  // Persist clock running states to localStorage
+  useEffect(() => {
+    if (Object.keys(clockRunning).length > 0) {
+      localStorage.setItem('clockRunning', JSON.stringify(clockRunning));
+    }
+  }, [clockRunning]);
+
+  // Persist clock history to localStorage
+  useEffect(() => {
+    if (Object.keys(_clockHistory).length > 0) {
+      localStorage.setItem('clockHistory', JSON.stringify(_clockHistory));
+    }
+  }, [_clockHistory]);
 
   return (
     <div className="mai-root">
@@ -688,56 +958,102 @@ const addMatchEvent = async () => {
                   </select>
                 </div>
 
-                {eventData.eventType !== "Substitution" && (
+              {eventData.eventType !== "Substitution" && (
+                <div className="mai-form-group">
+                  <label>Player Responsible</label>
+                  <select
+                    name="player"
+                    value={eventData.player}
+                    onChange={handleEventInputChange}
+                  >
+                    <option value="">Select player</option>
+                    {eventData.team === "Home" &&
+                      players[selectedMatch.homeTeam]?.map((p) => (
+                        <option key={p.playerId} value={p.name}>
+                          {p.name}
+                        </option>
+                      ))}
+                    {eventData.team === "Away" &&
+                      players[selectedMatch.awayTeam]?.map((p) => (
+                        <option key={p.playerId} value={p.name}>
+                          {p.name}
+                        </option>
+                      ))}
+                  </select>
+                </div>
+              )}
+
+              {eventData.eventType === "Substitution" && (
+                <>
                   <div className="mai-form-group">
-                    <label>Player Responsible</label>
-                    <input 
-                      type="text" 
-                      name="player" 
-                      placeholder="Enter player name" 
-                      value={eventData.player} 
-                      onChange={handleEventInputChange} 
-                    />
+                    <label>Player In</label>
+                    <select
+                      name="playerIn"
+                      value={eventData.playerIn}
+                      onChange={handleEventInputChange}
+                    >
+                      <option value="">Select player</option>
+                      {eventData.team === "Home" &&
+                        players[selectedMatch.homeTeam]?.map((p) => (
+                          <option key={p.playerId} value={p.name}>
+                            {p.name}
+                          </option>
+                        ))}
+                      {eventData.team === "Away" &&
+                        players[selectedMatch.awayTeam]?.map((p) => (
+                          <option key={p.playerId} value={p.name}>
+                            {p.name}
+                          </option>
+                        ))}
+                    </select>
                   </div>
-                )}
-                
-                {eventData.eventType === "Substitution" && (
-                  <>
-                    <div className="mai-form-group">
-                      <label>Player In</label>
-                      <input 
-                        type="text" 
-                        name="playerIn" 
-                        value={eventData.playerIn} 
-                        onChange={handleEventInputChange} 
-                        placeholder="Enter player coming in"
-                      />
-                    </div>
-                    <div className="mai-form-group">
-                      <label>Player Out</label>
-                      <input 
-                        type="text" 
-                        name="playerOut" 
-                        value={eventData.playerOut} 
-                        onChange={handleEventInputChange} 
-                        placeholder="Enter player going out"
-                      />
-                    </div>
-                  </>
-                )}
+
+                  <div className="mai-form-group">
+                    <label>Player Out</label>
+                    <select
+                      name="playerOut"
+                      value={eventData.playerOut}
+                      onChange={handleEventInputChange}
+                    >
+                      <option value="">Select player</option>
+                      {eventData.team === "Home" &&
+                        players[selectedMatch.homeTeam]?.map((p) => (
+                          <option key={p.playerId} value={p.name}>
+                            {p.name}
+                          </option>
+                        ))}
+                      {eventData.team === "Away" &&
+                        players[selectedMatch.awayTeam]?.map((p) => (
+                          <option key={p.playerId} value={p.name}>
+                            {p.name}
+                          </option>
+                        ))}
+                    </select>
+                  </div>
+                </>
+              )}
 
                 <div className="mai-form-group">
-                  <label>Time (Minutes)</label>
+                  <label>Time (Minutes) - Auto-filled from Clock</label>
                   <input 
                     type="number" 
                     name="time" 
                      min="0"
                     max="120" 
                     step="1"
-                    placeholder="e.g., 45, 90+2" 
+                    placeholder="Auto-filled from match clock" 
                     value={eventData.time} 
-                    onChange={handleEventInputChange} 
+                    onChange={handleEventInputChange}
+                    readOnly
+                    style={{ 
+                      backgroundColor: 'rgba(34, 197, 94, 0.1)', 
+                      border: '1px solid rgba(34, 197, 94, 0.3)',
+                      color: '#22c55e'
+                    }}
                   />
+                  <small style={{ color: '#94a3b8', fontSize: '0.75rem' }}>
+                    Time automatically set to current match clock: {selectedMatch && matchClockTimes[selectedMatch.id] ? formatClockTime(matchClockTimes[selectedMatch.id]) : '00:00'}
+                  </small>
                 </div>
 
                 <div className="mai-event-form-actions">
@@ -748,6 +1064,62 @@ const addMatchEvent = async () => {
                     Add Event
                   </button>
                 </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Confirmation Modal */}
+        {showConfirmModal && (
+          <div className="mai-modal-overlay">
+            <div className="mai-confirm-modal">
+              <div className="mai-confirm-modal-header">
+                <h3>Confirm Action</h3>
+                <button onClick={() => setShowConfirmModal(false)} className="mai-modal-close">
+                  <X size={20} />
+                </button>
+              </div>
+              
+              <div className="mai-confirm-modal-body">
+                <p>Are you sure you want to proceed with this action?</p>
+                {confirmData && confirmData.type === 'event' && (
+                  <div className="mai-confirm-details">
+                    <p><strong>Event Type:</strong> {confirmData.eventType}</p>
+                    <p><strong>Team:</strong> {confirmData.team}</p>
+                    {confirmData.player && <p><strong>Player:</strong> {confirmData.player}</p>}
+                    {confirmData.playerIn && <p><strong>Player In:</strong> {confirmData.playerIn}</p>}
+                    {confirmData.playerOut && <p><strong>Player Out:</strong> {confirmData.playerOut}</p>}
+                    <p><strong>Time:</strong> {confirmData.time}</p>
+                    <p><strong>Match:</strong> {selectedMatch?.homeTeam} vs {selectedMatch?.awayTeam}</p>
+                  </div>
+                )}
+                {confirmData && confirmData.type === 'match' && (
+                  <div className="mai-confirm-details">
+                    <p><strong>Action:</strong> {confirmData.action === 'create' ? 'Create' : 'Update'} Match</p>
+                    <p><strong>Sport:</strong> {confirmData.sportType}</p>
+                    <p><strong>Match:</strong> {confirmData.homeTeam} vs {confirmData.awayTeam}</p>
+                    <p><strong>Venue:</strong> {confirmData.venue}</p>
+                    <p><strong>Start Time:</strong> {new Date(confirmData.startTime).toLocaleString()}</p>
+                  </div>
+                )}
+              </div>
+              
+              <div className="mai-confirm-modal-actions">
+                <button 
+                  className="mai-cancel-btn" 
+                  onClick={() => setShowConfirmModal(false)}
+                >
+                  Cancel
+                </button>
+                <button 
+                  className="mai-create-btn mai-confirm-btn" 
+                  onClick={() => {
+                    setShowConfirmModal(false);
+                    if (confirmAction) confirmAction();
+                  }}
+                >
+                  Confirm
+                </button>
               </div>
             </div>
           </div>
@@ -887,6 +1259,37 @@ const addMatchEvent = async () => {
                       )}
                       <span>{match.awayTeam}</span>
                     </div>
+
+                    {/* Match Clock Display - only for ongoing matches */}
+                    {match.status === 'ongoing' && matchClockTimes[match.id] !== undefined && (
+                      <div className="mai-clock-container">
+                        <div className="mai-clock-display">
+                          <Clock size={18} />
+                          <span className="mai-clock-time">
+                            {formatClockTime(matchClockTimes[match.id] || 0)}
+                          </span>
+                        </div>
+                        <div className="mai-clock-controls">
+                          {clockRunning[match.id] ? (
+                            <button
+                              onClick={() => pauseMatchClock(match.id)}
+                              className="mai-clock-btn mai-pause-btn"
+                              title="Pause Clock"
+                            >
+                              <Square size={16} />
+                            </button>
+                          ) : (
+                            <button
+                              onClick={() => resumeMatchClock(match.id)}
+                              className="mai-clock-btn mai-resume-btn"
+                              title="Resume Clock"
+                            >
+                              <Play size={16} />
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    )}
                     <div className="mai-match-meta">
                       <div>
                         <Calendar size={16} /> {formatDateTime(match.startTime)}
