@@ -1,150 +1,237 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
+import { useNavigate, useLocation } from 'react-router-dom';
+import '../Styles/LiveAPI.css';
+const Ongoing = () => {
+  const API_KEY = "4399a3821d4ce5eb1a989436dc4e5303cf5e7176";
+  
+  // const selected_league = "Epl"; 
+   const location = useLocation();
 
-
-const OnGoing = () => {
+  const navigate = useNavigate();
+  const selected_league_2=location.state.selected_league;
+  console.log(location.state.selected_league);
+  
   const [matches, setMatches] = useState([]);
   const [loading, setLoading] = useState(true);
-const API_KEY = "4399a3821d4ce5eb1a989436dc4e5303cf5e7176";
+  const [error, setError] = useState(null);
 
-  const serie_a="253";
-  const Epl_id="228";
-  const La_liga="297";
-  let selected_league="";
-  let League_id="";
-  const Psl_id="296";
-  useEffect(() => {
-    const fetchLive = async () => {
-      try {
-        const response = await fetch(
-          `https://api.soccerdataapi.com/livescores/?auth_token=${API_KEY}`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              "Accept-Encoding": "gzip",
-            },
-          }
-        );
+  const hasFetched = useRef(false);
+  const abortController = useRef(null);
 
-
-
-        if (selected_league=="PSL"){
-            League_id=Psl_id;
-          }
-          else if (selected_league=="Epl") {
-            League_id=Epl_id;
-          }
-          else if (selected_league=="La_liga") {
-            League_id=La_liga;
-          }
-          else if (selected_league=="serie_a") {
-            League_id=serie_a;
-          }   
-          else{
-            League_id=Epl_id;//just in case
-          }     
-        if (!response.ok) {
-          console.error("Failed to fetch");
-          setLoading(false);
-          return;
-        }
-
-        const data = await response.json();
-
-        // Corrected: access data.results
-        const leagueMatches =
-          data.results
-            .find((league) => league.league_id === League_id)
-            ?.stage.flatMap((stage) => stage.matches) || [];
-
-        setMatches(leagueMatches);
-      } catch (error) {
-        console.error("Error fetching matches:", error);
-      } finally {
-        setLoading(false);
-      }
+  const fetchMatches = useCallback(async () => {
+    const LEAGUE_IDS = {
+      PSL: "296",
+      serie_a: "253",
+      Epl: "228",
+      "premier-league": "228",
+      La_liga: "297"
     };
 
-    fetchLive();
-  }, []);
+    if (abortController.current) abortController.current.abort();
+    abortController.current = new AbortController();
+    hasFetched.current = true;
+    setLoading(true);
+    setError(null);
+
+    try {
+      
+      // console.log(selected_league2);
+      
+      const league_id = LEAGUE_IDS[selected_league_2] || LEAGUE_IDS.Epl;
+      const apiUrl = `https://api.soccerdataapi.com/matches/?league_id=${league_id}&season=2025-2026&auth_token=${API_KEY}`;
+      const response = await fetch(apiUrl, {
+        method: "GET",
+        headers: { "Content-Type": "application/json", "Accept-Encoding": "gzip" },
+        signal: abortController.current.signal
+      });
+
+      if (!response.ok) {
+        if (response.status === 429) throw new Error("Rate limit exceeded. Please wait a moment and try again.");
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      if (!data || !Array.isArray(data) || data.length === 0) {
+        setMatches([]);
+        return;
+      }
+
+      const allMatches = data[0]?.stage?.flatMap(stage => stage.matches) || [];
+      if (allMatches.length === 0) {
+        setMatches([]);
+        return;
+      }
+
+    
+      
+
+      const filtered = allMatches.filter(match => {
+        if (!match.date) return false;
+        try {
+        
+        
+          const homeTeamName=match.teams.home.name;
+          const status=match.status;
+          return homeTeamName!="None" && status=="live";
+        } catch {
+          return false;
+        }
+      });
+
+      setMatches(filtered);
+
+    } catch (error) {
+      if (error.name === 'AbortError') return;
+      setError(error.message);
+    } finally {
+      setLoading(false);
+    }
+  }, [selected_league_2, API_KEY]);
+
+  useEffect(() => {
+    if (hasFetched.current) return;
+    fetchMatches();
+    return () => abortController.current?.abort();
+  }, [fetchMatches]);
+
+  useEffect(() => { hasFetched.current = false; }, [selected_league_2]);
 
   if (loading) {
-    return <p>Loading matches...</p>;
+    return (
+      <div className="live-api-container">
+        <div className="loading-container">
+          <p className="loading-text">Loading {selected_league_2} matches...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="live-api-container">
+        <div className="error-container" style={{ textAlign: 'center', padding: '2rem' }}>
+          <h3>Unable to Load Matches</h3>
+          <p>{error}</p>
+          {error.includes('Rate limit') && (
+            <div style={{ marginTop: '1rem' }}>
+              <p>You've reached the API rate limit. Please wait a few minutes before trying again.</p>
+              <button 
+                onClick={() => {
+                  hasFetched.current = false;
+                  setError(null);
+                  setLoading(true);
+                  window.location.reload();
+                }}
+                style={{ marginTop: '1rem', padding: '0.5rem 1rem' }}
+              >
+                Try Again
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div>
-      <h2>League {League_id} Matches</h2>
+    <div className="live-api-container">
+        <button onClick={() => navigate(-1)} style={{ marginBottom: '1rem', padding: '0.5rem 1rem', borderRadius: '8px', border: 'none', color: '#0e0d0dff', cursor: 'pointer' }}>Back</button>
+      <div className="live-api-header">
+        <h2 className="live-api-title">{selected_league_2.toUpperCase()}Ongoing Matches</h2>
+        <p className="live-api-subtitle">Live football matches ({matches.length} matches found)</p>
+      </div>
+      
       {matches.length > 0 ? (
-        matches.map((m) => (
-          <div key={m.id} style={{ marginBottom: "25px" }}>
-            <p>
-              <strong>
-                {m.teams.home?.name || "Unknown"} vs {m.teams.away?.name || "Unknown"}
-              </strong>
-            </p>
-            <p>
-              Kickoff:{" "}
-              {m.date && m.time
-                ? new Date(
-                    `${m.date.split("/")[2]}-${m.date.split("/")[1]}-${m.date.split("/")[0]}T${m.time}:00`
-                  ).toLocaleString()
-                : "Invalid Date"}
-            </p>
+        <div className="matches-grid">
+          {matches.map((match, index) => (
+            <div key={match.id || index} className="match-card">
+              <div className="match-header">
+                <div className="match-teams">
+                  <span className="team-name">{match.teams?.home?.name || "Unknown Home Team"}</span>
+                  <span className="vs-text">VS</span>
+                  <span className="team-name">{match.teams?.away?.name || "Unknown Away Team"}</span>
+                </div>
 
-            {m.events && m.events.length > 0 ? (
-              <div>
-                <h4>Events:</h4>
-                <ul>
-                  {m.events.map((event, idx) => {
-                    if (event.event_type === "substitution") {
-                      return (
-                        <li key={idx}>
-                          {event.event_minute}' substitution –{" "}
-                          {event.player_in?.name || "Unknown In"} for{" "}
-                          {event.player_out?.name || "Unknown Out"}
-                        </li>
-                      );
-                    }
+                <div className="match-score">
+                  <span className="home-score">{match.goals?.home_ft_goals ?? 0}</span>
+                  <span className="dash"> - </span>
+                  <span className="away-score">{match.goals?.away_ft_goals ?? 0}</span>
+                </div>
 
-                    if (event.event_type === "goal" || event.event_type === "penalty_goal") {
-                      return (
-                        <li key={idx}>
-                          {event.event_minute}' {event.event_type.replace("_", " ")} –{" "}
-                          {event.player?.name || "Unknown"}{" "}
-                          {event.assist_player ? `(assist: ${event.assist_player.name})` : ""}
-                        </li>
-                      );
-                    }
 
-                    if (event.event_type === "yellow_card" || event.event_type === "red_card") {
-                      return (
-                        <li key={idx}>
-                          {event.event_minute}' {event.event_type.replace("_", " ")} –{" "}
-                          {event.player?.name || "Unknown"}
-                        </li>
-                      );
-                    }
-
-                    return (
-                      <li key={idx}>
-                        {event.event_minute}' {event.event_type} –{" "}
-                        {event.player?.name || "Unknown"}
-                      </li>
-                    );
-                  })}
-                </ul>
+                <div className="match-status">{match.status || "LIVE"}</div>
               </div>
-            ) : (
-              <p>No events recorded.</p>
-            )}
-          </div>
-        ))
+
+              <div className="match-info">
+                <p className="match-datetime">
+                  <span className="datetime-icon">🕒</span>
+                  Kickoff:{" "}
+                  {match.date && match.time
+                    ? (() => {
+                        try {
+                          const [day, month, year] = match.date.split("/");
+                          const isoDate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}T${match.time}:00`;
+                          return new Date(isoDate).toLocaleString();
+                        } catch {
+                          return "Invalid Date";
+                        }
+                      })()
+                    : "Date/Time not available"}
+                </p>
+                <p>
+              
+                🕒 {match.minute || "Time N/A"}
+
+                </p>
+                {match.venue && (
+                  <p className="match-venue">
+                    <span className="venue-icon">📍</span>
+                    {match.venue}
+                  </p>
+                )}
+              </div>
+
+              {match.events && match.events.length > 0 && (
+                <div className="events-section">
+                  <h4 className="events-title">Match Events</h4>
+                  <ul className="events-list">
+                    {match.events.slice(0, 5).map((event, eventIndex) => {
+                      let playerName = "Unknown";
+                      if (event.event_type === "substitution") {
+                        const inName = event.player_in?.name || "Unknown";
+                        const outName = event.player_out?.name || "Unknown";
+                        playerName = `${outName} → ${inName}`;
+                      } else {
+                        playerName = event.player?.name || "Unknown";
+                      }
+                      return (
+                        <li key={eventIndex} className="event-item">
+                          <span className="event-minute">{event.event_minute}'</span>
+                          <span className="event-type">{event.event_type}</span>
+                          <span className="event-player">- {playerName}</span>
+                        </li>
+                      );
+                    })}
+                    {match.events.length > 5 && (
+                      <li className="event-item">
+                        <span>... and {match.events.length - 5} more events</span>
+                      </li>
+                    )}
+                  </ul>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
       ) : (
-        <p>No matches found for this league.</p>
+        <div className="no-matches">
+          <div className="no-matches-icon">⚽</div>
+          <p className="no-matches-text">No {selected_league_2} matches found in the last 7 days.</p>
+          <p className="no-matches-subtitle">Try checking back later or selecting a different league.</p>
+        </div>
       )}
     </div>
   );
 };
 
-export default OnGoing;
+export default Ongoing;
