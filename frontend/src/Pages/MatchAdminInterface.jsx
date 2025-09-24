@@ -129,32 +129,21 @@ export default function MatchAdminInterface() {
   const sportTypes = [ "Football", "Basketball", "Tennis", "Cricket", "Baseball", "Hockey", "Rugby", "Volleyball", "Badminton", "Table Tennis"];
 
   const eventTypes = [
-    "Goal", "Foul", "Yellow Card", "Red Card", "Substitution", 
+    "Goal","Own Goal", "Foul", "Yellow Card", "Red Card", "Substitution", 
     "Penalty", "Corner Kick", "Free Kick", "Offside", "Injury", "Timeout"
   ];
 
   const startMatch = async (match) => {
     const matchId = match.id;
-    const initialDoc = {
-      home_score: match.homeScore || 0,
-      away_score: match.awayScore || 0,
-      isRunning: true,
-      period: 1,
-      fouls: [],
-      substitutions: [],
-      goals: [],
-    };
-
+    
     try {
       await fetch(`https://prime-backend.azurewebsites.net/api/feed/${matchId}/start`, {
         method: "POST",
         headers: { "Content-Type": "application/json", "x-user-role": "admin" },
-        body: JSON.stringify(initialDoc),
       });
 
       updateMatchStatus(matchId, 'ongoing');
       
-      // Initialize the match clock when starting
       initializeMatchClock(matchId);
 
     } catch (err) {
@@ -173,76 +162,70 @@ export default function MatchAdminInterface() {
     setEventData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const addMatchEvent = async () => {
-    // Show confirmation modal first
-    setConfirmData({
-      type: 'event',
-      eventType: eventData.eventType,
-      team: eventData.team,
-      player: eventData.player,
-      playerIn: eventData.playerIn,
-      playerOut: eventData.playerOut,
-      time: eventData.time
-    });
-    setConfirmAction(() => executeAddMatchEvent);
-    setShowConfirmModal(true);
+  
+ const addMatchEvent = async () => {
+  const endpoint = `/api/feed/${selectedMatch.id}/event`;
+
+  // Start with the always-required fields
+  const payload = {
+    eventType: eventData.eventType,
+    team: eventData.team,
+    time: eventData.time,
   };
 
-  const executeAddMatchEvent = async () => {
-    let endpoint = "";
-    let payload = { team: eventData.team, time: eventData.time, eventType: eventData.eventType };
+  // Add fields conditionally based on event type
+  switch (eventData.eventType) {
+    case "Goal":
+    case "Foul":
+      if (eventData.player) payload.player = eventData.player;
+      break;
 
-    if (eventData.eventType === "Goal" || eventData.eventType === "Foul") {
-      payload.player = eventData.player;
-      endpoint = `/api/feed/${selectedMatch.id}/${eventData.eventType.toLowerCase()}`;
-    } 
-    else if (eventData.eventType === "Substitution") {
-      payload.playerIn = eventData.playerIn;
-      payload.playerOut = eventData.playerOut;
-      endpoint = `/api/feed/${selectedMatch.id}/substitution`;
-    }
-    else if (eventData.eventType === "Yellow Card") {
-      payload.player = eventData.player;
+    case "Yellow Card":
+      if (eventData.player) payload.player = eventData.player;
       payload.card = "yellow";
-      endpoint = `/api/feed/${selectedMatch.id}/foul`;
-    } 
-    else if (eventData.eventType === "Red Card") {
-      payload.player = eventData.player;
+      break;
+
+    case "Red Card":
+      if (eventData.player) payload.player = eventData.player;
       payload.card = "red";
-      endpoint = `/api/feed/${selectedMatch.id}/foul`;
-    }
+      break;
 
-    try {
-      const res = await fetch(`https://prime-backend.azurewebsites.net${endpoint}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "x-user-role": "admin" },
-        body: JSON.stringify(payload),
-      });
+    case "Substitution":
+      if (eventData.playerIn) payload.playerIn = eventData.playerIn;
+      if (eventData.playerOut) payload.playerOut = eventData.playerOut;
+      break;
 
-      if (!res.ok) throw new Error("Failed to add event");
+    default:
+      // For Timeout, Corner Kick, Injury, Penalty, etc. — no extra fields needed
+      break;
+  }
 
-      setMessage({ type: "success", text: "Event added successfully" });
+  try {
+    const res = await fetch(`https://prime-backend.azurewebsites.net${endpoint}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "x-user-role": "admin" },
+      body: JSON.stringify(payload),
+    });
 
-      const newEvent = { ...payload, id: Date.now(), timestamp: new Date().toISOString() };
+    if (!res.ok) throw new Error("Failed to add event");
 
-      // ✅ keep events sorted by time
-      setMatchEvents(prev => {
-        const updatedEvents = [...(prev[selectedMatch.id] || []), newEvent];
-        updatedEvents.sort((a, b) => parseInt(a.time, 10) - parseInt(b.time, 10));
-        return {
-          ...prev,
-          [selectedMatch.id]: updatedEvents,
-        };
-      });
-    }
-    catch (err) {
-      setMessage({ type: "error", text: err.message });
-    } 
-    finally {
-      setEventData({ eventType: "", team: "", player: "", time: "", playerIn: "", playerOut: "" });
-      setShowEventForm(false);
-    }
-  };
+    setMessage({ type: "success", text: "Event added successfully" });
+
+    // Add locally for instant UI update
+    const newEvent = { ...payload, id: Date.now(), timestamp: new Date().toISOString() };
+    setMatchEvents(prev => ({
+      ...prev,
+      [selectedMatch.id]: [...(prev[selectedMatch.id] || []), newEvent]
+    }));
+  } catch (err) {
+    setMessage({ type: "error", text: err.message });
+  } finally {
+    setEventData({ eventType: "", team: "", player: "", time: "", playerIn: "", playerOut: "" });
+    setShowEventForm(false);
+  }
+};
+ 
+ 
 
 
   const openEventForm = (match) => {
