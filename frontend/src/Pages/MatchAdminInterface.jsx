@@ -76,15 +76,8 @@ export default function MatchAdminInterface() {
 
   const sportTypes = [
     "Football",
-    "Basketball",
-    "Tennis",
-    "Cricket",
-    "Baseball",
-    "Hockey",
+    "Netball",
     "Rugby",
-    "Volleyball",
-    "Badminton",
-    "Table Tennis",
   ];
 
   const eventTypes = [
