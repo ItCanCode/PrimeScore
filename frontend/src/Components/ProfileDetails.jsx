@@ -7,6 +7,7 @@ function ProfileDetails() {
   const [favoritePlayer, setFavoritePlayer] = useState("");  
   const [isEditing, setIsEditing] = useState(false);
 
+  let baseURL = "http://localhost:3000"
   // Fetch user data on mount
   useEffect(() => {
     const fetchUser = async () => {
@@ -14,7 +15,7 @@ function ProfileDetails() {
       if (!token) return;
 
       try {
-        const res = await fetch("https://prime-backend.azurewebsites.net/api/users/me", {
+        const res = await fetch(baseURL + "/api/users/me", {
           headers: { Authorization: `Bearer ${token}` },
         });
         const data = await res.json();
@@ -32,7 +33,7 @@ function ProfileDetails() {
   async function handleSave() {
     const token = localStorage.getItem("token");
     try {
-      const res = await fetch("https://prime-backend.azurewebsites.net/api/users/me", {
+      const res = await fetch(baseURL + "/api/users/me", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -118,9 +119,30 @@ function ProfileDetails() {
         </>
       ) : (
         <>
-          <p>Favorite Sports: {favoriteSports.join(", ") || "Add  sport type"}</p>
-          <p>Favorite Team: {favoriteTeam || "Add your favourite team"}</p>
-          <p>Favorite Player: {favoritePlayer || "Add your favourite player"}</p>
+          <section className="info-cards">
+            <section className="info-card">
+              <p>
+                <span className="label">Favorite Sports:</span>{" "}
+                <span className="value">{favoriteSports.join(", ") || "sportsA"}</span>
+              </p>
+            </section>
+
+            <section className="info-card">
+              <p>
+                <span className="label">Favourite Team:</span>{" "}
+                <span className="value">{favoriteTeam || "teamA"}</span>
+              </p>
+            </section>
+
+            <section className="info-card">
+              <p>
+                <span className="label">Favorite Player:</span>{" "}
+                <span className="value">{favoritePlayer || "playerA"}</span>
+              </p>
+            </section>
+          </section>
+          
+      
           <button className="edit-btn" onClick={() => setIsEditing(true)}>Edit Details</button>
         </>
       )}
