@@ -25,7 +25,7 @@ export default function MatchAdminInterface() {
   const role = user.role;
   console.log(role);
 
-  const [_players, setPlayers] = useState({});
+  const [players, setPlayers] = useState({});
   const [matches, setMatches] = useState([]);
   const [teams, setTeams] = useState([]);
   const [showForm, setShowForm] = useState(false);
@@ -362,6 +362,7 @@ export default function MatchAdminInterface() {
             handleEventInputChange={handleEventInputChange}
             closeEventForm={closeEventForm}
             addMatchEvent={addMatchEvent}
+            players={players}
           />
         )}
 
