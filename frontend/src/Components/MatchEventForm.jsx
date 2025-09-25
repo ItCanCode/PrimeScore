@@ -7,7 +7,8 @@ const MatchEventForm = ({
   eventTypes,
   handleEventInputChange,
   closeEventForm,
-  addMatchEvent
+  addMatchEvent,
+  players
 }) => {
   if (!selectedMatch) return null;
 
@@ -45,13 +46,25 @@ const MatchEventForm = ({
           {eventData.eventType !== "Substitution" && (
             <div className="mai-form-group">
               <label>Player Responsible</label>
-              <input 
-                type="text" 
-                name="player" 
-                placeholder="Enter player name" 
-                value={eventData.player} 
-                onChange={handleEventInputChange} 
-              />
+              <select
+                    name="player"
+                    value={eventData.player}
+                    onChange={handleEventInputChange}
+                  >
+                    <option value="">Select player</option>
+                    {eventData.team === "Home" &&
+                      players[selectedMatch.homeTeam]?.map((p) => (
+                        <option key={p.playerId} value={p.name}>
+                          {p.name}
+                        </option>
+                      ))}
+                    {eventData.team === "Away" &&
+                      players[selectedMatch.awayTeam]?.map((p) => (
+                        <option key={p.playerId} value={p.name}>
+                          {p.name}
+                        </option>
+                      ))}
+              </select>
             </div>
           )}
 
@@ -59,23 +72,47 @@ const MatchEventForm = ({
             <>
               <div className="mai-form-group">
                 <label>Player In</label>
-                <input 
-                  type="text" 
-                  name="playerIn" 
-                  value={eventData.playerIn} 
-                  onChange={handleEventInputChange} 
-                  placeholder="Enter player coming in"
-                />
+                <select
+                      name="playerIn"
+                      value={eventData.playerIn}
+                      onChange={handleEventInputChange}
+                    >
+                      <option value="">Select player</option>
+                      {eventData.team === "Home" &&
+                        players[selectedMatch.homeTeam]?.map((p) => (
+                          <option key={p.playerId} value={p.name}>
+                            {p.name}
+                          </option>
+                        ))}
+                      {eventData.team === "Away" &&
+                        players[selectedMatch.awayTeam]?.map((p) => (
+                          <option key={p.playerId} value={p.name}>
+                            {p.name}
+                          </option>
+                        ))}
+                </select>
               </div>
               <div className="mai-form-group">
                 <label>Player Out</label>
-                <input 
-                  type="text" 
-                  name="playerOut" 
-                  value={eventData.playerOut} 
-                  onChange={handleEventInputChange} 
-                  placeholder="Enter player going out"
-                />
+                <select
+                      name="playerOut"
+                      value={eventData.playerOut}
+                      onChange={handleEventInputChange}
+                    >
+                      <option value="">Select player</option>
+                      {eventData.team === "Home" &&
+                        players[selectedMatch.homeTeam]?.map((p) => (
+                          <option key={p.playerId} value={p.name}>
+                            {p.name}
+                          </option>
+                        ))}
+                      {eventData.team === "Away" &&
+                        players[selectedMatch.awayTeam]?.map((p) => (
+                          <option key={p.playerId} value={p.name}>
+                            {p.name}
+                          </option>
+                        ))}
+                </select>
               </div>
             </>
           )}
