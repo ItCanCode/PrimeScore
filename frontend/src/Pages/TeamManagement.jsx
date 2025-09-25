@@ -12,7 +12,7 @@ const TeamManagement = () => {
   const [newPlayer, setNewPlayer] = useState({ name: '', position: '', number: '', age: '' });
   const [newTeam, setNewTeam] = useState({ teamName: '', shortName: '', sportType: '', city: '' });
 
-  const sportOptions = ['Soccer','Basketball','Rugby'];
+  const sportOptions = ['Football','Netball','Rugby'];
 
   useEffect(() => {
     const fetchMyTeam = async () => {
@@ -48,8 +48,8 @@ const TeamManagement = () => {
 
   const getPositionsBySport = (sport) => {
     const positions = {
-      'Soccer': ['Goalkeeper','Defender','Midfielder','Forward'],
-      'Basketball': ['Point Guard','Shooting Guard','Small Forward','Power Forward','Center'],
+      'Football': ['Goalkeeper','Defender','Midfielder','Forward'],
+      'Netball': ['Point Guard','Shooting Guard','Small Forward','Power Forward','Center'],
       'Rugby': ['Forward','Back','Scrum Half','Fly Half','Hooker','Prop'],
     };
     return positions[sport] || [];

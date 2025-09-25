@@ -1,13 +1,16 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import '../Styles/LiveAPI.css';
 const LiveApi = () => {
   const API_KEY = "4399a3821d4ce5eb1a989436dc4e5303cf5e7176";
-  // Replace with your actual useLocation hook
-  const selected_league = "Epl"; // location.state?.selected_league || "Epl";
+  
+  // const selected_league = "Epl"; 
+   const location = useLocation();
 
   const navigate = useNavigate();
-
+  const selected_league_2=location.state.selected_league;
+  console.log(location.state.selected_league);
+  
   const [matches, setMatches] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -31,7 +34,10 @@ const LiveApi = () => {
     setError(null);
 
     try {
-      const league_id = LEAGUE_IDS[selected_league] || LEAGUE_IDS.Epl;
+      
+      // console.log(selected_league2);
+      
+      const league_id = LEAGUE_IDS[selected_league_2] || LEAGUE_IDS.Epl;
       const apiUrl = `https://api.soccerdataapi.com/matches/?league_id=${league_id}&season=2025-2026&auth_token=${API_KEY}`;
       const response = await fetch(apiUrl, {
         method: "GET",
@@ -82,7 +88,7 @@ const LiveApi = () => {
     } finally {
       setLoading(false);
     }
-  }, [selected_league, API_KEY]);
+  }, [selected_league_2, API_KEY]);
 
   useEffect(() => {
     if (hasFetched.current) return;
@@ -90,13 +96,13 @@ const LiveApi = () => {
     return () => abortController.current?.abort();
   }, [fetchMatches]);
 
-  useEffect(() => { hasFetched.current = false; }, [selected_league]);
+  useEffect(() => { hasFetched.current = false; }, [selected_league_2]);
 
   if (loading) {
     return (
       <div className="live-api-container">
         <div className="loading-container">
-          <p className="loading-text">Loading {selected_league} matches...</p>
+          <p className="loading-text">Loading {selected_league_2} matches...</p>
         </div>
       </div>
     );
@@ -133,7 +139,7 @@ const LiveApi = () => {
     <div className="live-api-container">
         <button onClick={() => navigate(-1)} style={{ marginBottom: '1rem', padding: '0.5rem 1rem', borderRadius: '8px', border: 'none', color: '#0e0d0dff', cursor: 'pointer' }}>Back</button>
       <div className="live-api-header">
-        <h2 className="live-api-title">{selected_league.toUpperCase()} Matches in the Last 7 Days</h2>
+        <h2 className="live-api-title">{selected_league_2.toUpperCase()} Matches in the Last 7 Days</h2>
         <p className="live-api-subtitle">Recent football matches ({matches.length} matches found)</p>
       </div>
       
@@ -216,7 +222,7 @@ const LiveApi = () => {
       ) : (
         <div className="no-matches">
           <div className="no-matches-icon">⚽</div>
-          <p className="no-matches-text">No {selected_league} matches found in the last 7 days.</p>
+          <p className="no-matches-text">No {selected_league_2} matches found in the last 7 days.</p>
           <p className="no-matches-subtitle">Try checking back later or selecting a different league.</p>
         </div>
       )}

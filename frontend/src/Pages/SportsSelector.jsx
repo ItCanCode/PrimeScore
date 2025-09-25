@@ -36,7 +36,7 @@ const SportsSelector = () => {
     },
     { 
       id: 'basketball', 
-      name: 'Basketball', 
+      name: 'BaskeRutball', 
       icon: '🏀', 
       description: ' ' 
     },
@@ -59,8 +59,8 @@ const SportsSelector = () => {
       description: 'Ice-cold competition with lightning-fast gameplay' 
     },
     { 
-      id: 'volleyball', 
-      name: 'Volleyball', 
+      id: 'rugby', 
+      name: 'Rugby', 
       icon: '🏐', 
       description: 'Teamwork and timing in every spike and block' 
     }
@@ -101,6 +101,10 @@ const SportsSelector = () => {
     if (sportId === 'football') {
       setShowFootballModal(true);
     }
+      
+      else if (sportId === 'rugby') { 
+    navigate('/rugby'); 
+  } 
 
   };
 
@@ -108,28 +112,38 @@ const SportsSelector = () => {
 
 const handleLeagueSelection = (leagueId) => {
   setShowFootballModal(false);
+  console.log(leagueId);
+  
   setSelectedLeague(leagueId);
   setShowLeaguesChoice(true);
 };
 
 const handleMatchTypeSelection = (matchType) => {
   setShowLeaguesChoice(false);
+  console.log(matchType);
   if(selectedLeague == "local-leagues"){
     navigate(`/${matchType}`)
     console.log(matchType);
     
   }
-  else if (matchType === 'upcoming' || matchType === 'past') {
+  else if (matchType === 'upcoming' || matchType === 'past' || matchType==="ongoing") {
     navigate(`/live/${matchType}`,{
       state:{selected_league:selectedLeague}
     });
+    console.log(selectedLeague);
+    
   } else {
   
     let leagueParam = selectedLeague;
     if (selectedLeague === "premier-league") {
       leagueParam = "Epl";
     }
-    
+    //     else if (selectedLeague === "serie_a") {
+    //   leagueParam = "Epl";
+    // }
+    //     if (selectedLeague === "PSL") {
+    //   leagueParam = "Epl";
+    // }
     navigate("/past", { 
       state: { selected_league: leagueParam } 
     });

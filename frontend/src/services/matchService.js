@@ -1,34 +1,44 @@
 // services/matchService.js
 
+//let baseURL = "http://localhost:3000";
+let baseURL = "https://prime-backend.azurewebsites.net";
+
 export const addMatchEventService = async (selectedMatch, eventData) => {
-  let endpoint = "";
-  let payload = { 
-    team: eventData.team, 
-    time: eventData.time, 
-    eventType: eventData.eventType 
+  const endpoint = `/api/feed/${selectedMatch.id}/event`;
+
+  const payload = {
+    eventType: eventData.eventType,
+    team: eventData.team,
+    time: eventData.time,
   };
 
-  if (eventData.eventType === "Goal" || eventData.eventType === "Foul") {
-    payload.player = eventData.player;
-    endpoint = `/api/feed/${selectedMatch.id}/${eventData.eventType.toLowerCase()}`;
-  } 
-  else if (eventData.eventType === "Substitution") {
-    payload.playerIn = eventData.playerIn;
-    payload.playerOut = eventData.playerOut;
-    endpoint = `/api/feed/${selectedMatch.id}/substitution`;
-  }
-  else if (eventData.eventType === "Yellow Card") {
-    payload.player = eventData.player;
-    payload.card = "yellow";
-    endpoint = `/api/feed/${selectedMatch.id}/foul`;
-  } 
-  else if (eventData.eventType === "Red Card") {
-    payload.player = eventData.player;
-    payload.card = "red";
-    endpoint = `/api/feed/${selectedMatch.id}/foul`;
+  switch (eventData.eventType) {
+    case "Goal":
+    case "Foul":
+      if (eventData.player) payload.player = eventData.player;
+      break;
+
+    case "Yellow Card":
+      if (eventData.player) payload.player = eventData.player;
+      payload.card = "yellow";
+      break;
+
+    case "Red Card":
+      if (eventData.player) payload.player = eventData.player;
+      payload.card = "red";
+      break;
+
+    case "Substitution":
+      if (eventData.playerIn) payload.playerIn = eventData.playerIn;
+      if (eventData.playerOut) payload.playerOut = eventData.playerOut;
+      break;
+
+    default:
+      // Timeout, Corner Kick, Injury, etc. → no extra fields
+      break;
   }
 
-  const res = await fetch(`https://prime-backend.azurewebsites.net${endpoint}`, {
+  const res = await fetch(`${baseURL}${endpoint}`, {
     method: "POST",
     headers: { "Content-Type": "application/json", "x-user-role": "admin" },
     body: JSON.stringify(payload),
@@ -36,11 +46,10 @@ export const addMatchEventService = async (selectedMatch, eventData) => {
 
   if (!res.ok) throw new Error("Failed to add event");
 
-  // return new event data for the component
-  return { 
-    ...payload, 
-    id: Date.now(), 
-    timestamp: new Date().toISOString() 
+  return {
+    ...payload,
+    id: Date.now(),
+    timestamp: new Date().toISOString(),
   };
 };
 
@@ -57,8 +66,8 @@ const validateMatchForm = (formData) => {
 export const saveMatchService = async (formData, editingMatch) => {
     validateMatchForm(formData);
   const endpoint = editingMatch 
-    ? `https://prime-backend.azurewebsites.net/api/admin/updateMatch/${editingMatch.id}`
-    : `https://prime-backend.azurewebsites.net/api/admin/createMatch`;
+    ? `${baseURL}/api/admin/updateMatch/${editingMatch.id}`
+    : `${baseURL}/api/admin/createMatch`;
 
   const method = editingMatch ? "PUT" : "POST";
 
@@ -88,7 +97,7 @@ export const startMatchService = async (match, updateMatchStatus, setMessage) =>
   };
 
   try {
-    const res = await fetch(`https://prime-backend.azurewebsites.net/api/feed/${matchId}/start`, {
+    const res = await fetch(`${baseURL}/api/feed/${matchId}/start`, {
       method: "POST",
       headers: { "Content-Type": "application/json", "x-user-role": "admin" },
       body: JSON.stringify(initialDoc),
@@ -105,7 +114,7 @@ export const startMatchService = async (match, updateMatchStatus, setMessage) =>
 };
 // Fetch all matches
 export const fetchMatchesService = async () => {
-  const response = await fetch("https://prime-backend.azurewebsites.net/api/users/viewMatches");
+  const response = await fetch(`${baseURL}/api/users/viewMatches`);
   if (!response.ok) throw new Error("Failed to fetch matches");
 
   const matchesData = await response.json();
@@ -120,7 +129,7 @@ export const fetchMatchesService = async () => {
 };
 
 export const updateMatchStatusService = async (matchId, newStatus) => {
-  const res = await fetch(`https://prime-backend.azurewebsites.net/api/admin/updateMatchStatus/${matchId}`, {
+  const res = await fetch(`${baseURL}/api/admin/updateMatchStatus/${matchId}`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ status: newStatus }),
@@ -134,7 +143,7 @@ export const updateMatchStatusService = async (matchId, newStatus) => {
 };
 
 export const updateScoreService = async (matchId, homeScore, awayScore) => {
-  const res = await fetch(`https://prime-backend.azurewebsites.net/api/admin/updateScore/${matchId}`, {
+  const res = await fetch(`${baseURL}/api/admin/updateScore/${matchId}`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ homeScore, awayScore }),
@@ -148,7 +157,7 @@ export const updateScoreService = async (matchId, homeScore, awayScore) => {
 };
 
 export const deleteMatchService = async (matchId) => {
-  const res = await fetch(`https://prime-backend.azurewebsites.net/api/admin/deleteMatch/${matchId}`, {
+  const res = await fetch(`${baseURL}/api/admin/deleteMatch/${matchId}`, {
     method: "DELETE",
   });
 
@@ -160,14 +169,14 @@ export const deleteMatchService = async (matchId) => {
 };
 
 export const fetchTeams = async () => {
-  const res = await fetch("https://prime-backend.azurewebsites.net/api/admin/allTeams");
+  const res = await fetch(`${baseURL}/api/admin/allTeams`);
   if (!res.ok) throw new Error("Failed to fetch teams");
   const data = await res.json();
   return data.teams.map(team => ({ id: team.id, name: team.teamName }));
 };
 
 export const fetchMatches = async () => {
-  const res = await fetch('https://prime-backend.azurewebsites.net/api/users/viewMatches');
+  const res = await fetch(`${baseURL}/api/users/viewMatches`);
   if (!res.ok) throw new Error("Failed to fetch matches");
   const data = await res.json();
   return data.map(match => ({
@@ -179,7 +188,7 @@ export const fetchMatches = async () => {
 };
 
 export const fetchLiveStats = async () => {
-  const res = await fetch('https://prime-backend.azurewebsites.net/api/display/display-matches');
+  const res = await fetch(`${baseURL}/api/display/display-matches`);
   if (!res.ok) throw new Error("Failed to fetch live stats");
   return res.json();
 };
