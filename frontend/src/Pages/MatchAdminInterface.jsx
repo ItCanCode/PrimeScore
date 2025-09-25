@@ -1,34 +1,31 @@
 import { useState, useEffect, useContext } from "react";
 import { AuthContext } from "../context/authContext.jsx";
-import { Plus} from "lucide-react";
+import { Plus, X } from "lucide-react";
 import MatchClock from "../Components/MatchClock.jsx";
 import "../Styles/MatchAdminInterface.css";
 
 //services
 import { handleSubmitService } from "../services/handleSubmitService";
 import { handleUpdateMatchStatus } from "../services/updateMatchStatusService";
-import { fetchMatches,fetchTeams,fetchLiveStats } from "../services/matchService.js";
-import { startMatchService } from "../services/matchService";
-
-// import { handleUpdateScore } from "../services/updateScoreHandler";
+import { fetchMatches, fetchTeams, fetchLiveStats, startMatchService } from "../services/matchService";
 import { handleDeleteMatch } from "../services/deleteMatchHandler";
 import { handleAddMatchEvent } from "../services/addMatchEventHandler";
 
 //Components
-import MatchForm from "../Components/MatchForm"; 
-import MatchesList from "../Components/MatchesList"; 
-import MatchEventForm from "../Components/MatchEventForm"; 
+import MatchForm from "../Components/MatchForm";
+import MatchesList from "../Components/MatchesList";
+import MatchEventForm from "../Components/MatchEventForm";
 import Navbar from "../Components/Navbar";
 
 // Utils
-import { formatDateTime, getStatusColor, getStatusIcon,parseMatchEvents } from "../utils.jsx";
+import { formatDateTime, getStatusColor, getStatusIcon, parseMatchEvents } from "../utils.jsx";
 
 export default function MatchAdminInterface() {
-  const { user} = useContext(AuthContext);
-  const role = user.role; 
+  const { user } = useContext(AuthContext);
+  const role = user.role;
   console.log(role);
-  
-  const [players, setPlayers] = useState({});
+
+  const [_players, setPlayers] = useState({});
   const [matches, setMatches] = useState([]);
   const [teams, setTeams] = useState([]);
   const [showForm, setShowForm] = useState(false);
@@ -36,8 +33,7 @@ export default function MatchAdminInterface() {
   const [isMobile, setIsMobile] = useState(false);
   const [_isTablet, setIsTablet] = useState(false);
 
-  // Set default tab to 'ongoing' so ongoing matches are shown by default
-  const [activeTab, setActiveTab] = useState('ongoing');
+  const [activeTab, setActiveTab] = useState("ongoing");
   const [editingMatch, setEditingMatch] = useState(null);
   const [formData, setFormData] = useState({
     sportType: "",
@@ -57,96 +53,140 @@ export default function MatchAdminInterface() {
     player: "",
     time: "",
     playerIn: "",
-    playerOut: ""
+    playerOut: "",
   });
 
   const [matchEvents, setMatchEvents] = useState({});
-  // Store live stats for each match (score, etc.)
   const [matchStats, setMatchStats] = useState({});
-  
-  // Confirmation modal states
+
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [confirmAction, setConfirmAction] = useState(null);
   const [confirmData, setConfirmData] = useState(null);
-  
-  console.log(setMatchStats);
 
-    useEffect(() => {
-      const handleResize = () => {
-        setIsMobile(window.innerWidth <= 768);
-        setIsTablet(window.innerWidth > 768 && window.innerWidth <= 1024);
-      };
-  
-      handleResize();
-      window.addEventListener('resize', handleResize);
-      return () => window.removeEventListener('resize', handleResize);
-    }, []);
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+      setIsTablet(window.innerWidth > 768 && window.innerWidth <= 1024);
+    };
 
-  const sportTypes = [ "Football", "Basketball", "Tennis", "Cricket", "Baseball", "Hockey", "Rugby", "Volleyball", "Badminton", "Table Tennis"];
-  const eventTypes = ["Goal", "Foul", "Yellow Card", "Red Card", "Substitution", 
-    "Penalty", "Corner Kick", "Free Kick", "Offside", "Injury", "Timeout"
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  const sportTypes = [
+    "Football",
+    "Basketball",
+    "Tennis",
+    "Cricket",
+    "Baseball",
+    "Hockey",
+    "Rugby",
+    "Volleyball",
+    "Badminton",
+    "Table Tennis",
   ];
- 
+
+  const eventTypes = [
+    "Goal",
+    "Foul",
+    "Yellow Card",
+    "Red Card",
+    "Substitution",
+    "Penalty",
+    "Corner Kick",
+    "Free Kick",
+    "Offside",
+    "Injury",
+    "Timeout",
+  ];
+
   // Handlers
-  const handleInputChange = (e) => setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
-  const handleEventInputChange = (e) => setEventData(prev => ({ ...prev, [e.target.name]: e.target.value }));
+  const handleInputChange = (e) =>
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+
+  const handleEventInputChange = (e) =>
+    setEventData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+
   const addMatchEvent = async () => {
-    // Show confirmation modal first
     setConfirmData({
-      type: 'event',
+      type: "event",
       eventType: eventData.eventType,
       team: eventData.team,
       player: eventData.player,
       playerIn: eventData.playerIn,
       playerOut: eventData.playerOut,
-      time: eventData.time
+      time: eventData.time,
     });
-    setConfirmAction(() => handleAddMatchEvent(selectedMatch, eventData, setMatchEvents, setMessage, () => closeEventForm()););
+
+    setConfirmAction(() =>
+      handleAddMatchEvent(
+        selectedMatch,
+        eventData,
+        setMatchEvents,
+        setMessage,
+        () => closeEventForm()
+      )
+    );
     setShowConfirmModal(true);
   };
 
   const fetchCurrentMatchTime = async (matchId) => {
     try {
-      const response = await fetch(`https://prime-backend.azurewebsites.net/api/match-clock/${matchId}`);
+      const response = await fetch(
+        `https://prime-backend.azurewebsites.net/api/match-clock/${matchId}`
+      );
       const data = await response.json();
-      return Math.floor(data.elapsed / 60); // Convert seconds to minutes
+      return Math.floor(data.elapsed / 60);
     } catch (error) {
-      console.error('Failed to fetch match time:', error);
+      console.error("Failed to fetch match time:", error);
       return 0;
     }
   };
 
   const openEventForm = async (match) => {
     setSelectedMatch(match);
-    
-    // Get current match time for ongoing matches
-    const currentTime = match.status === 'ongoing' ? await fetchCurrentMatchTime(match.id) : '';
-    
-    setEventData({ 
-      eventType: "", 
-      team: "", 
-      player: "", 
-      time: currentTime.toString(), // Auto-filled from match clock
-      playerIn: "", 
-      playerOut: "" 
+
+    const currentTime =
+      match.status === "ongoing"
+        ? await fetchCurrentMatchTime(match.id)
+        : "";
+
+    setEventData({
+      eventType: "",
+      team: "",
+      player: "",
+      time: currentTime.toString(),
+      playerIn: "",
+      playerOut: "",
     });
-    
+
     setShowEventForm(true);
   };
 
-  const handleSubmit = async() => {
-    // Show confirmation modal first
+  const handleSubmit = async () => {
     setConfirmData({
-      type: 'match',
-      action: editingMatch ? 'update' : 'create',
+      type: "match",
+      action: editingMatch ? "update" : "create",
       sportType: formData.sportType,
       matchName: formData.matchName,
       homeTeam: formData.homeTeam,
       awayTeam: formData.awayTeam,
       startTime: formData.startTime,
-      venue: formData.venue
+      venue: formData.venue,
     });
-    setConfirmAction(handleSubmitService(formData, editingMatch, setMessage, setMatches, setEditingMatch, setFormData, setShowForm););
+
+    setConfirmAction(() =>
+      handleSubmitService(
+        formData,
+        editingMatch,
+        setMessage,
+        setMatches,
+        setEditingMatch,
+        setFormData,
+        setShowForm
+      )
+    );
     setShowConfirmModal(true);
   };
 
@@ -156,71 +196,136 @@ export default function MatchAdminInterface() {
     const { homeTeam, awayTeam } = selectedMatch;
 
     Promise.all([
-      fetch(`https://prime-backend.azurewebsites.net/api/admin/teams/${homeTeam}/players`),
-      fetch(`https://prime-backend.azurewebsites.net/api/admin/teams/${awayTeam}/players`)
+      fetch(
+        `https://prime-backend.azurewebsites.net/api/admin/teams/${homeTeam}/players`
+      ),
+      fetch(
+        `https://prime-backend.azurewebsites.net/api/admin/teams/${awayTeam}/players`
+      ),
     ])
       .then(async ([resHome, resAway]) => {
         const homePlayers = await resHome.json();
         const awayPlayers = await resAway.json();
 
-        setPlayers(prev => ({
+        setPlayers((prev) => ({
           ...prev,
           [homeTeam]: homePlayers.players || [],
-          [awayTeam]: awayPlayers.players || []
+          [awayTeam]: awayPlayers.players || [],
         }));
       })
-      .catch(err => {
+      .catch((err) => {
         console.error("Failed to fetch players", err);
       });
-  }, [selectedMatch]);
+  }, [selectedMatch?.id, selectedMatch?.homeTeam, selectedMatch?.awayTeam]);
 
-
-//   const openEventForm = (match) => { setSelectedMatch(match); setShowEventForm(true); };
-  const closeEventForm = () => { setSelectedMatch(null); setShowEventForm(false); setEventData({ eventType: "", team: "", player: "", time: "", playerIn: "", playerOut: "" }); };
-  const addMatchEvent = () => handleAddMatchEvent(selectedMatch, eventData, setMatchEvents, setMessage, () => closeEventForm());
-
-  const startMatch = async (match) => {startMatchService(match, updateMatchStatus, setMessage);};
-//   const handleSubmit = () => handleSubmitService(formData, editingMatch, setMessage, setMatches, setEditingMatch, setFormData, setShowForm);
-  const editMatch = (match) => { setEditingMatch(match); setFormData(match); setShowForm(true); };
-  const cancelEdit = () => { setEditingMatch(null); setFormData({ sportType: "", matchName: "", homeTeam: "", awayTeam: "", startTime: "", venue: "" }); setShowForm(false); };
-  const deleteMatch = (matchId) => handleDeleteMatch(matchId, setMatches, setMessage);
-  const updateMatchStatus = (matchId, status) => handleUpdateMatchStatus(matchId, status, setMatches, setMessage);
-
-  const filteredMatches = matches.filter(match =>  
-    match.status === activeTab || (!match.status && activeTab === 'scheduled')
-  );
-
-
-useEffect(() => {
-  const loadData = async () => {
-    try {
-      const [teamsData, matchesData, liveStatsData] = await Promise.all([
-        fetchTeams(),
-        fetchMatches(),
-        fetchLiveStats()
-      ]);
-
-      setTeams(teamsData);
-      setMatches(matchesData);
-
-      const { statsMap, eventsMap } = parseMatchEvents(liveStatsData);
-      setMatchStats(statsMap);
-      setMatchEvents(eventsMap);
-
-    } catch (error) {
-      console.error("Error loading match data:", error);
-      // fallback dummy data
-      setMatches([
-        { id: 1, homeTeam: "Manchester United", awayTeam: "Liverpool", venue: "Old Trafford", startTime: "2025-08-20T15:00", sportType: "Football", matchName: "Premier League Match", status: "scheduled", homeScore: 0, awayScore: 0 },
-        { id: 2, homeTeam: "Lakers", awayTeam: "Warriors", venue: "Crypto.com Arena", startTime: "2025-08-21T20:30", sportType: "Basketball", matchName: "NBA Regular Season", status: "ongoing", homeScore: 85, awayScore: 92 },
-        { id: 3, homeTeam: "England", awayTeam: "Australia", venue: "Lord's Cricket Ground", startTime: "2025-08-22T11:00", sportType: "Cricket", matchName: "Test Match", status: "finished", homeScore: 287, awayScore: 245 }
-      ]);
-    }
-
+  const closeEventForm = () => {
+    setSelectedMatch(null);
+    setShowEventForm(false);
+    setEventData({
+      eventType: "",
+      team: "",
+      player: "",
+      time: "",
+      playerIn: "",
+      playerOut: "",
+    });
   };
 
-  loadData();
-}, []);
+  const startMatch = async (match) => {
+    startMatchService(match, updateMatchStatus, setMessage);
+  };
+
+  const editMatch = (match) => {
+    setEditingMatch(match);
+    setFormData(match);
+    setShowForm(true);
+  };
+
+  const cancelEdit = () => {
+    setEditingMatch(null);
+    setFormData({
+      sportType: "",
+      matchName: "",
+      homeTeam: "",
+      awayTeam: "",
+      startTime: "",
+      venue: "",
+    });
+    setShowForm(false);
+  };
+
+  const deleteMatch = (matchId) =>
+    handleDeleteMatch(matchId, setMatches, setMessage);
+
+  const updateMatchStatus = (matchId, status) =>
+    handleUpdateMatchStatus(matchId, status, setMatches, setMessage);
+
+  const filteredMatches = matches.filter(
+    (match) =>
+      match.status === activeTab ||
+      (!match.status && activeTab === "scheduled")
+  );
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const [teamsData, matchesData, liveStatsData] = await Promise.all([
+          fetchTeams(),
+          fetchMatches(),
+          fetchLiveStats(),
+        ]);
+
+        setTeams(teamsData);
+        setMatches(matchesData);
+
+        const { statsMap, eventsMap } = parseMatchEvents(liveStatsData);
+        setMatchStats(statsMap);
+        setMatchEvents(eventsMap);
+      } catch (error) {
+        console.error("Error loading match data:", error);
+        setMatches([
+          {
+            id: 1,
+            homeTeam: "Manchester United",
+            awayTeam: "Liverpool",
+            venue: "Old Trafford",
+            startTime: "2025-08-20T15:00",
+            sportType: "Football",
+            matchName: "Premier League Match",
+            status: "scheduled",
+            homeScore: 0,
+            awayScore: 0,
+          },
+          {
+            id: 2,
+            homeTeam: "Lakers",
+            awayTeam: "Warriors",
+            venue: "Crypto.com Arena",
+            startTime: "2025-08-21T20:30",
+            sportType: "Basketball",
+            matchName: "NBA Regular Season",
+            status: "ongoing",
+            homeScore: 85,
+            awayScore: 92,
+          },
+          {
+            id: 3,
+            homeTeam: "England",
+            awayTeam: "Australia",
+            venue: "Lord's Cricket Ground",
+            startTime: "2025-08-22T11:00",
+            sportType: "Cricket",
+            matchName: "Test Match",
+            status: "finished",
+            homeScore: 287,
+            awayScore: 245,
+          },
+        ]);
+      }
+    };
+
+    loadData();
+  }, []);
 
   return (
     <div className="mai-root">
@@ -237,15 +342,18 @@ useEffect(() => {
           <p>Create and manage upcoming sports matches</p>
         </div>
 
-        {/* Message Display */}
         {message && (
           <div className={`mai-message mai-message-${message.type}`}>
             {message.text}
-            <button onClick={() => setMessage(null)} className="mai-message-close">×</button>
+            <button
+              onClick={() => setMessage(null)}
+              className="mai-message-close"
+            >
+              ×
+            </button>
           </div>
         )}
 
-        {/* Event Form Modal */}
         {showEventForm && selectedMatch && (
           <MatchEventForm
             selectedMatch={selectedMatch}
@@ -257,50 +365,89 @@ useEffect(() => {
           />
         )}
 
-        {/* Confirmation Modal */}
         {showConfirmModal && (
           <div className="mai-modal-overlay">
             <div className="mai-confirm-modal">
               <div className="mai-confirm-modal-header">
                 <h3>Confirm Action</h3>
-                <button onClick={() => setShowConfirmModal(false)} className="mai-modal-close">
+                <button
+                  onClick={() => setShowConfirmModal(false)}
+                  className="mai-modal-close"
+                >
                   <X size={20} />
                 </button>
               </div>
-              
+
               <div className="mai-confirm-modal-body">
                 <p>Are you sure you want to proceed with this action?</p>
-                {confirmData && confirmData.type === 'event' && (
+                {confirmData && confirmData.type === "event" && (
                   <div className="mai-confirm-details">
-                    <p><strong>Event Type:</strong> {confirmData.eventType}</p>
-                    <p><strong>Team:</strong> {confirmData.team}</p>
-                    {confirmData.player && <p><strong>Player:</strong> {confirmData.player}</p>}
-                    {confirmData.playerIn && <p><strong>Player In:</strong> {confirmData.playerIn}</p>}
-                    {confirmData.playerOut && <p><strong>Player Out:</strong> {confirmData.playerOut}</p>}
-                    <p><strong>Time:</strong> {confirmData.time}</p>
-                    <p><strong>Match:</strong> {selectedMatch?.homeTeam} vs {selectedMatch?.awayTeam}</p>
+                    <p>
+                      <strong>Event Type:</strong> {confirmData.eventType}
+                    </p>
+                    <p>
+                      <strong>Team:</strong> {confirmData.team}
+                    </p>
+                    {confirmData.player && (
+                      <p>
+                        <strong>Player:</strong> {confirmData.player}
+                      </p>
+                    )}
+                    {confirmData.playerIn && (
+                      <p>
+                        <strong>Player In:</strong> {confirmData.playerIn}
+                      </p>
+                    )}
+                    {confirmData.playerOut && (
+                      <p>
+                        <strong>Player Out:</strong> {confirmData.playerOut}
+                      </p>
+                    )}
+                    <p>
+                      <strong>Time:</strong> {confirmData.time}
+                    </p>
+                    <p>
+                      <strong>Match:</strong> {selectedMatch?.homeTeam} vs{" "}
+                      {selectedMatch?.awayTeam}
+                    </p>
                   </div>
                 )}
-                {confirmData && confirmData.type === 'match' && (
+                {confirmData && confirmData.type === "match" && (
                   <div className="mai-confirm-details">
-                    <p><strong>Action:</strong> {confirmData.action === 'create' ? 'Create' : 'Update'} Match</p>
-                    <p><strong>Sport:</strong> {confirmData.sportType}</p>
-                    <p><strong>Match:</strong> {confirmData.homeTeam} vs {confirmData.awayTeam}</p>
-                    <p><strong>Venue:</strong> {confirmData.venue}</p>
-                    <p><strong>Start Time:</strong> {new Date(confirmData.startTime).toLocaleString()}</p>
+                    <p>
+                      <strong>Action:</strong>{" "}
+                      {confirmData.action === "create"
+                        ? "Create"
+                        : "Update"}{" "}
+                      Match
+                    </p>
+                    <p>
+                      <strong>Sport:</strong> {confirmData.sportType}
+                    </p>
+                    <p>
+                      <strong>Match:</strong> {confirmData.homeTeam} vs{" "}
+                      {confirmData.awayTeam}
+                    </p>
+                    <p>
+                      <strong>Venue:</strong> {confirmData.venue}
+                    </p>
+                    <p>
+                      <strong>Start Time:</strong>{" "}
+                      {new Date(confirmData.startTime).toLocaleString()}
+                    </p>
                   </div>
                 )}
               </div>
-              
+
               <div className="mai-confirm-modal-actions">
-                <button 
-                  className="mai-cancel-btn" 
+                <button
+                  className="mai-cancel-btn"
                   onClick={() => setShowConfirmModal(false)}
                 >
                   Cancel
                 </button>
-                <button 
-                  className="mai-create-btn mai-confirm-btn" 
+                <button
+                  className="mai-create-btn mai-confirm-btn"
                   onClick={() => {
                     setShowConfirmModal(false);
                     if (confirmAction) confirmAction();
@@ -313,13 +460,14 @@ useEffect(() => {
           </div>
         )}
 
-        {/* Status Tabs */}
         <div className="mai-status-tabs">
-          {['scheduled', 'ongoing', 'finished'].map((tab) => (
+          {["scheduled", "ongoing", "finished"].map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`mai-tab ${activeTab === tab ? 'mai-tab-active' : ''}`}
+              className={`mai-tab ${
+                activeTab === tab ? "mai-tab-active" : ""
+              }`}
             >
               {getStatusIcon(tab)}
               <span className="capitalize">{tab} Matches</span>
@@ -338,8 +486,7 @@ useEffect(() => {
             teams={teams}
           />
         )}
-        
-      
+
         <MatchesList
           filteredMatches={filteredMatches}
           activeTab={activeTab}
@@ -354,7 +501,6 @@ useEffect(() => {
           openEventForm={openEventForm}
           updateMatchStatus={updateMatchStatus}
         />
-     
       </div>
 
       <div className="mai-floating-icons">
