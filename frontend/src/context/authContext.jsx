@@ -4,11 +4,11 @@ import { createContext, useState, useEffect } from "react";
 export const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
-  useEffect(() => {
-  console.log("🔑 AuthContext Mounted");
-  console.log("Initial User from localStorage:", user);
-  console.log("Initial Token from localStorage:", token);
-}, []);
+//   useEffect(() => {
+//   console.log("🔑 AuthContext Mounted");
+//   console.log("Initial User from localStorage:", user);
+//   console.log("Initial Token from localStorage:", token);
+// }, []);
   const [user, setUser] = useState(() => {
     // Load from localStorage if available
     const savedUser = localStorage.getItem("user");
