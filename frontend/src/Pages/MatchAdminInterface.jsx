@@ -80,19 +80,11 @@ export default function MatchAdminInterface() {
     "Rugby",
   ];
 
-  const eventTypes = [
-    "Goal",
-    "Foul",
-    "Yellow Card",
-    "Red Card",
-    "Substitution",
-    "Penalty",
-    "Corner Kick",
-    "Free Kick",
-    "Offside",
-    "Injury",
-    "Timeout",
-  ];
+const sportEventMappings = {
+  Football: ["Goal", "Own Goal", "Foul", "Yellow Card", "Red Card", "Substitution", "Penalty", "Corner Kick", "Free Kick", "Offside", "Injury"],
+  Rugby: ["Try", "Conversion", "Penalty", "Yellow Card", "Red Card", "Substitution", "Injury"],
+  Netball: ["Goal", "Foul", "Substitution", "Injury", "Timeout"],
+};
 
   // Handlers
   const handleInputChange = (e) =>
@@ -351,7 +343,7 @@ export default function MatchAdminInterface() {
           <MatchEventForm
             selectedMatch={selectedMatch}
             eventData={eventData}
-            eventTypes={eventTypes}
+            eventTypes={sportEventMappings[selectedMatch.sportType] || []}
             handleEventInputChange={handleEventInputChange}
             closeEventForm={closeEventForm}
             addMatchEvent={addMatchEvent}
