@@ -7,7 +7,7 @@ function ProfileDetails() {
   const [favoritePlayer, setFavoritePlayer] = useState("");  
   const [isEditing, setIsEditing] = useState(false);
 
-  let baseURL = "http://localhost:3000"
+  let baseURL = "https://prime-backend.azurewebsites.net"
   // Fetch user data on mount
   useEffect(() => {
     const fetchUser = async () => {
