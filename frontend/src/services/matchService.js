@@ -12,19 +12,29 @@ export const addMatchEventService = async (selectedMatch, eventData) => {
     time: eventData.time,
   };
 
+  if (eventData.eventType !== "Timeout" && eventData.eventType !== "Substitution" && eventData.player) {
+    payload.player = eventData.player;
+  }
+
   switch (eventData.eventType) {
     case "Goal":
-    case "Foul":
-      if (eventData.player) payload.player = eventData.player;
+      payload.points = 1; 
       break;
 
+    case "Try":
+      payload.points = 5; 
+      break;
+
+    case "Conversion":
+      payload.points = 2; 
+      break;
+
+
     case "Yellow Card":
-      if (eventData.player) payload.player = eventData.player;
       payload.card = "yellow";
       break;
 
     case "Red Card":
-      if (eventData.player) payload.player = eventData.player;
       payload.card = "red";
       break;
 
@@ -34,7 +44,6 @@ export const addMatchEventService = async (selectedMatch, eventData) => {
       break;
 
     default:
-      // Timeout, Corner Kick, Injury, etc. → no extra fields
       break;
   }
 
@@ -52,6 +61,7 @@ export const addMatchEventService = async (selectedMatch, eventData) => {
     timestamp: new Date().toISOString(),
   };
 };
+
 
 const validateMatchForm = (formData) => {
   if (!formData.sportType || !formData.matchName || !formData.homeTeam || !formData.awayTeam || !formData.startTime || !formData.venue) {
@@ -86,26 +96,22 @@ export const saveMatchService = async (formData, editingMatch) => {
 };
 export const startMatchService = async (match, updateMatchStatus, setMessage) => {
   const matchId = match.id;
-  const initialDoc = {
-    home_score: match.homeScore || 0,
-    away_score: match.awayScore || 0,
-    isRunning: true,
-    period: 1,
-    fouls: [],
-    substitutions: [],
-    goals: [],
-  };
-
+  const now = new Date();
+  const scheduledTime = new Date(match.startTime);
+  if (now < scheduledTime){
+    setMessage({ type: "error", text: `Cannot start match before scheduled time: ${scheduledTime.toLocaleString()}` });
+    return;
+  }
   try {
     const res = await fetch(`${baseURL}/api/feed/${matchId}/start`, {
       method: "POST",
       headers: { "Content-Type": "application/json", "x-user-role": "admin" },
-      body: JSON.stringify(initialDoc),
     });
 
     if (!res.ok) throw new Error("Failed to start match");
 
     updateMatchStatus(matchId, 'ongoing');
+    setMessage({ type: "success", text: "Match started successfully!" });
 
   } catch (err) {
     console.error("Failed to start match", err);
