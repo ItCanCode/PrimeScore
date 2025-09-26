@@ -1,6 +1,6 @@
 import React from "react";
 import { Calendar, MapPin, Users, Play, Plus, Clock, Square, Edit2, Trash2 } from  "lucide-react";
-
+import MatchClock from "./MatchClock.jsx";
 
 const MatchesList = ({
   filteredMatches,
@@ -83,6 +83,12 @@ const MatchesList = ({
                     <MapPin size={16} /> {match.venue}
                   </div>
                 </div>
+                    {/* Match Clock Display - show for ongoing matches */}
+                {match.status === 'ongoing' && (
+                  <div className="mai-match-clock">
+                    <MatchClock matchId={match.id} status={match.status} />
+                  </div>
+                )}
 
                 <div className="mai-events-list">
                   <h5>Match Events:</h5>

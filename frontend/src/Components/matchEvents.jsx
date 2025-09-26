@@ -95,7 +95,7 @@ function MatchEvents() {
             />
           </>
         )}
-
+ 
         {eventType === "substitution" && (
           <>
             <label htmlFor="playerIn">Player In</label>
