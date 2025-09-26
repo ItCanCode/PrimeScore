@@ -10,7 +10,7 @@ export default function MatchClock({ matchId, status }) {
   // fetch current server state
   const fetchClock = async () => {
     try {
-      const response = await fetch(`/api/match-clock/${matchId}`);
+      const response = await fetch(`https://prime-backend.azurewebsites.net/api/match-clock/${matchId}`);
       const data = await response.json();
       setSeconds(Math.floor(data.elapsed));
       setRunning(data.running);
@@ -35,7 +35,7 @@ export default function MatchClock({ matchId, status }) {
 
   const startOrResume = async () => {
     try {
-      await fetch(`/api/match-clock/${matchId}/start`, {
+      await fetch(`https://prime-backend.azurewebsites.net/api/match-clock/${matchId}/start`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' }
       });
@@ -49,7 +49,7 @@ export default function MatchClock({ matchId, status }) {
     const reason = prompt("Pause reason?");
     if (!reason) return;
     try {
-      await fetch(`/api/match-clock/${matchId}/pause`, {
+      await fetch(`https://prime-backend.azurewebsites.net/api/match-clock/${matchId}/pause`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ reason })
@@ -62,7 +62,7 @@ export default function MatchClock({ matchId, status }) {
 
   const finishClock = async () => {
     try {
-      await fetch(`/api/match-clock/${matchId}/finish`, {
+      await fetch(`https://prime-backend.azurewebsites.net/api/match-clock/${matchId}/finish`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' }
       });

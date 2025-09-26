@@ -17,7 +17,7 @@ export const handleAddMatchEvent = async (
   resetEventForm
 ) => {
   try {
-    const newEvent = await addMatchEventService(selectedMatch.id, eventData);
+    const newEvent = await addMatchEventService(selectedMatch, eventData);
 
     setMessage({ type: "success", text: "Event added successfully" });
 
