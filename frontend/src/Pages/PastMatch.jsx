@@ -191,7 +191,7 @@ const LiveApi = () => {
                 <div className="events-section">
                   <h4 className="events-title">Match Events</h4>
                   <ul className="events-list">
-                    {match.events.slice(0, 5).map((event, eventIndex) => {
+                    {match.events.slice(0,match.events.length).map((event, eventIndex) => {
                       let playerName = "Unknown";
                       if (event.event_type === "substitution") {
                         const inName = event.player_in?.name || "Unknown";
@@ -208,11 +208,11 @@ const LiveApi = () => {
                         </li>
                       );
                     })}
-                    {match.events.length > 5 && (
+                    {/* {match.events.length > 5 && (
                       <li className="event-item">
                         <span>... and {match.events.length - 5} more events</span>
                       </li>
-                    )}
+                    )} */}
                   </ul>
                 </div>
               )}

@@ -1,7 +1,6 @@
 import { useState, useEffect, useContext } from "react";
 import { AuthContext } from "../context/authContext.jsx";
 import { Plus, X } from "lucide-react";
-import MatchClock from "../Components/MatchClock.jsx";
 import "../Styles/MatchAdminInterface.css";
 
 //services
@@ -16,6 +15,7 @@ import MatchForm from "../Components/MatchForm";
 import MatchesList from "../Components/MatchesList";
 import MatchEventForm from "../Components/MatchEventForm";
 import Navbar from "../Components/Navbar";
+
 
 // Utils
 import { formatDateTime, getStatusColor, getStatusIcon, parseMatchEvents } from "../utils.jsx";
@@ -80,19 +80,11 @@ export default function MatchAdminInterface() {
     "Rugby",
   ];
 
-  const eventTypes = [
-    "Goal",
-    "Foul",
-    "Yellow Card",
-    "Red Card",
-    "Substitution",
-    "Penalty",
-    "Corner Kick",
-    "Free Kick",
-    "Offside",
-    "Injury",
-    "Timeout",
-  ];
+const sportEventMappings = {
+  Football: ["Goal", "Own Goal", "Foul", "Yellow Card", "Red Card", "Substitution", "Penalty", "Corner Kick", "Free Kick", "Offside", "Injury"],
+  Rugby: ["Try", "Conversion", "Penalty", "Yellow Card", "Red Card", "Substitution", "Injury"],
+  Netball: ["Goal", "Foul", "Substitution", "Injury", "Timeout"],
+};
 
   // Handlers
   const handleInputChange = (e) =>
@@ -351,7 +343,7 @@ export default function MatchAdminInterface() {
           <MatchEventForm
             selectedMatch={selectedMatch}
             eventData={eventData}
-            eventTypes={eventTypes}
+            eventTypes={sportEventMappings[selectedMatch.sportType] || []}
             handleEventInputChange={handleEventInputChange}
             closeEventForm={closeEventForm}
             addMatchEvent={addMatchEvent}

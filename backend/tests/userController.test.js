@@ -100,11 +100,13 @@ describe("UserController", () => {
     it("should update user profile successfully", async () => {
       req.body = {
         username: "Bob",
-        bio: "Hello",
         picture: "pic.jpg",
-        favoriteSports: ["Soccer", "Basketball"],
-        favoriteTeam: "Real Madrid",
-        favoritePlayer: "Ronaldo",
+        profile: {
+          bio: "Hello",
+          favoriteSports: ["Soccer", "Basketball"],
+          favoriteTeam: "Real Madrid",
+          favoritePlayer: "Ronaldo",
+        },
       };
 
       const { firestore } = await import("../src/config/firebaseAdmin.js");
@@ -114,8 +116,8 @@ describe("UserController", () => {
 
       expect(firestore().collection().doc().update).toHaveBeenCalledWith({
         username: "Bob",
-        "profile.bio": "Hello",
         picture: "pic.jpg",
+        "profile.bio": "Hello",
         "profile.favoriteSports": ["Soccer", "Basketball"],
         "profile.favoriteTeam": "Real Madrid",
         "profile.favoritePlayer": "Ronaldo",
@@ -128,7 +130,15 @@ describe("UserController", () => {
     });
 
     it("should update profile with partial data", async () => {
-      req.body = { username: "Bob" }; 
+      req.body = {
+        username: "Bob",
+        profile: {
+          favoriteSports: [],
+          favoriteTeam: "",
+          favoritePlayer: "",
+        },
+      };
+
       const { firestore } = await import("../src/config/firebaseAdmin.js");
       firestore().collection().doc().get.mockResolvedValueOnce({ data: () => req.body });
 
