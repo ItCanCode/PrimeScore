@@ -16,6 +16,7 @@ import OngoingMatches from "./Pages/OngoingMatches";
 import { AuthProvider } from "./context/authContext.jsx";
 import UpcomingMatches from "./Components/upcomingMatches.jsx";
 import FixRug from "./Pages/RugbyFixture.jsx";
+import PastMatches from "./Pages/PastMatches.jsx";
 function App() {
   return (
     <>
@@ -35,8 +36,8 @@ function App() {
         <Route path='/live/past' element={<LiveApi/>}/>
         <Route path="/live/ongoing" element={<OnGoing/>}/>
         <Route path="/ongoing" element={<OngoingMatches/>}/>
-        
         <Route path="/upcoming" element={<UpcomingMatches/>}/>
+        <Route path="/past" element={<PastMatches/>}/>
         <Route path="/rugby" element={<FixRug/>}/>
       </Routes>
       </AuthProvider>
