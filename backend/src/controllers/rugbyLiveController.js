@@ -9,8 +9,15 @@ const db = admin.firestore();
 
         const batch = db.batch();
         const  fixtures  = req.body; 
-        
+        console.log("Incoming fixtures:", fixtures);
 
+
+    if (!Array.isArray(fixtures) || fixtures.length === 0) {
+      return res.status(400).json({ error: "No fixtures provided" });
+    }
+
+
+    
         const fixRef = db.collection("rugby_Live");
         for (const fixture of fixtures){
             const docRef = fixRef.doc();
