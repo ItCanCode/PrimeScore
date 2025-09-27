@@ -10,5 +10,6 @@ router.patch('/updateScore/:id', adminController.updateScore);
 router.post('/addMatchEvent/:id', adminController.addMatchEvent);
 router.get('/allTeams',adminController.allTeams);
 router.get('/teams/:teamName/players',adminController.getPlayersByTeamName);
+router.delete('/deleteMatch/:id', adminController.deleteMatch);
 
 export default router;
