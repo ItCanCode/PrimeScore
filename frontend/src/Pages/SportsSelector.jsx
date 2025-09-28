@@ -1,13 +1,17 @@
 import { useState ,useEffect,useContext} from 'react';
 import { useNavigate,Link  } from 'react-router-dom';
 import { ChevronRight, Home, Trophy, Users, Calendar, X } from 'lucide-react';
+import LeagueModal from '../Components/leagueModal.jsx';
+import MatchTypeModal from '../Components/MatchType.jsx';
 import { AuthContext } from "../context/authContext.jsx";
+import { getMatchTypeNavigation } from "../services/sportService";
 import '../Styles/SportsSelector.css';
+import { getSports, getFootballLeagues,getLeaguesForSport } from "../services/sportService";
 
 const SportsSelector = () => {
   const { user} = useContext(AuthContext);
   const role = user.role; 
-  console.log(role);
+
 
   const [showFootballModal, setShowFootballModal] = useState(false);
   const [showLeaguesChoice, setShowLeaguesChoice] = useState(false);
@@ -16,68 +20,25 @@ const SportsSelector = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [_isTablet, setIsTablet] = useState(false);
-  // Role-based booleans
+
   const [isManager, setIsManager] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isViewer, setIsViewer] = useState(false);
-  
+
+  const [selectedSport, setSelectedSport] = useState(null);
+
+  const navigate = useNavigate();
   useEffect(() => {
       setIsManager(role === 'manager');
       setIsAdmin(role === 'admin');
       setIsViewer(role === 'viewer');
     }, [role]);
 
-  const sports = [
-    { 
-      id: 'football', 
-      name: 'Football', 
-      icon: '⚽', 
-      description: ' ' 
-    },
-    { 
-      id: 'basketball', 
-      name: 'BaskeRutball', 
-      icon: '🏀', 
-      description: ' ' 
-    },
-    { 
-      id: 'tennis', 
-      name: 'Tennis', 
-      icon: '🎾', 
-      description: ' ' 
-    },
-    { 
-      id: 'baseball', 
-      name: 'Baseball', 
-      icon: '⚾', 
-      description: ' ' 
-    },
-    { 
-      id: 'hockey', 
-      name: 'Hockey', 
-      icon: '🏒', 
-      description: 'Ice-cold competition with lightning-fast gameplay' 
-    },
-    { 
-      id: 'rugby', 
-      name: 'Rugby', 
-      icon: '🏐', 
-      description: 'Teamwork and timing in every spike and block' 
-    }
 
-  ];
+const sports = getSports();
+const _footballLeagues = getFootballLeagues();
 
-  const footballLeagues = [
-    { id: 'premier-league', name: 'Premier League', flag: '🏴󠁧󠁢󠁥󠁮󠁧󠁿' },
-    { id: 'serie_a', name: 'Serie A', flag: '🇮🇹' },
-    { id: 'PSL', name: 'PSL', flag: '🇿🇦' },
-    { id: 'local-leagues', name: 'Local Leagues', flag: '🌍' }
-  ];
-
-
-  const navigate = useNavigate();
-
-    useEffect(() => {
+  useEffect(() => {
       const handleResize = () => {
         setIsMobile(window.innerWidth <= 768);
         setIsTablet(window.innerWidth > 768 && window.innerWidth <= 1024);
@@ -87,6 +48,7 @@ const SportsSelector = () => {
       window.addEventListener('resize', handleResize);
       return () => window.removeEventListener('resize', handleResize);
     }, []);
+
   const handleLogout = () => {
     localStorage.removeItem("authToken");
     navigate("/");
@@ -97,58 +59,30 @@ const SportsSelector = () => {
     navigate(path);
     setDropdownOpen(false);
   };
-  const handleSportClick = (sportId) => {
-    if (sportId === 'football') {
-      setShowFootballModal(true);
-    }
-      
-      else if (sportId === 'rugby') { 
-    navigate('/rugby'); 
-  } 
 
+  const handleSportClick = (sportId) => {
+    setSelectedSport(sportId);
+    setShowFootballModal(true); 
   };
 
-  
-
-const handleLeagueSelection = (leagueId) => {
-  setShowFootballModal(false);
-  console.log(leagueId);
-  
+ const handleLeagueSelection = (leagueId) => {
   setSelectedLeague(leagueId);
-  setShowLeaguesChoice(true);
-};
 
-const handleMatchTypeSelection = (matchType) => {
-  setShowLeaguesChoice(false);
-  console.log(matchType);
-  if(selectedLeague == "local-leagues"){
-    navigate(`/${matchType}`)
-    console.log(matchType);
-    
-  }
-  else if (matchType === 'upcoming' || matchType === 'past' || matchType==="ongoing") {
-    navigate(`/live/${matchType}`,{
-      state:{selected_league:selectedLeague}
-    });
-    console.log(selectedLeague);
-    
+  if (selectedSport === "rugby") {
+    navigate(`/rugby/${leagueId}`);
   } else {
-  
-    let leagueParam = selectedLeague;
-    if (selectedLeague === "premier-league") {
-      leagueParam = "Epl";
-    }
-    //     else if (selectedLeague === "serie_a") {
-    //   leagueParam = "Epl";
-    // }
-    //     if (selectedLeague === "PSL") {
-    //   leagueParam = "Epl";
-    // }
-    navigate("/past", { 
-      state: { selected_league: leagueParam } 
-    });
+    setShowFootballModal(false);
+    setShowLeaguesChoice(true);
   }
 };
+;
+
+    const handleMatchTypeSelection = (matchType) => {
+      setShowLeaguesChoice(false);
+
+      const { path, state } = getMatchTypeNavigation(selectedLeague, matchType, selectedSport);
+      navigate(path, { state });
+    };
 
   const closeModal = () => {
     setShowFootballModal(false);
@@ -168,11 +102,11 @@ const handleMatchTypeSelection = (matchType) => {
 
           <ul className="nav-links">
             <li>
-              <a onClick={()=>{              navigate("/home",{
+              <a onClick={()=>{navigate("/home",{
                 state:{role : role}
               });}} >News</a>
             </li>
-            {/* View Matches for all roles */}
+           
             {(isManager || isAdmin || isViewer) && (
               <li>
                 <a
@@ -315,92 +249,33 @@ const handleMatchTypeSelection = (matchType) => {
         </div>
       </div>
 
-      {/* Football League Selection Modal */}
+     
       {showFootballModal && (
-        <div className="modal-overlay" onClick={closeModal}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
-              <h2 className="modal-title">
-                <span className="football-icon">⚽</span>
-                Select Football League
-              </h2>
-              <button 
-                onClick={closeModal}
-                className="modal-close-button"
-                aria-label="Close modal"
-              >
-                <X size={24} />
-              </button>
-            </div>
-            
-            <div className="modal-body">
-              <div className="leagues-grid">
-                {footballLeagues.map((league) => (
-                  <button
-                    key={league.id}
-                    onClick={() => handleLeagueSelection(league.id)}
-                    className="league-option"
-                  >
-                    <span className="league-flag">{league.flag}</span>
-                    <span className="league-name">{league.name}</span>
-                    <ChevronRight className="league-arrow" />
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
+        <LeagueModal
+          isOpen={showFootballModal}
+          sport={selectedSport}
+          leagues={getLeaguesForSport(selectedSport)}
+          onClose={closeModal}
+          onSelect={handleLeagueSelection}
+        />
       )}
     </div>
   );
-
+  // const rugby = sports.find(sport => sport.id === "rugby");
   // Render the Match Type selection for all leagues
-  if (showLeaguesChoice) {
-    return (
-      <div className="modal-overlay" onClick={closeLeaguesChoice}>
-        <div className="modal-content" onClick={e => e.stopPropagation()}>
-          <div className="modal-header">
-            <h2 className="modal-title">
-              <span className="football-icon">🌍</span>
-              Select Match Type
-            </h2>
-            <button 
-              onClick={closeLeaguesChoice}
-              className="modal-close-button"
-              aria-label="Close modal"
-            >
-              <X size={24} />
-            </button>
-          </div>
-          <div className="modal-body">
-            <div className="leagues-grid">
-              <button
-                className="league-option"
-                onClick={() => handleMatchTypeSelection('upcoming')}
-              >
-                <span className="league-name">Upcoming Matches</span>
-                <ChevronRight className="league-arrow" />
-              </button>
-              <button
-                className="league-option"
-                onClick={() => handleMatchTypeSelection('ongoing')}
-              >
-                <span className="league-name">Ongoing Matches</span>
-                <ChevronRight className="league-arrow" />
-              </button>
-              <button
-                className="league-option"
-                onClick={() => handleMatchTypeSelection('past')}
-              >
-                <span className="league-name">Past Matches</span>
-                <ChevronRight className="league-arrow" />
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
+if (showLeaguesChoice && selectedSport!="rugby") {
+
+
+  return (
+    <MatchTypeModal 
+      isOpen={showLeaguesChoice} 
+      onClose={closeLeaguesChoice} 
+      onSelect={handleMatchTypeSelection}
+    />
+  );
+}
+
+
   return renderHomePage();
 };
 

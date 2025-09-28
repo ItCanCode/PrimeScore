@@ -1,21 +1,22 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Calendar, Clock, MapPin, Trophy, Flag, User } from 'lucide-react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { Calendar, Clock, MapPin, Trophy } from 'lucide-react';
 import Loading from './Loading';
 import '../Styles/OngoingMatches.css';
 
 const OngoingMatches = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // ✅ sportType passed when navigating
+  const sportType = location.state?.sport || null;
 
   const [matches, setMatches] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  // State to indicate background updates
   const [isUpdating, setIsUpdating] = useState(false);
-  // State to track last update time
   const [lastUpdated, setLastUpdated] = useState(new Date());
 
-  // Function to fetch ongoing matches from backend
   const fetchOngoingMatches = async (isInitialLoad = false) => {
     try {
       if (isInitialLoad) {
@@ -27,10 +28,16 @@ const OngoingMatches = () => {
       const response = await fetch('https://prime-backend.azurewebsites.net/api/display/display-matches');
       if (!response.ok) throw new Error('Failed to fetch matches');
       const data = await response.json();
-      // Only set matches that are truly ongoing (not scheduled/upcoming)
-      const ongoing = Array.isArray(data) ? data.filter(m => m.status && m.status.toLowerCase() === 'ongoing') : [];
-      
-      // Only update state if data has actually changed
+
+      // ✅ Filter only ongoing + by sportType if provided
+      const ongoing = Array.isArray(data)
+        ? data.filter(m => {
+            const statusOk = m.status && m.status.toLowerCase() === 'ongoing';
+            const sportOk = !sportType || (m.sportType?.toLowerCase() === sportType.toLowerCase());
+            return statusOk && sportOk;
+          })
+        : [];
+
       setMatches(prevMatches => {
         const hasChanged = JSON.stringify(prevMatches) !== JSON.stringify(ongoing);
         if (hasChanged) {
@@ -51,16 +58,14 @@ const OngoingMatches = () => {
 
   // Poll for updates every 3 minutes
   useEffect(() => {
-  fetchOngoingMatches(true); // Initial load
-  const interval = setInterval(() => fetchOngoingMatches(false), 180000); // Background updates every 3 minutes
-  return () => clearInterval(interval);
-}, []);
+    fetchOngoingMatches(true);
+    const interval = setInterval(() => fetchOngoingMatches(false), 180000);
+    return () => clearInterval(interval);
+  }, [sportType]); // ✅ re-fetch when sportType changes
 
-  // Helper to extract score, fouls, substitutions from match events
   const getMatchStats = (events = []) => {
     let homeScore = 0, awayScore = 0;
-    let fouls = [];
-    let substitutions = [];
+    let fouls = [], substitutions = [];
     if (Array.isArray(events)) {
       events.forEach(event => {
         if (event.type === 'score') {
@@ -79,21 +84,15 @@ const OngoingMatches = () => {
     return { homeScore, awayScore, fouls, substitutions };
   };
 
-  // Emoji icons by sport type
   const getSportIcon = (sport) => {
     switch (sport) {
-      case 'Football':
-        return '⚽';
-      case 'Basketball':
-        return '🏀';
-      case 'Cricket':
-        return '🏏';
-      default:
-        return '🏆';
+      case 'Football': return '⚽';
+      case 'Basketball': return '🏀';
+      case 'Cricket': return '🏏';
+      default: return '🏆';
     }
   };
 
-  // Format date and time nicely
   const formatDateTime = (dateTimeString) => {
     const date = new Date(dateTimeString);
     const dateStr = date.toLocaleDateString('en-US', {
@@ -109,49 +108,38 @@ const OngoingMatches = () => {
     return { dateStr, timeStr };
   };
 
-  // Utility function to map match status to CSS classes
   const getStatusColor = (status) => {
     switch (status) {
-      case 'Scheduled':
-        return 'status-scheduled';
-      case 'Confirmed':
-        return 'status-confirmed';
-      case 'Postponed':
-        return 'status-postponed';
-      case 'Ongoing':
-        return 'status-ongoing';
-      default:
-        return 'status-default';
+      case 'Scheduled': return 'status-scheduled';
+      case 'Confirmed': return 'status-confirmed';
+      case 'Postponed': return 'status-postponed';
+      case 'Ongoing': return 'status-ongoing';
+      default: return 'status-default';
     }
   };
 
-  // Render loading, error, or matches
-  if (loading) {
-    return <Loading />;
-  }
-
-  if (error) {
-    return <div className="ongoing-matches-error">Error: {error}</div>;
-  }
-
+  if (loading) return <Loading />;
+  if (error) return <div className="ongoing-matches-error">Error: {error}</div>;
   if (!matches.length) {
-    return <div className="ongoing-matches-empty">No ongoing matches at the moment.</div>;
+    return (
+      <div className="ongoing-matches-empty">
+        No ongoing {sportType ? sportType.toLowerCase() : ''} matches at the moment.
+      </div>
+    );
   }
 
   return (
     <div className="ongoing-matches-container">
-      {/* Back Button */}
       <button onClick={() => navigate(-1)} style={{ marginBottom: '1rem', padding: '0.5rem 1rem', borderRadius: '8px', border: 'none', color: '#0e0d0dff', cursor: 'pointer' }}>Back</button>
 
-      {/* Header */}
       <div className="ongoing-header-card">
         <div className="ongoing-header-content">
           <h1 className="ongoing-header-title">
             <Trophy className="ongoing-header-icon" size={36} />
-            Ongoing Matches
+            Ongoing {sportType ? `${sportType} ` : ''}Matches
             {isUpdating && (
               <span style={{ marginLeft: '10px', fontSize: '14px', color: '#163453ff', opacity: 0.8 }}>
-                🔄  {/*i added this loading icon instead, so that the loading doesnt happen for the whole page but only happens here*/ }
+                🔄
               </span>
             )}
           </h1>
@@ -161,14 +149,11 @@ const OngoingMatches = () => {
         </div>
       </div>
 
-      {/* Matches Grid */}
       <div className="ongoing-matches-grid">
         {matches.map((match) => {
-          // Prefer backend-provided homeScore/awayScore, fallback to events
           let homeScore = typeof match.homeScore === 'number' ? match.homeScore : undefined;
           let awayScore = typeof match.awayScore === 'number' ? match.awayScore : undefined;
-          let fouls = [];
-          let substitutions = [];
+          let fouls = [], substitutions = [];
           if (homeScore === undefined || awayScore === undefined) {
             const stats = getMatchStats(match.events);
             if (homeScore === undefined) homeScore = stats.homeScore;
@@ -176,7 +161,6 @@ const OngoingMatches = () => {
             fouls = stats.fouls;
             substitutions = stats.substitutions;
           } else {
-            // If scores are present, still try to get fouls/subs from events
             const stats = getMatchStats(match.events);
             fouls = stats.fouls;
             substitutions = stats.substitutions;
@@ -184,7 +168,6 @@ const OngoingMatches = () => {
           const { dateStr, timeStr } = formatDateTime(match.startTime);
           return (
             <div key={match.id} className="ongoing-match-card">
-              {/* Sport Header */}
               <div className="ongoing-sport-header">
                 <div className="ongoing-sport-header-content">
                   <div className="ongoing-sport-type">
@@ -195,9 +178,7 @@ const OngoingMatches = () => {
                 </div>
               </div>
 
-              {/* Match Content */}
               <div className="ongoing-match-content">
-                {/* Teams */}
                 <div className="ongoing-teams">
                   <div className="ongoing-team-name">{match.homeTeam}</div>
                   <div className="ongoing-vs">VS</div>
@@ -208,12 +189,10 @@ const OngoingMatches = () => {
                 </div>
 
                 <div className="ongoing-match-details">
-
                   <div className="ongoing-detail-item ongoing-venue">
                     <MapPin size={18} className="ongoing-icon-gray" />
                     <span>{match.venue}</span>
                   </div>
-
                   <div className="ongoing-date-time-container">
                     <div className="ongoing-detail-item ongoing-date">
                       <Calendar size={18} className="ongoing-icon-gray" />
@@ -232,7 +211,6 @@ const OngoingMatches = () => {
                   </span>
                 </div>
 
-
                 <div className="ongoing-extra-stats">
                   <div className="ongoing-match-fouls">
                     <strong>Fouls:</strong>
@@ -242,9 +220,7 @@ const OngoingMatches = () => {
                           <li key={idx}>{foul.player} ({foul.team}) - {foul.description || 'Foul'}</li>
                         ))}
                       </ul>
-                    ) : (
-                      <span> None</span>
-                    )}
+                    ) : <span> None</span>}
                   </div>
                   <div className="ongoing-match-subs">
                     <strong>Substitutions:</strong>
@@ -254,9 +230,7 @@ const OngoingMatches = () => {
                           <li key={idx}>{sub.playerOut} → {sub.playerIn} ({sub.team})</li>
                         ))}
                       </ul>
-                    ) : (
-                      <span> None</span>
-                    )}
+                    ) : <span> None</span>}
                   </div>
                 </div>
               </div>
@@ -265,7 +239,6 @@ const OngoingMatches = () => {
         })}
       </div>
 
-      {/* Footer */}
       <div className="ongoing-footer">
         Last updated: {lastUpdated.toLocaleString()}
         {isUpdating && (
