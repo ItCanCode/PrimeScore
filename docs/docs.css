@@ -6,6 +6,11 @@ html, body { margin: 0; padding: 0; }
 img { max-width: 100%; height: auto; display: block; }
 ul, ol { padding-left: 1.25rem; }
 
+/* ========== SMOOTH SCROLLING ========== */
+html {
+  scroll-behavior: smooth;
+}
+
 /* ========== THEME ========== */
 :root {
   --bg: #f9f9fb;
@@ -95,6 +100,9 @@ body {
 .site-nav {
   background: var(--accent);
   border-bottom: 1px solid rgba(0,0,0,0.08);
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 .nav-list {
   list-style: none;
@@ -110,6 +118,7 @@ body {
   font-weight: 600;
   padding: 0.4rem 0.6rem;
   border-radius: 8px;
+  transition: background-color 0.2s ease;
 }
 .nav-list a:hover,
 .nav-list a:focus {
@@ -125,6 +134,7 @@ body {
   border: 1px solid var(--border);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
+  scroll-margin-top: 90px; /* Offset for sticky nav */
 }
 
 .section-header {
