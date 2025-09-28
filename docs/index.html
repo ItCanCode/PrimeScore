@@ -30,6 +30,7 @@
         <li><a href="#api">APIs</a></li>
         <li><a href="#backlog">Sprint Backlog</a></li>
         <li><a href="#stories">User Stories</a></li>
+        <li><a href="#sprint2-bugs">Sprint 2 Bug Tracking</a></li>
         <li><a href="#setup">Setup Guide</a></li>
         <li><a href="#git">Git Workflow</a></li>
         <li><a href="#database">Database</a></li>
@@ -78,7 +79,7 @@
 
       <p>PrimeScore uses a client–server architecture:</p>
       <ul class="bullets">
-      <li><strong>Frontend (React on Vercel):</strong> Chosen because React’s component-based structure makes it ideal for building dynamic UIs like scoreboards and dashboards, while Vercel provides seamless deployments, global CDN, and automatic scaling for fast access worldwide.</li>
+      <li><strong>Frontend (React on Vercel):</strong> Chosen because React's component-based structure makes it ideal for building dynamic UIs like scoreboards and dashboards, while Vercel provides seamless deployments, global CDN, and automatic scaling for fast access worldwide.</li>
 
       <li><strong>Backend (Node.js/Express on Azure):</strong> Selected for its ability to handle real-time data efficiently. Node.js/Express offers lightweight, scalable APIs for match setup and live feeds, while Azure provides reliability, monitoring, and scalability as the platform grows.</li>
 
@@ -113,7 +114,7 @@
     </section>
 
     <!-- APIs -->
-<section id="third-party" class="section" aria-labelledby="third-party-title">
+<section id="api" class="section" aria-labelledby="third-party-title">
   <header class="section-header">
     <h2 id="third-party-title">Third-Party Code Documentation</h2>
   </header>
@@ -258,11 +259,11 @@
         <li>As a developer, I want to set up backend testing, so that I can ensure the system works correctly.</li>
         <li>As an admin, I want to create a match using a form, so that it appears under upcoming matches for viewers.</li>
         <li>As an admin, I want to log in to the Admin page, so that I can access the admin homepage.</li>
-        <li>As a developer, I want to deploy the app to Vercel (frontend) and Azure (backend), so that it’s hosted online.</li>
+        <li>As a developer, I want to deploy the app to Vercel (frontend) and Azure (backend), so that it's hosted online.</li>
       </ol>
     </section>
 
-    <section id="stories" class="section" aria-labelledby="stories-title">
+        <section id="stories" class="section" aria-labelledby="stories-title">
       <header class="section-header">
         <h2 id="stories-title">Sprint 2 User Stories</h2>
       </header>
@@ -275,6 +276,68 @@
         <li>As an admin, I want to update the status of a match from upcoming to ongoing, so that fans and players know the match has started.</li>
         <li>As an admin, I want to update the events of the matches, so that the viewers can see the events occuring in the match.</li>
       </ol>
+    </section>
+    
+    <section id="stories" class="section" aria-labelledby="stories-title">
+      <header class="section-header">
+        <h2 id="stories-title">Sprint 3 User Stories</h2>
+      </header>
+      <ol class="ordered">
+        <li>As a viewer, I want to see netball,rugby and football options so i can watch a sport of my choice </li>
+        <li>As a viewer, I want to see animations for current match events so I don't have to refresh to see changes</li>
+      </ol>
+    </section>
+    <!-- Sprint 2 Bug Resolution -->
+    <section id="sprint2-bugs" class="section" aria-labelledby="sprint2-bugs-title">
+      <header class="section-header">
+        <h2 id="sprint2-bugs-title">Sprint 2 Bug Resolution</h2>
+      </header>
+
+      <p>
+        During Sprint 2, the team decided to prioritize <strong>bug fixing</strong> before starting Sprint 3. 
+        This was crucial to prevent app instability and crashes as we scale. 
+        A total of <strong>17 issues</strong> were identified, including critical bugs, minor UI/UX inconsistencies, 
+        and improvement tasks to prepare the app for new features.
+      </p>
+
+      <h3>Timeline & Burndown</h3>
+      <p>
+        The bug resolution effort ran from <strong>Wednesday, 24th</strong> to <strong>Wednesday, 1st</strong>. 
+        Referring to the sprint burndown chart, we observed:
+      </p>
+      <ul class="bullets">
+        <li><strong>Days 1–2:</strong> Focused on reproducing and prioritizing bugs (bug count remained constant).</li>
+        <li><strong>Day 3:</strong> Major drop (≈ 40% of bugs resolved).</li>
+        <li><strong>Days 4–6:</strong> Gradual resolution of remaining issues.</li>
+        <li><strong>End of Sprint:</strong> Only one low-priority bug remained open, moved to Sprint 3.</li>
+      </ul>
+
+      <figure class="figure">
+        <img src="sprint2_burndown.png" alt="Sprint 2 burndown chart" />
+        <figcaption>Figure — Sprint 2 bug resolution progress over time.</figcaption>
+      </figure>
+
+      <h3>Bug Metrics</h3>
+      <ul class="bullets">
+        <li><strong>Resolved:</strong> 16/17 bugs (≈ 94% completion)</li>
+        <li><strong>Velocity:</strong> 12 bug cards closed within this sprint</li>
+        <li><strong>Overdue:</strong> 3 improvement tasks carried over to Sprint 3</li>
+        <li><strong>In Progress:</strong> 1 open bug card by sprint close</li>
+      </ul>
+
+      <h3>Outcome</h3>
+
+      <p>
+        By addressing the majority of issues before Sprint 3, the app is now more stable, 
+        reducing the risk of runtime crashes and allowing the team to focus on new features. 
+        This approach helped reduce technical debt and will improve velocity in upcoming sprints.
+      </p>
+
+      <figure class="figure">
+        <img src="bug_tracking_dashboard.png" alt="Bug tracking dashboard metrics" />
+        <figcaption>Figure — Sprint 2 bug tracking dashboard summary.</figcaption>
+      </figure>
+
     </section>
 
     <!-- Setup -->
@@ -358,7 +421,7 @@ npm run dev
         <li><strong>players</strong> (collection)
           <ul>
             <li><code>playerId</code> — unique identifier (auto-generated)</li>
-            <li><code>name</code> — player’s full name</li>
+            <li><code>name</code> — player's full name</li>
             <li><code>teamId</code> — reference to <code>teams.teamId</code></li>
           </ul>
         </li>
@@ -496,8 +559,7 @@ npm test -- --coverage
   This ensures that user feedback and automated verification work together to maintain quality.
 </p>
 
-
-
+    </section>
 
   </main>
 
