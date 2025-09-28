@@ -27,8 +27,8 @@ const leaguesBySport = {
     { id: "local-leagues", name: "Local Leagues", flag: "" },
   ],
   rugby: [
-    { id: "super-rugby", name: "Super Rugby", flag: "" },
-    { id: "currie-cup", name: "Currie Cup", flag: "" },
+    { id: "super-rugby", name: "Famous Rugby leagues", flag: "" },
+    // { id: "currie-cup", name: "Currie Cup", flag: "" },
     { id: "local-leagues", name: "Local Leagues", flag: "" }, 
   ],
   netball: [
@@ -66,13 +66,20 @@ export const getMatchTypeNavigation = (selectedLeague, matchType, sportType) => 
       state: { sport: sportType },
     };
   }
+    if(sportType!="rugby" || sportType !='Rugby'){
+        if (matchType === "upcoming" || matchType === "past" || matchType === "ongoing") {
+      return {
+        path: `/live/${matchType}`, // include sport in the URL
+        state: { selected_league: selectedLeague, sport: sportType },
+      };
+    }
+  }  
+  // else{
 
-  if (matchType === "upcoming" || matchType === "past" || matchType === "ongoing") {
-    return {
-      path: `/live/${matchType}`, // include sport in the URL
-      state: { selected_league: selectedLeague, sport: sportType },
-    };
-  }
+  // }
+
+
+ 
 
   // Fallback → normalize league and go to /past for that sport
   const leagueParam = mapLeagueParam(selectedLeague);

@@ -65,12 +65,17 @@ const _footballLeagues = getFootballLeagues();
     setShowFootballModal(true); 
   };
 
-  const handleLeagueSelection = (leagueId) => {
-    setShowFootballModal(false);
+ const handleLeagueSelection = (leagueId) => {
+  setSelectedLeague(leagueId);
 
-    setSelectedLeague(leagueId);
+  if (selectedSport === "rugby") {
+    navigate(`/rugby/${leagueId}`);
+  } else {
+    setShowFootballModal(false);
     setShowLeaguesChoice(true);
-  };
+  }
+};
+;
 
     const handleMatchTypeSelection = (matchType) => {
       setShowLeaguesChoice(false);
@@ -256,9 +261,11 @@ const _footballLeagues = getFootballLeagues();
       )}
     </div>
   );
-
+  // const rugby = sports.find(sport => sport.id === "rugby");
   // Render the Match Type selection for all leagues
-if (showLeaguesChoice) {
+if (showLeaguesChoice && selectedSport!="rugby") {
+
+
   return (
     <MatchTypeModal 
       isOpen={showLeaguesChoice} 
@@ -267,6 +274,8 @@ if (showLeaguesChoice) {
     />
   );
 }
+
+
   return renderHomePage();
 };
 

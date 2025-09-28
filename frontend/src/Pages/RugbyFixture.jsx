@@ -27,7 +27,40 @@ const FixturesByDate = () => {
       }
 
       const data = await response.json();
-      setFixtures(data.fixture ? Object.values(data.fixture).flatMap(l => l.games) : []);
+const storeFixtures = data.fixture
+  ? Object.values(data.fixture).flatMap(l =>
+      l.games.map(g => ({
+        leagueName: l.leagueName,
+        name: g.name,
+        date: g.date,
+        status: g.status?.type?.description || "Unknown",
+        score: g.competitions?.[0]?.competitors?.map(c => ({
+          team: c.team.displayName,
+          score: c.score
+        })) || []
+      }))
+    )
+  : [];
+
+setFixtures(storeFixtures);
+
+// ✅ Send only parsedFixtures
+const sendIt=await fetch("https://prime-backend.azurewebsites.net/api/rugby/live", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    "Accept": "application/json"
+  },
+  body: JSON.stringify(storeFixtures),
+});
+
+    if(!sendIt.ok){
+      throw new Error('Network for sending fixtures  was not ok');
+    }
+
+
+    const sendItdata = await sendIt.json(); 
+    console.log("Response:", sendItdata);
     } catch (err) {
       setError(err.message);
       console.error('Error fetching fixtures:', err);
@@ -56,34 +89,49 @@ const FixturesByDate = () => {
 
       {!loading && !error && fixtures.length === 0 && <p style={{ color: 'white' }}>No fixtures found for this date.</p>}
 
-      <div>
-        {fixtures.map((fixture) => (
-          <div
-            key={fixture.id}
-            style={{
-              border: '1px solid #ccc',
-              margin: '1rem 0',
-              padding: '1rem',
-              borderRadius: '8px',
-              backgroundColor: '#1e1e1e',
-              color: 'white',
-            }}
-          >
-            <h3>{fixture.name}</h3>
-            <p>Date: {new Date(fixture.date).toLocaleString()}</p>
-            <p>Status: {fixture.status?.type?.description}</p>
-            <div style={{ display: 'flex', justifyContent: 'space-between', maxWidth: '400px' }}>
-              {fixture.competitions[0].competitors.map((c) => (
-                <div key={c.id} style={{ textAlign: 'center', color: 'white' }}>
-                  <img src={c.team.logo} alt={c.team.name} width="50" />
-                  <p>{c.team.displayName}</p>
-                  <p>Score: {c.score}</p>
-                </div>
-              ))}
-            </div>
+<div>
+  {Object.entries(
+    fixtures.reduce((acc, game) => {
+      if (!acc[game.leagueName]) acc[game.leagueName] = [];
+      acc[game.leagueName].push(game);
+      return acc;
+    }, {})
+  ).map(([leagueName, games]) => (
+    <div key={leagueName}>
+      <h2 style={{ color: "yellow" }}>{leagueName}</h2>
+
+      {games.map((game, index) => (
+        <div
+          key={index}
+          style={{
+            border: "1px solid #ccc",
+            margin: "1rem 0",
+            padding: "1rem",
+            borderRadius: "8px",
+            backgroundColor: "#1e1e1e",
+            color: "white",
+          }}
+        >
+          <h3>{game.name}</h3>
+          <p>Date: {new Date(game.date).toLocaleString()}</p>
+          <p>Status: {game.status}</p>
+
+          <div style={{ display: "flex", justifyContent: "space-between", maxWidth: "400px" }}>
+            {game.score.map((s, i) => (
+              <div key={i} style={{ textAlign: "center" }}>
+                <p>{s.team}</p>
+                <p>Score: {s.score}</p>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
+        </div>
+      ))}
+    </div>
+  ))}
+</div>
+
+
+
     </div>
   );
 };
