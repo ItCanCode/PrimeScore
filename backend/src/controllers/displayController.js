@@ -21,11 +21,11 @@ export const getmatchEvents = async (req, res) => {
           const eventData = eventDoc.data();
           matchData.events = eventData;
           // Attach homeScore and awayScore if present
-          if (typeof eventData.home_score === 'number') {
-            matchData.homeScore = eventData.home_score;
+          if (typeof eventData.homeScore === 'number') {
+            matchData.homeScore = eventData.homeScore;
           }
-          if (typeof eventData.away_score === 'number') {
-            matchData.awayScore = eventData.away_score;
+          if (typeof eventData.awayScore === 'number') {
+            matchData.awayScore = eventData.awayScore;
           }
         } else {
           matchData.events = null;
