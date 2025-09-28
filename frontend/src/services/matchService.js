@@ -1,7 +1,7 @@
 // services/matchService.js
 
-//let baseURL = "http://localhost:3000";
-let baseURL = "https://prime-backend.azurewebsites.net";
+let baseURL = "http://localhost:3000";
+//let baseURL = "https://prime-backend.azurewebsites.net";
 
 export const addMatchEventService = async (selectedMatch, eventData) => {
   const endpoint = `/api/feed/${selectedMatch.id}/event`;
@@ -19,6 +19,14 @@ export const addMatchEventService = async (selectedMatch, eventData) => {
   switch (eventData.eventType) {
     case "Goal":
       payload.points = 1; 
+      break;
+
+    case "Own Goal":
+      payload.points = 1; 
+      break;
+    
+    case "Drop Goal":
+      payload.points = 3;
       break;
 
     case "Try":

@@ -75,7 +75,16 @@ export const addEvent = async (req, res) => {
     };
 
     if (points && !isNaN(points)) {
-      const scoreKey = team.toLowerCase() === "home" ? "homeScore" : "awayScore";
+      let scoreKey;
+
+      if (eventType.toLowerCase() === "own goal") {
+       
+        scoreKey = team.toLowerCase() === "home" ? "awayScore" : "homeScore";
+      } else {
+      
+        scoreKey = team.toLowerCase() === "home" ? "homeScore" : "awayScore";
+      }
+
       updates[scoreKey] = admin.firestore.FieldValue.increment(Number(points));
     }
 

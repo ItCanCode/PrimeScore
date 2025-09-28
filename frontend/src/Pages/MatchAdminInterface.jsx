@@ -81,9 +81,9 @@ export default function MatchAdminInterface() {
   ];
 
 const sportEventMappings = {
-  Football: ["Goal", "Own Goal", "Foul", "Yellow Card", "Red Card", "Substitution", "Penalty", "Corner Kick", "Free Kick", "Offside", "Injury"],
-  Rugby: ["Try", "Conversion", "Penalty", "Yellow Card", "Red Card", "Substitution", "Injury"],
-  Netball: ["Goal", "Foul", "Substitution", "Injury", "Timeout"],
+  Football: ["Goal", "Own Goal", "Foul", "Yellow Card", "Red Card", "Substitution", "Penalty Kick", "Corner Kick", "Free Kick", "Offside", "Injury"],
+  Rugby: ["Drop Goal", "Try", "Conversion", "Scrum","Line-Out","Knock-On","Forward Pass","Penalty", "Yellow Card", "Red Card", "Substitution", "Injury"],
+  Netball: ["Goal (1 point)", "Missed Shot", "Rebound", "Interception", "Turnover","Contact Foul", "Obstruction", "Footwork Violation", "Offside", "Throw-In","Penalty Pass", "Free Pass", "Substitution", "Injury", "Timeout"],
 };
 
   // Handlers
@@ -93,7 +93,7 @@ const sportEventMappings = {
   const handleEventInputChange = (e) =>
     setEventData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
 
-  const addMatchEvent = async () => {
+  const addMatchEvent = () => {
     setConfirmData({
       type: "event",
       eventType: eventData.eventType,
@@ -104,15 +104,16 @@ const sportEventMappings = {
       time: eventData.time,
     });
 
-    setConfirmAction(() =>
-      handleAddMatchEvent(
+    setConfirmAction(() => async () => {
+      await handleAddMatchEvent(
         selectedMatch,
         eventData,
         setMatchEvents,
         setMessage,
-        () => closeEventForm()
-      )
-    );
+        closeEventForm
+      );
+    });
+
     setShowConfirmModal(true);
   };
 
@@ -149,7 +150,7 @@ const sportEventMappings = {
     setShowEventForm(true);
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = () => {
     setConfirmData({
       type: "match",
       action: editingMatch ? "update" : "create",
@@ -161,8 +162,8 @@ const sportEventMappings = {
       venue: formData.venue,
     });
 
-    setConfirmAction(() =>
-      handleSubmitService(
+    setConfirmAction(() => async () => {
+      await handleSubmitService(
         formData,
         editingMatch,
         setMessage,
@@ -170,8 +171,9 @@ const sportEventMappings = {
         setEditingMatch,
         setFormData,
         setShowForm
-      )
-    );
+      );
+    });
+
     setShowConfirmModal(true);
   };
 
@@ -239,8 +241,18 @@ const sportEventMappings = {
     setShowForm(false);
   };
 
-  const deleteMatch = (matchId) =>
-    handleDeleteMatch(matchId, setMatches, setMessage);
+  const deleteMatch = (matchId) => {
+    setConfirmData({
+      type: "deleteMatch",
+      matchId
+    });
+
+    setConfirmAction(() => async () => {
+      await handleDeleteMatch(matchId, setMatches, setMessage);
+    });
+
+    setShowConfirmModal(true);
+  };
 
   const updateMatchStatus = (matchId, status) =>
     handleUpdateMatchStatus(matchId, status, setMatches, setMessage);
