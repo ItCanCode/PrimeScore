@@ -1,7 +1,7 @@
 // services/matchService.js
 
-let baseURL = "http://localhost:3000";
-//let baseURL = "https://prime-backend.azurewebsites.net";
+//let baseURL = "http://localhost:3000";
+let baseURL = "https://prime-backend.azurewebsites.net";
 
 export const addMatchEventService = async (selectedMatch, eventData) => {
   const endpoint = `/api/feed/${selectedMatch.id}/event`;

@@ -220,6 +220,7 @@ const sportEventMappings = {
 
   const startMatch = async (match) => {
     startMatchService(match, updateMatchStatus, setMessage);
+    
   };
 
   const editMatch = (match) => {
