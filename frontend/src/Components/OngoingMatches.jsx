@@ -16,6 +16,29 @@ const OngoingMatches = () => {
   const [error, setError] = useState(null);
   const [isUpdating, setIsUpdating] = useState(false);
   const [lastUpdated, setLastUpdated] = useState(new Date());
+  const [highlightedMatchId, setHighlightedMatchId] = useState(null);
+  const [recentEvents, setRecentEvents] = useState({});
+
+  const getMatchStats = (events = []) => {
+    let homeScore = 0, awayScore = 0;
+    let fouls = [], substitutions = [];
+    if (Array.isArray(events)) {
+      events.forEach(event => {
+        if (event.type === 'score') {
+          if (typeof event.home === 'number') homeScore = event.home;
+          if (typeof event.away === 'number') awayScore = event.away;
+        }
+        if (event.type === 'foul') fouls.push(event);
+        if (event.type === 'substitution') substitutions.push(event);
+      });
+    } else if (events && typeof events === 'object') {
+      if (typeof events.homeScore === 'number') homeScore = events.homeScore;
+      if (typeof events.awayScore === 'number') awayScore = events.awayScore;
+      if (Array.isArray(events.fouls)) fouls = events.fouls;
+      if (Array.isArray(events.substitutions)) substitutions = events.substitutions;
+    }
+    return { homeScore, awayScore, fouls, substitutions };
+  };
 
   const fetchOngoingMatches = async (isInitialLoad = false) => {
     try {
@@ -42,6 +65,44 @@ const OngoingMatches = () => {
         const hasChanged = JSON.stringify(prevMatches) !== JSON.stringify(ongoing);
         if (hasChanged) {
           setLastUpdated(new Date());
+
+          // Detect new scoring events for animations
+          ongoing.forEach(match => {
+            const prevMatch = prevMatches.find(m => m.id === match.id);
+            
+            if (prevMatch) {
+              // Get current scores using getMatchStats
+              const prevStats = getMatchStats(prevMatch.events);
+              const currentStats = getMatchStats(match.events);
+              
+              // Check for score changes
+              const prevTotalScore = prevStats.homeScore + prevStats.awayScore;
+              const currentTotalScore = currentStats.homeScore + currentStats.awayScore;
+              
+              console.log(`Match ${match.id}: Previous total: ${prevTotalScore}, Current total: ${currentTotalScore}`);
+              
+              // If total score increased, trigger animation
+              if (currentTotalScore > prevTotalScore) {
+                console.log(`🎉 GOAL DETECTED for match ${match.id}! Starting animation...`);
+                setRecentEvents(prevRecent => ({
+                  ...prevRecent,
+                  [match.id]: [Date.now()] // Use timestamp as unique identifier
+                }));
+                setHighlightedMatchId(match.id);
+              }
+            } else {
+              // New match detected - could also trigger animation
+              const currentStats = getMatchStats(match.events);
+              if (currentStats.homeScore > 0 || currentStats.awayScore > 0) {
+                console.log(`🆕 New match with score detected: ${match.id}`);
+                setRecentEvents(prevRecent => ({
+                  ...prevRecent,
+                  [match.id]: [Date.now()]
+                }));
+                setHighlightedMatchId(match.id);
+              }
+            }
+          });
         }
         return ongoing;
       });
@@ -56,33 +117,31 @@ const OngoingMatches = () => {
     }
   };
 
-  // Poll for updates every 3 minutes
+  // Poll for updates every 10 seconds for near real-time updates
   useEffect(() => {
     fetchOngoingMatches(true);
-    const interval = setInterval(() => fetchOngoingMatches(false), 180000);
+    const interval = setInterval(() => fetchOngoingMatches(false), 10000); // 10 seconds
     return () => clearInterval(interval);
   }, [sportType]); // ✅ re-fetch when sportType changes
 
-  const getMatchStats = (events = []) => {
-    let homeScore = 0, awayScore = 0;
-    let fouls = [], substitutions = [];
-    if (Array.isArray(events)) {
-      events.forEach(event => {
-        if (event.type === 'score') {
-          if (typeof event.home === 'number') homeScore = event.home;
-          if (typeof event.away === 'number') awayScore = event.away;
-        }
-        if (event.type === 'foul') fouls.push(event);
-        if (event.type === 'substitution') substitutions.push(event);
-      });
-    } else if (events && typeof events === 'object') {
-      if (typeof events.homeScore === 'number') homeScore = events.homeScore;
-      if (typeof events.awayScore === 'number') awayScore = events.awayScore;
-      if (Array.isArray(events.fouls)) fouls = events.fouls;
-      if (Array.isArray(events.substitutions)) substitutions = events.substitutions;
-    }
-    return { homeScore, awayScore, fouls, substitutions };
-  };
+  // Auto-remove animations after 3 minutes
+  useEffect(() => {
+    const timers = [];
+    Object.keys(recentEvents).forEach(matchId => {
+      if (recentEvents[matchId]?.length) {
+        const timer = setTimeout(() => {
+          setRecentEvents(prev => {
+            const updated = { ...prev };
+            delete updated[matchId];
+            return updated;
+          });
+        }, 15000); // the animation will disappear after 15 seconds
+        timers.push(timer);
+      }
+    });
+    return () => timers.forEach(clearTimeout);
+  }, [recentEvents]);
+  //implement: once a user enters ongoing matches five minutes after a goal has been attained or any other event has happened , they should see the animation again for another 15 seconds
 
   const getSportIcon = (sport) => {
     switch (sport) {
@@ -139,7 +198,7 @@ const OngoingMatches = () => {
             Ongoing {sportType ? `${sportType} ` : ''}Matches
             {isUpdating && (
               <span style={{ marginLeft: '10px', fontSize: '14px', color: '#163453ff', opacity: 0.8 }}>
-                🔄
+                .
               </span>
             )}
           </h1>
@@ -167,7 +226,11 @@ const OngoingMatches = () => {
           }
           const { dateStr, timeStr } = formatDateTime(match.startTime);
           return (
-            <div key={match.id} className="ongoing-match-card">
+            <div
+              key={match.id}
+              className={`ongoing-match-card ${highlightedMatchId === match.id ? "score-anim" : ""}`}
+              onAnimationEnd={() => setHighlightedMatchId(null)}  // reset after animation
+            >
               <div className="ongoing-sport-header">
                 <div className="ongoing-sport-header-content">
                   <div className="ongoing-sport-type">
@@ -184,8 +247,13 @@ const OngoingMatches = () => {
                   <div className="ongoing-vs">VS</div>
                   <div className="ongoing-team-name">{match.awayTeam}</div>
                 </div>
-                <div className="ongoing-score-row">
+                <div className={`ongoing-score-row ${recentEvents[match.id]?.length ? "goal-animate" : ""}`}>
                   <span className="ongoing-score">{homeScore} - {awayScore}</span>
+                  {recentEvents[match.id]?.length > 0 && (
+                    <span style={{ fontSize: '12px', color: '#ffd700', marginLeft: '10px' }}>
+                       GOAL!
+                    </span>
+                  )}
                 </div>
 
                 <div className="ongoing-match-details">
