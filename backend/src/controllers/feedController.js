@@ -80,7 +80,8 @@ export const addEvent = async (req, res) => {
       if (eventType.toLowerCase() === "own goal") {
        
         scoreKey = team.toLowerCase() === "home" ? "awayScore" : "homeScore";
-      } else {
+      } 
+      else {
       
         scoreKey = team.toLowerCase() === "home" ? "homeScore" : "awayScore";
       }
