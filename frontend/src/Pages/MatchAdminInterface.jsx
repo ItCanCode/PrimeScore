@@ -83,7 +83,7 @@ export default function MatchAdminInterface() {
 const sportEventMappings = {
   Football: ["Goal", "Own Goal", "Foul", "Yellow Card", "Red Card", "Substitution", "Penalty Kick", "Corner Kick", "Free Kick", "Offside", "Injury"],
   Rugby: ["Drop Goal", "Try", "Conversion", "Scrum","Line-Out","Knock-On","Forward Pass","Penalty", "Yellow Card", "Red Card", "Substitution", "Injury"],
-  Netball: ["Goal (1 point)", "Missed Shot", "Rebound", "Interception", "Turnover","Contact Foul", "Obstruction", "Footwork Violation", "Offside", "Throw-In","Penalty Pass", "Free Pass", "Substitution", "Injury", "Timeout"],
+  Netball: ["Goal", "Missed Shot", "Rebound", "Interception", "Turnover","Contact Foul", "Obstruction", "Footwork Violation", "Offside", "Throw-In","Penalty Pass", "Free Pass", "Substitution", "Injury", "Timeout"],
 };
 
   // Handlers
