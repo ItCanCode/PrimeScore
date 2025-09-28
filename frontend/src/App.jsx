@@ -17,7 +17,7 @@ import { AuthProvider } from "./context/authContext.jsx";
 import UpcomingMatches from "./Components/upcomingMatches.jsx";
 import FixRug from "./Pages/RugbyFixture.jsx";
 import PastMatches from "./Pages/PastMatches.jsx";
-import { RugbyLocal } from "./Pages/rugbyLocal.jsx";
+import { RugbyLocal } from "./Pages/RugbyLocal.jsx";
 function App() {
   return (
     <>
