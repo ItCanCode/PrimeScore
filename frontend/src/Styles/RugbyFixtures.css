@@ -1,0 +1,303 @@
+/* RugbyFixtures.css */
+
+.rugby-fixtures-container {
+  padding: 20px;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  min-height: 100vh;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.rugby-header {
+  text-align: center;
+  margin-bottom: 30px;
+  padding: 30px 20px;
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, rgba(124, 58, 237, 0.1) 100%);
+  border-radius: 20px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.rugby-header h2 {
+  color: #ffffff;
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin: 0 0 15px 0;
+  text-shadow: 0 2px 10px rgba(139, 92, 246, 0.3);
+}
+
+.rugby-date-picker {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+.rugby-date-input {
+  padding: 12px 20px;
+  border-radius: 12px;
+  border: 2px solid rgba(139, 92, 246, 0.3);
+  background: rgba(30, 41, 59, 0.8);
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+.rugby-date-input:hover {
+  border-color: rgba(139, 92, 246, 0.6);
+  background: rgba(30, 41, 59, 0.95);
+  transform: translateY(-2px);
+}
+
+.rugby-date-input:focus {
+  outline: none;
+  border-color: #8b5cf6;
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
+}
+
+.rugby-loading {
+  text-align: center;
+  color: #cbd5e1;
+  font-size: 1.2rem;
+  padding: 40px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 15px;
+  margin: 20px 0;
+}
+
+.rugby-error {
+  background: rgba(239, 68, 68, 0.1);
+  border-radius: 15px;
+  padding: 2rem;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  backdrop-filter: blur(10px);
+  text-align: center;
+  color: #fca5a5;
+  font-size: 1.2rem;
+  font-weight: 500;
+}
+
+.rugby-no-fixtures {
+  text-align: center;
+  padding: 60px 20px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 20px;
+  border: 2px dashed rgba(255, 255, 255, 0.2);
+  color: #94a3b8;
+  font-size: 1.2rem;
+  font-weight: 500;
+}
+
+.rugby-leagues-container {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.rugby-league-section {
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.95) 0%, rgba(15, 23, 42, 0.95) 100%);
+  border-radius: 20px;
+  padding: 25px;
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+.rugby-league-title {
+  color: #fbbf24;
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin: 0 0 20px 0;
+  text-shadow: 0 2px 10px rgba(251, 191, 36, 0.3);
+  padding-bottom: 15px;
+  border-bottom: 2px solid rgba(251, 191, 36, 0.2);
+}
+
+.rugby-games-grid {
+  display: grid;
+  gap: 20px;
+}
+
+.rugby-game-card {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 15px;
+  padding: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+.rugby-game-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 30px rgba(139, 92, 246, 0.2);
+  border-color: rgba(139, 92, 246, 0.3);
+}
+
+.rugby-game-name {
+  color: #ffffff;
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin: 0 0 15px 0;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.rugby-game-info {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.rugby-game-detail {
+  color: #cbd5e1;
+  font-size: 1rem;
+}
+
+.rugby-game-detail strong {
+  color: #8b5cf6;
+  margin-right: 8px;
+}
+
+.rugby-game-status {
+  display: inline-block;
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 5px;
+}
+
+.rugby-status-scheduled {
+  background: linear-gradient(135deg, #64748b, #475569);
+  color: #ffffff;
+}
+
+.rugby-status-live {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: #ffffff;
+  animation: pulse-live 2s infinite;
+}
+
+.rugby-status-completed {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  color: #ffffff;
+}
+
+.rugby-status-default {
+  background: linear-gradient(135deg, #6b7280, #4b5563);
+  color: #ffffff;
+}
+
+@keyframes pulse-live {
+  0%, 100% {
+    box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+  }
+  50% {
+    box-shadow: 0 4px 25px rgba(239, 68, 68, 0.6);
+  }
+}
+
+.rugby-scores-container {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  margin-top: 20px;
+  padding: 15px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 12px;
+  max-width: 500px;
+}
+
+.rugby-team-score {
+  flex: 1;
+  text-align: center;
+  padding: 15px;
+  background: rgba(139, 92, 246, 0.1);
+  border-radius: 10px;
+  border: 1px solid rgba(139, 92, 246, 0.2);
+}
+
+.rugby-team-name {
+  color: #ffffff;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.rugby-team-score-value {
+  color: #8b5cf6;
+  font-size: 2rem;
+  font-weight: 800;
+  text-shadow: 0 0 15px rgba(139, 92, 246, 0.4);
+  font-family: 'Courier New', monospace;
+  letter-spacing: 2px;
+}
+
+.rugby-vs-separator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #8b5cf6;
+  font-size: 1.2rem;
+  font-weight: 800;
+  text-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .rugby-fixtures-container {
+    padding: 15px;
+  }
+
+  .rugby-header h2 {
+    font-size: 2rem;
+  }
+
+  .rugby-league-title {
+    font-size: 1.5rem;
+  }
+
+  .rugby-game-name {
+    font-size: 1.1rem;
+  }
+
+  .rugby-scores-container {
+    flex-direction: column;
+    max-width: 100%;
+  }
+
+  .rugby-vs-separator {
+    transform: rotate(90deg);
+    margin: 10px 0;
+  }
+
+  .rugby-team-score-value {
+    font-size: 1.6rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .rugby-header h2 {
+    font-size: 1.5rem;
+  }
+
+  .rugby-header {
+    padding: 20px 15px;
+  }
+
+  .rugby-league-title {
+    font-size: 1.3rem;
+  }
+
+  .rugby-game-card {
+    padding: 15px;
+  }
+
+  .rugby-team-score-value {
+    font-size: 1.4rem;
+  }
+}
