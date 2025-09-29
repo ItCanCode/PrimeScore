@@ -68,7 +68,8 @@ const _footballLeagues = getFootballLeagues();
  const handleLeagueSelection = (leagueId) => {
   setSelectedLeague(leagueId);
 
-  if (selectedSport === "rugby") {
+  if (leagueId === "super-rugby") {
+    
     navigate(`/rugby/${leagueId}`);
   } else {
     setShowFootballModal(false);
@@ -263,7 +264,7 @@ const _footballLeagues = getFootballLeagues();
   );
   // const rugby = sports.find(sport => sport.id === "rugby");
   // Render the Match Type selection for all leagues
-if (showLeaguesChoice && selectedSport!="rugby") {
+if (showLeaguesChoice && selectedLeague !="super-rugby") {
 
 
   return (
