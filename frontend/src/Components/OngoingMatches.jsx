@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react'; // Add useRef import
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Calendar, Clock, MapPin, Trophy } from 'lucide-react';
 import Loading from './Loading';
@@ -9,8 +9,8 @@ import '../Styles/OngoingMatches.css';
 const OngoingMatches = () => {
   const navigate = useNavigate();
   const location = useLocation();
-
-  // ✅ sportType passed when navigating
+  
+  const animationUtilsRef = useRef();
   const sportType = location.state?.sport || null;
 
   const [matches, setMatches] = useState([]);
@@ -19,15 +19,17 @@ const OngoingMatches = () => {
   const [isUpdating, setIsUpdating] = useState(false);
   const [lastUpdated, setLastUpdated] = useState(new Date());
   const [highlightedMatchId, setHighlightedMatchId] = useState(null);
-  const animationUtilsRef = useRef(null);
+  // Rename to start with underscore to indicate intentionally unused
+  const [_recentEvents, setRecentEvents] = useState({});
 
-  const getMatchStats = (events = []) => {
+  const getMatchStats = (events) => {
     let homeScore = 0, awayScore = 0;
     let fouls = [], substitutions = [];
     if (Array.isArray(events)) {
       events.forEach(event => {
-        if (event.type === 'score') {
-          if (typeof event.home === 'number') homeScore = event.home;
+        console.log(event.type)
+        if (event.type === 'goal') {
+          if (event.team === 'home') homeScore = event.home;
           if (typeof event.away === 'number') awayScore = event.away;
         }
         if (event.type === 'foul') fouls.push(event);
@@ -42,7 +44,8 @@ const OngoingMatches = () => {
     return { homeScore, awayScore, fouls, substitutions };
   };
 
-  const fetchOngoingMatches = async (isInitialLoad = false) => {
+  // Wrap fetchOngoingMatches in useCallback to fix the dependency warning
+  const fetchOngoingMatches = useCallback(async (isInitialLoad = false) => {
     try {
       if (isInitialLoad) {
         setLoading(true);
@@ -69,14 +72,55 @@ const OngoingMatches = () => {
             return statusOk && sportOk;
           })
         : [];
-
+    
+    
       setMatches(prevMatches => {
         const hasChanged = JSON.stringify(prevMatches) !== JSON.stringify(ongoing);
         if (hasChanged) {
+          console.log("Matches changed");
           setLastUpdated(new Date());
+
+          // Detect new scoring events for animations
+          ongoing.forEach(match => {
+            const prevMatch = prevMatches.find(m => m.id === match.id);
+            
+            if (prevMatch) {
+              // Get current scores using getMatchStats
+              const prevStats = getMatchStats(prevMatch.events);
+              const currentStats = getMatchStats(match.events.events);
+              console.log(prevStats)
+              // Check for score changes
+              const prevTotalScore = prevStats.homeScore + prevStats.awayScore;
+              const currentTotalScore = currentStats.homeScore + currentStats.awayScore;
+              
+              console.log(`Match ${match.id}: Previous total: ${prevTotalScore}, Current total: ${currentTotalScore}`);
+              
+              // If total score increased, trigger animation
+              if (currentTotalScore > prevTotalScore) {
+                console.log(`🎉 GOAL DETECTED for match ${match.id}! Starting animation...`);
+                setRecentEvents(prevRecent => ({
+                  ...prevRecent,
+                  [match.id]: [Date.now()] // Use timestamp as unique identifier
+                }));
+                setHighlightedMatchId(match.id);
+              }
+            } else {
+              // New match detected - could also trigger animation
+              const currentStats = getMatchStats(match.events);
+              if (currentStats.homeScore > 0 || currentStats.awayScore > 0) {
+              
+                setRecentEvents(prevRecent => ({
+                  ...prevRecent,
+                  [match.id]: [Date.now()]
+                }));
+                setHighlightedMatchId(match.id);
+              }
+            }
+          });
         }
         return ongoing;
       });
+    
     } catch (err) {
       setError(err.message);
     } finally {
@@ -86,14 +130,14 @@ const OngoingMatches = () => {
         setIsUpdating(false);
       }
     }
-  };
+  }, [sportType]); // Add sportType as dependency
 
   // Poll for updates every 10 seconds for near real-time updates
   useEffect(() => {
     fetchOngoingMatches(true);
-    const interval = setInterval(() => fetchOngoingMatches(false), 10000); // 10 seconds
+    const interval = setInterval(() => fetchOngoingMatches(false), 10000);
     return () => clearInterval(interval);
-  }, [sportType]); // ✅ re-fetch when sportType changes
+  }, [fetchOngoingMatches]); // Change dependency to fetchOngoingMatches
 
 
 
@@ -183,19 +227,25 @@ const OngoingMatches = () => {
 
       <div className="ongoing-matches-grid">
         {matches.map((match) => {
+          console.log(match.events.events)
           let homeScore = typeof match.homeScore === 'number' ? match.homeScore : undefined;
           let awayScore = typeof match.awayScore === 'number' ? match.awayScore : undefined;
-          let fouls = [], substitutions = [];
+          let fouls = [], _substitutions = [], _goals = [];
           if (homeScore === undefined || awayScore === undefined) {
-            const stats = getMatchStats(match.events);
+          
+            const stats = getMatchStats(match.events.events);
             if (homeScore === undefined) homeScore = stats.homeScore;
             if (awayScore === undefined) awayScore = stats.awayScore;
             fouls = stats.fouls;
-            substitutions = stats.substitutions;
+            _substitutions = stats.substitutions;
           } else {
-            const stats = getMatchStats(match.events);
+            
+       
+            const stats = getMatchStats(match.events.events);
+            console.log(fouls)
             fouls = stats.fouls;
-            substitutions = stats.substitutions;
+            _substitutions = stats.substitutions;
+            _goals = stats.goals;
           }
           const { dateStr, timeStr } = formatDateTime(match.startTime);
           return (
@@ -262,7 +312,7 @@ const OngoingMatches = () => {
                     {match.status}
                   </span>
                 </div>
-
+{/* 
                 <div className="ongoing-extra-stats">
                   <div className="ongoing-match-fouls">
                     <strong>Fouls:</strong>
@@ -284,7 +334,39 @@ const OngoingMatches = () => {
                       </ul>
                     ) : <span> None</span>}
                   </div>
-                </div>
+                </div> */}
+          <div className="ongoing-extra-stats">
+            <h4 style={{ marginTop: "10px" }}>Events:</h4>
+            {Array.isArray(match.events.events) && match.events.events.length > 0 ? (
+              <ul>
+                {match.events.events.map((event, idx) => (
+                  <li key={idx} className={
+                    event.type === "foul" ? "ongoing-match-fouls" :
+                    event.type === "substitution" ? "ongoing-match-subs" :
+                    ""
+                  }>
+                    {event.type === "foul" && (
+                      <div className='ongoing-match-foul'> Foul by {event.player}</div>
+                    )}
+                    {event.type === "goal" && (
+                      <div className='ongoing-match-foul'> Goal by {event.player} ({event.team})</div>
+                    )}
+                    {event.type === "substitution" && (
+                      <> {event.playerOut} → {event.playerIn} ({event.team})</>
+                    )}
+                    {event.type === "yellow card" && (
+                      <div className='ongoing-match-foul'> Yellow Card By {event.player} ({event.team})</div>
+                    )}
+                    {event.type === "own goal" && (
+                      <div className='ongoing-match-foul'> Own goal by {event.player} ({event.team})</div>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <span>No events yet</span>
+            )}
+          </div>
               </div>
             </div>
           );
