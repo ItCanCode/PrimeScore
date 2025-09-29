@@ -1,3 +1,4 @@
+import React from "react";
 import { X, ChevronRight } from "lucide-react";
 
 const LeagueModal = ({ isOpen, sport, leagues, onClose, onSelect }) => {
