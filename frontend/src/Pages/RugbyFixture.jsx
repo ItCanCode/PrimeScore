@@ -5,13 +5,33 @@ const FixturesByDate = () => {
   const [selectedDate, setSelectedDate] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  // const [available,setAvail]=useState()
+
+
+
+
+
+
+
 
   const fetchFixtures = async (year, month, day, leagueId) => {
     setLoading(true);
     setError(null);
 
     try {
-      const response = await fetch(
+         const dateStr = `${year}-${month}-${day}`;
+        // const [year, month, day] = date.split('-');
+        console.log(dateStr);
+        
+        const response= await fetch(`https://prime-backend.azurewebsites.net/api/rugby/live/${dateStr}`);
+        if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      let data = await response.json();
+      setFixtures(data);
+      
+       if(data.message === "None" || data.length === 0){
+              const rapidResponse  = await fetch(
         `https://rugby-live-data-complete.p.rapidapi.com/fixture-by-league?year=${year}&month=${month}&day=${day}&leagueId=${leagueId}`,
         {
           method: 'GET',
@@ -22,12 +42,13 @@ const FixturesByDate = () => {
         }
       );
 
-      if (!response.ok) {
+      if (!rapidResponse.ok) {
         throw new Error('Network response was not ok');
       }
+       const rapidData = await rapidResponse.json();
 
-      const data = await response.json();
-const storeFixtures = data.fixture
+
+       const storeFixtures = rapidData.fixture
   ? Object.values(data.fixture).flatMap(l =>
       l.games.map(g => ({
         leagueName: l.leagueName,
@@ -42,16 +63,15 @@ const storeFixtures = data.fixture
     )
   : [];
 
-setFixtures(storeFixtures);
+  setFixtures(storeFixtures);
 
-// ✅ Send only parsedFixtures
-const sendIt=await fetch("https://prime-backend.azurewebsites.net/api/rugby/live", {
+  const sendIt=await fetch(`https://prime-backend.azurewebsites.net/api/rugby/`, {
   method: "POST",
   headers: {
     "Content-Type": "application/json",
     "Accept": "application/json"
   },
-  body: JSON.stringify(storeFixtures),
+  body: JSON.stringify(fixtures),
 });
 
     if(!sendIt.ok){
@@ -59,8 +79,21 @@ const sendIt=await fetch("https://prime-backend.azurewebsites.net/api/rugby/live
     }
 
 
-    const sendItdata = await sendIt.json(); 
-    console.log("Response:", sendItdata);
+    // const sendItdata = await sendIt.json();
+    if (!sendIt.ok) throw new Error('Failed to save fixtures to backend');
+      }
+
+
+      setFixtures(data);
+      
+
+
+     
+
+
+
+ 
+    // console.log("Response:", sendItdata);
     } catch (err) {
       setError(err.message);
       console.error('Error fetching fixtures:', err);
@@ -74,7 +107,7 @@ const sendIt=await fetch("https://prime-backend.azurewebsites.net/api/rugby/live
     setSelectedDate(date);
 
     const [year, month, day] = date.split('-');
-    const leagueId = '270555'; // Replace with the desired league ID
+    const leagueId = '270555'; 
 
     fetchFixtures(year, month, day, leagueId);
   };
