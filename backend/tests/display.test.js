@@ -89,7 +89,7 @@ describe('Display Controller', () => {
       // Mock matches collection snapshot
       __mockGet
         .mockResolvedValueOnce({ docs: mockMatchDocs }) // matches collection
-        .mockResolvedValueOnce({ exists: true, data: () => ({ home_score: 1, away_score: 0 }) }); // match_events for m1
+        .mockResolvedValueOnce({ exists: true, data: () => ({ homeScore: 1, awayScore: 0 }) }); // match_events for m1
 
       req = {}; // no params for this one
       await getmatchEvents(req, res);

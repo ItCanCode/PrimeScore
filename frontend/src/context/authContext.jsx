@@ -5,7 +5,7 @@ export const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
 //   useEffect(() => {
-//   console.log("🔑 AuthContext Mounted");
+//   console.log(" AuthContext Mounted");
 //   console.log("Initial User from localStorage:", user);
 //   console.log("Initial Token from localStorage:", token);
 // }, []);

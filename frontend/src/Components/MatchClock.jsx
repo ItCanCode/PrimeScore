@@ -1,7 +1,7 @@
 // src/components/MatchClock.js
 import { useEffect, useState, useRef } from "react";
 
-export default function MatchClock({ matchId, status }) {
+export default function MatchClock({ matchId, status, showControls = true }) {
   const [seconds, setSeconds] = useState(0);
   const [running, setRunning] = useState(false);
   const [pausedReason, setPausedReason] = useState("");
@@ -73,17 +73,16 @@ export default function MatchClock({ matchId, status }) {
   };
 
   const format = (secs) => {
-    const h = String(Math.floor(secs / 3600)).padStart(2, "0");
-    const m = String(Math.floor((secs % 3600) / 60)).padStart(2, "0");
+    const m = String(Math.floor(secs / 60)).padStart(2, "0");
     const s = String(secs % 60).padStart(2, "0");
-    return `${h}:${m}:${s}`;
+    return `${m}:${s}`;
   };
 
   return (
     <div className="match-clock-widget">
       <p className="time">{format(seconds)}</p>
       {pausedReason && !running && <p className="reason">Paused: {pausedReason}</p>}
-      {status === "ongoing" && (
+      {status === "ongoing" && showControls && (
         <div className="controls">
           {running ? (
             <button onClick={pauseClock}>Pause</button>
