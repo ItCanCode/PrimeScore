@@ -32,8 +32,16 @@ const updateMatchStatus = async (req, res) => {
       return res.status(404).json({ error: 'Match not found in matches collection' });
     }
 
-    // Just update the status in 'matches'
-    await matchRef.update({ status });
+    // Prepare update data
+    const updateData = { status };
+    
+    // If status is being set to 'finished', also set end_time
+    if (status && status.toLowerCase() === 'finished') {
+      updateData.end_time = admin.firestore.FieldValue.serverTimestamp();
+    }
+    
+    // Update the status (and end_time if applicable) in 'matches'
+    await matchRef.update(updateData);
 
     res.status(200).json({ message: `Match status updated to ${status}` });
   } catch (error) {
