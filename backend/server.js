@@ -1,3 +1,6 @@
+//server.js
+
+
 import express from 'express';
 import corsMiddleware from './src/middleware/cors.js';
 import userRoutes from './src/routes/userRoutes.js';

@@ -25,12 +25,17 @@ const FixturesByDate = () => {
         
         const response= await fetch(`https://prime-backend.azurewebsites.net/api/rugby/live/${dateStr}`);
         if (!response.ok) {
-        throw new Error('Network response was not ok');
+        throw new Error('Network (fetching from backend) response was not ok');
       }
       let data = await response.json();
-      setFixtures(data);
-      
-       if(data.message === "None" || data.length === 0){
+      // setFixtures(data);
+      if (data.length>0) {
+        console.log("fetched from database");
+        
+      }
+       if( data.fixtures.length === 0){
+        console.log("using exernal api");
+        
               const rapidResponse  = await fetch(
         `https://rugby-live-data-complete.p.rapidapi.com/fixture-by-league?year=${year}&month=${month}&day=${day}&leagueId=${leagueId}`,
         {
@@ -43,7 +48,7 @@ const FixturesByDate = () => {
       );
 
       if (!rapidResponse.ok) {
-        throw new Error('Network response was not ok');
+        throw new Error('Network response to the external api was not ok');
       }
        const rapidData = await rapidResponse.json();
 
@@ -74,9 +79,6 @@ const FixturesByDate = () => {
   body: JSON.stringify(fixtures),
 });
 
-    if(!sendIt.ok){
-      throw new Error('Network for sending fixtures  was not ok');
-    }
 
 
     // const sendItdata = await sendIt.json();
