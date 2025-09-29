@@ -28,6 +28,7 @@
         <li><a href="#overview">Overview</a></li>
         <li><a href="#architecture">Architecture</a></li>
         <li><a href="#api">APIs</a></li>
+        <li><a href="#components">Components</a></li>
         <li><a href="#backlog">Sprint Backlog</a></li>
         <li><a href="#stories">User Stories</a></li>
         <li><a href="#sprint2-bugs">Sprint 2 Bug Tracking</a></li>
@@ -218,6 +219,114 @@
     <li>Provide real-time sports data (soccer & rugby) via APIs.</li>
     <li>Maintain code quality with testing and linting tools.</li>
     <li>Deliver polished UX with icons and fast builds.</li>
+  </ul>
+</section>
+
+<section id="components" class="section" aria-labelledby="component-title">
+  <header class="section-header">
+    <h2 id="component-title">Components used in Primescore</h2>
+  </header>
+  
+  <p>
+    This section documents custom React components developed for PrimeScore.
+    These components were carefully designed to provide reusable, efficient solutions for match event handling and user interface animations.
+  </p>
+
+  <h3>Custom Components</h3>
+
+  <h4>MatchEventAnimation</h4>
+  <ul>
+    <li><strong>Purpose:</strong> Reusable React component for handling match event animations with intelligent display rules and user tracking.</li>
+    <li><strong>Why Used:</strong> Provides consistent animation behavior across different pages while preventing users from seeing the same animation multiple times.</li>
+    <li><strong>Challenges:</strong> Managing localStorage tracking, preventing infinite re-renders, and creating stable event identifiers.</li>
+  </ul>
+
+  <h4>Key Features</h4>
+  <ul>
+    <li><strong>15-second Animation Duration</strong> — Animations automatically disappear after exactly 15 seconds</li>
+    <li><strong>User Tracking with localStorage</strong> — Each animation is tracked per user to prevent showing the same animation twice</li>
+    <li><strong>5-minute Time Window</strong> — Only shows animations for events that happened within the last 5 minutes</li>
+    <li><strong>Stable Event Identification</strong> — Uses match state (scores) and rounded timestamps to create consistent identifiers</li>
+    <li><strong>Real-time Event Detection</strong> — Monitors match data for scoring events and triggers animations automatically</li>
+    <li><strong>Cleanup on Unmount</strong> — Properly handles component lifecycle and memory cleanup</li>
+  </ul>
+
+  <h4>Basic Usage</h4>
+  <div class="code-block">import MatchEventAnimation from './Components/MatchEventAnimation';
+
+function MatchesPage() {
+  const [matches, setMatches] = useState([]);
+  const [highlightedMatchId, setHighlightedMatchId] = useState(null);
+
+  return (
+    &lt;div&gt;
+      &lt;MatchEventAnimation
+        matches={matches}
+        onAnimationTrigger={(matchId, eventType) =&gt; {
+          setHighlightedMatchId(matchId);
+        }}
+        onAnimationEnd={(matchId, eventType) =&gt; {
+          setHighlightedMatchId(null);
+        }}
+      &gt;
+        {({ isMatchAnimating, getAnimationData, endAnimation }) =&gt; (
+          &lt;div className="matches-container"&gt;
+            {matches.map(match =&gt; (
+              &lt;div 
+                key={match.id}
+                className={`match-card ${highlightedMatchId === match.id ? 'score-anim' : ''}`}
+                onAnimationEnd={() =&gt; endAnimation(match.id)}
+              &gt;
+                &lt;div className={`score ${isMatchAnimating(match.id) ? 'goal-animate' : ''}`}&gt;
+                  {match.homeScore} - {match.awayScore}
+                  {isMatchAnimating(match.id) && (
+                    &lt;span className="goal-notification"&gt;GOAL!&lt;/span&gt;
+                  )}
+                &lt;/div&gt;
+              &lt;/div&gt;
+            ))}
+          &lt;/div&gt;
+        )}
+      &lt;/MatchEventAnimation&gt;
+    &lt;/div&gt;
+  );
+}</div>
+
+  <h4>Component Props</h4>
+  <ul>
+    <li><strong><div class="code-block">matches</div> (Array, default: <div class="code-block">[]</div>)</strong> — Array of match objects to monitor for events</li>
+    <li><strong><div class="code-block">onAnimationTrigger</div> (Function, default: <div class="code-block">() => {}</div>)</strong> — Callback when animation starts <div class="code-block">(matchId, eventType)</div></li>
+    <li><strong><div class="code-block">onAnimationEnd</div> (Function, default: <div class="code-block">() => {}</div>)</strong> — Callback when animation ends <div class="code-block">(matchId, eventType)</div></li>
+    <li><strong><div class="code-block">animationDuration</div> (Number, default: <div class="code-block">15000</div>)</strong> — Duration in milliseconds (15 seconds)</li>
+    <li><strong><div class="code-block">timeWindow</div> (Number, default: <div class="code-block">300000</div>)</strong> — Time window for showing animations (5 minutes)</li>
+    <li><strong><div class="code-block">children</div> (Function, required)</strong> — Render prop function that receives animation utilities</li>
+  </ul>
+
+  <h4>Animation Rules</h4>
+  <ol>
+    <li><strong>First Visit:</strong> User sees animation for recent scoring events (within 5 minutes)</li>
+    <li><strong>Refresh/Reopen:</strong> Same scoring events won't trigger animations again</li>
+    <li><strong>New Events:</strong> Only genuinely new scoring events trigger animations</li>
+    <li><strong>Persistence:</strong> Works across browser sessions via localStorage</li>
+    <li><strong>Time Limit:</strong> After 5 minutes from an event, no animations are shown</li>
+    <li><strong>Duration:</strong> Each animation runs for exactly 15 seconds</li>
+  </ol>
+
+  <h4>CSS Classes & localStorage</h4>
+  <ul>
+    <li><strong>Required CSS:</strong> <div class="code-block">MatchEventAnimation.css</div></li>
+    <li><strong><div class="code-block">.goal-animate</div></strong> — Applied to elements during goal animations</li>
+    <li><strong><div class="code-block">.score-anim</div></strong> — Applied to match cards during scoring events</li>
+    <li><strong><div class="code-block">.match-event-notification</div></strong> — For event notification badges</li>
+    <li><strong>localStorage Key:</strong> <div class="code-block">primescore_viewed_animations</div></li>
+  </ul>
+
+  <h4>Browser Compatibility</h4>
+  <ul>
+    <li>Supports all modern browsers with localStorage and React support</li>
+    <li>Graceful fallback handling for localStorage errors</li>
+    <li>No external dependencies beyond React</li>
+    <li>Efficient match data comparison and automatic cleanup</li>
   </ul>
 </section>
 

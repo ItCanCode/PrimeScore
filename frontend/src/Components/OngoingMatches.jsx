@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Calendar, Clock, MapPin, Trophy } from 'lucide-react';
 import Loading from './Loading';
 import MatchClock from './MatchClock.jsx';
+import MatchEventAnimation from './MatchEventAnimation.jsx';
 import '../Styles/OngoingMatches.css';
 
 const OngoingMatches = () => {
@@ -18,7 +19,7 @@ const OngoingMatches = () => {
   const [isUpdating, setIsUpdating] = useState(false);
   const [lastUpdated, setLastUpdated] = useState(new Date());
   const [highlightedMatchId, setHighlightedMatchId] = useState(null);
-  const [recentEvents, setRecentEvents] = useState({});
+  const animationUtilsRef = useRef(null);
 
   const getMatchStats = (events = []) => {
     let homeScore = 0, awayScore = 0;
@@ -66,44 +67,6 @@ const OngoingMatches = () => {
         const hasChanged = JSON.stringify(prevMatches) !== JSON.stringify(ongoing);
         if (hasChanged) {
           setLastUpdated(new Date());
-
-          // Detect new scoring events for animations
-          ongoing.forEach(match => {
-            const prevMatch = prevMatches.find(m => m.id === match.id);
-            
-            if (prevMatch) {
-              // Get current scores using getMatchStats
-              const prevStats = getMatchStats(prevMatch.events);
-              const currentStats = getMatchStats(match.events);
-              
-              // Check for score changes
-              const prevTotalScore = prevStats.homeScore + prevStats.awayScore;
-              const currentTotalScore = currentStats.homeScore + currentStats.awayScore;
-              
-              console.log(`Match ${match.id}: Previous total: ${prevTotalScore}, Current total: ${currentTotalScore}`);
-              
-              // If total score increased, trigger animation
-              if (currentTotalScore > prevTotalScore) {
-                console.log(`🎉 GOAL DETECTED for match ${match.id}! Starting animation...`);
-                setRecentEvents(prevRecent => ({
-                  ...prevRecent,
-                  [match.id]: [Date.now()] // Use timestamp as unique identifier
-                }));
-                setHighlightedMatchId(match.id);
-              }
-            } else {
-              // New match detected - could also trigger animation
-              const currentStats = getMatchStats(match.events);
-              if (currentStats.homeScore > 0 || currentStats.awayScore > 0) {
-                console.log(`🆕 New match with score detected: ${match.id}`);
-                setRecentEvents(prevRecent => ({
-                  ...prevRecent,
-                  [match.id]: [Date.now()]
-                }));
-                setHighlightedMatchId(match.id);
-              }
-            }
-          });
         }
         return ongoing;
       });
@@ -125,24 +88,7 @@ const OngoingMatches = () => {
     return () => clearInterval(interval);
   }, [sportType]); // ✅ re-fetch when sportType changes
 
-  // Auto-remove animations after 3 minutes
-  useEffect(() => {
-    const timers = [];
-    Object.keys(recentEvents).forEach(matchId => {
-      if (recentEvents[matchId]?.length) {
-        const timer = setTimeout(() => {
-          setRecentEvents(prev => {
-            const updated = { ...prev };
-            delete updated[matchId];
-            return updated;
-          });
-        }, 15000); // the animation will disappear after 15 seconds
-        timers.push(timer);
-      }
-    });
-    return () => timers.forEach(clearTimeout);
-  }, [recentEvents]);
-  //implement: once a user enters ongoing matches five minutes after a goal has been attained or any other event has happened , they should see the animation again for another 15 seconds
+
 
   const getSportIcon = (sport) => {
     switch (sport) {
@@ -190,6 +136,25 @@ const OngoingMatches = () => {
 
   return (
     <div className="ongoing-matches-container">
+      {/* Animation Component */}
+      <MatchEventAnimation
+        matches={matches}
+        onAnimationTrigger={(matchId, eventType) => {
+          console.log(`🎬 Animation started: ${matchId} - ${eventType}`);
+          setHighlightedMatchId(matchId);
+        }}
+        onAnimationEnd={(matchId, eventType) => {
+          console.log(`🎬 Animation ended: ${matchId} - ${eventType}`);
+          setHighlightedMatchId(null);
+        }}
+      >
+        {({ isMatchAnimating, getAnimationData, endAnimation }) => {
+          // Store animation utilities in ref for use in render
+          animationUtilsRef.current = { isMatchAnimating, getAnimationData, endAnimation };
+          return null;
+        }}
+      </MatchEventAnimation>
+
       <button onClick={() => navigate(-1)} style={{ marginBottom: '1rem', padding: '0.5rem 1rem', borderRadius: '8px', border: 'none', color: '#0e0d0dff', cursor: 'pointer' }}>Back</button>
 
       <div className="ongoing-header-card">
@@ -230,7 +195,13 @@ const OngoingMatches = () => {
             <div
               key={match.id}
               className={`ongoing-match-card ${highlightedMatchId === match.id ? "score-anim" : ""}`}
-              onAnimationEnd={() => setHighlightedMatchId(null)}  // reset after animation
+              onAnimationEnd={() => {
+                // Use animation utilities if available
+                if (animationUtilsRef.current && animationUtilsRef.current.endAnimation) {
+                  animationUtilsRef.current.endAnimation(match.id);
+                }
+                setHighlightedMatchId(null);
+              }}
             >
               <div className="ongoing-sport-header">
                 <div className="ongoing-sport-header-content">
@@ -248,9 +219,9 @@ const OngoingMatches = () => {
                   <div className="ongoing-vs">VS</div>
                   <div className="ongoing-team-name">{match.awayTeam}</div>
                 </div>
-                <div className={`ongoing-score-row ${recentEvents[match.id]?.length ? "goal-animate" : ""}`}>
+                <div className={`ongoing-score-row ${animationUtilsRef.current?.isMatchAnimating(match.id) ? "goal-animate" : ""}`}>
                   <span className="ongoing-score">{homeScore} - {awayScore}</span>
-                  {recentEvents[match.id]?.length > 0 && (
+                  {animationUtilsRef.current?.isMatchAnimating(match.id) && (
                     <span style={{ fontSize: '12px', color: '#ffd700', marginLeft: '10px' }}>
                        GOAL!
                     </span>
