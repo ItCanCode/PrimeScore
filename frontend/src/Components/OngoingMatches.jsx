@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Calendar, Clock, MapPin, Trophy } from 'lucide-react';
 import Loading from './Loading';
+import MatchClock from './MatchClock.jsx';
 import '../Styles/OngoingMatches.css';
 
 const OngoingMatches = () => {
@@ -254,6 +255,11 @@ const OngoingMatches = () => {
                        GOAL!
                     </span>
                   )}
+                </div>
+
+                {/* Match Clock Display - show for ongoing matches */}
+                <div className="ongoing-match-clock">
+                  <MatchClock matchId={match.id} status={match.status} showControls={false} />
                 </div>
 
                 <div className="ongoing-match-details">
