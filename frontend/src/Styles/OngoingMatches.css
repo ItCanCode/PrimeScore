@@ -433,3 +433,100 @@
     padding: 15px;
   }
 }
+
+/*  Goal animation: green pulse */
+@keyframes goalHighlight {
+  0% { transform: scale(1); box-shadow: 0 0 0px #22c55e; }
+  50% { transform: scale(1.05); box-shadow: 0 0 30px #22c55e; }
+  100% { transform: scale(1); box-shadow: 0 0 0px transparent; }
+}
+.goal-anim {
+  animation: goalHighlight 1.2s ease-in-out;
+}
+
+/* Foul animation: red shake */
+@keyframes foulShake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-6px); }
+  50% { transform: translateX(6px); }
+  75% { transform: translateX(-3px); }
+}
+.foul-anim {
+  animation: foulShake 0.6s ease-in-out;
+  border: 1px solid #ef4444;
+}
+
+/* Substitution animation: yellow flash */
+@keyframes subFlash {
+  0%, 100% { background-color: rgba(255, 255, 255, 0.1); }
+  50% { background-color: rgba(253, 224, 71, 0.2); }
+}
+.sub-anim {
+  animation: subFlash 1s ease-in-out;
+}
+
+@keyframes scoreFlash {
+  0% { transform: scale(1); box-shadow: 0 0 0px transparent; }
+  50% { transform: scale(1.05); box-shadow: 0 0 25px #66cc99; }
+  100% { transform: scale(1); box-shadow: 0 0 0px transparent; }
+}
+
+.score-anim {
+  animation: scoreFlash 1s ease-in-out;
+}
+
+/* 3-minute goal animation for ongoing matches */
+.goal-animate {
+  animation: goal-celebration 1.5s infinite ease-in-out;
+  position: relative;
+  overflow: visible;
+}
+
+.goal-animate::before {
+  content: '';
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  right: -10px;
+  bottom: -10px;
+  background: linear-gradient(45deg, #ff6b35, #f7931e, #ffd700, #32cd32, #1e90ff, #9370db);
+  background-size: 400% 400%;
+  border-radius: 15px;
+  z-index: -1;
+  animation: rainbow-border 2s linear infinite;
+  opacity: 0.8;
+}
+
+@keyframes goal-celebration {
+  0% { 
+    transform: scale(1) rotate(0deg); 
+    color: #ffffff;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+  }
+  25% { 
+    transform: scale(1.1) rotate(-2deg); 
+    color: #ff6b35;
+    text-shadow: 0 0 20px #ff6b35, 0 0 30px #ff6b35;
+  }
+  50% { 
+    transform: scale(1.2) rotate(2deg); 
+    color: #ffd700;
+    text-shadow: 0 0 25px #ffd700, 0 0 35px #ffd700, 0 0 45px #ffd700;
+  }
+  75% { 
+    transform: scale(1.1) rotate(-1deg); 
+    color: #32cd32;
+    text-shadow: 0 0 20px #32cd32, 0 0 30px #32cd32;
+  }
+  100% { 
+    transform: scale(1) rotate(0deg); 
+    color: #ffffff;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+  }
+}
+
+@keyframes rainbow-border {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
