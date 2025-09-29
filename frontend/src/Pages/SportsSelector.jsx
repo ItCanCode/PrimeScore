@@ -275,7 +275,6 @@ if (showLeaguesChoice && selectedSport!="rugby") {
   );
 }
 
-
   return renderHomePage();
 };
 

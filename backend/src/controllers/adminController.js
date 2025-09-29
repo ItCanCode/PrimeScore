@@ -69,7 +69,7 @@ const updateScore = async (req, res) => {
         matchId,
         timestamp: new Date().toISOString()
       };
-      await db.collection('match_events').add(event);
+      await db.collection('matchEvents').add(event);
     }
     res.status(200).json({ message: 'Score updated' });
   } catch (error) {
@@ -91,7 +91,7 @@ const addMatchEvent = async (req, res) => {
       matchId,
       timestamp: new Date().toISOString()
     };
-    await db.collection('match_events').add(event);
+    await db.collection('matchEvents').add(event);
     res.status(200).json({ message: 'Event added' });
   } catch (error) {
     res.status(500).json({ error: error.message });

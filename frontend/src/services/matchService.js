@@ -21,6 +21,14 @@ export const addMatchEventService = async (selectedMatch, eventData) => {
       payload.points = 1; 
       break;
 
+    case "Own Goal":
+      payload.points = 1; 
+      break;
+    
+    case "Drop Goal":
+      payload.points = 3;
+      break;
+
     case "Try":
       payload.points = 5; 
       break;
