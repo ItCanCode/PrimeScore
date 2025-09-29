@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "test": "jest --coverage --coverageReporters=lcov",
+    "test": "jest --coverage",
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
@@ -58,6 +58,16 @@
     "setupFiles": [
       "whatwg-fetch",
       "<rootDir>/jest.setup.js"
+    ],
+    "collectCoverage": true,
+    "coverageDirectory": "coverage",
+    "coverageReporters": [
+      "lcov",
+      "text"
+    ],
+    "reporters": [
+      "default",
+      ["jest-junit", { "outputDirectory": "./", "outputName": "junit.xml" }]
     ]
   }
 }
