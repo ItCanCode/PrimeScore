@@ -69,7 +69,7 @@ const updateScore = async (req, res) => {
         matchId,
         timestamp: new Date().toISOString()
       };
-      await db.collection('match_events').add(event);
+      await db.collection('matchEvents').add(event);
     }
     res.status(200).json({ message: 'Score updated' });
   } catch (error) {
@@ -91,7 +91,7 @@ const addMatchEvent = async (req, res) => {
       matchId,
       timestamp: new Date().toISOString()
     };
-    await db.collection('match_events').add(event);
+    await db.collection('matchEvents').add(event);
     res.status(200).json({ message: 'Event added' });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -160,6 +160,32 @@ const getPlayersByTeamName = async (req, res) => {
   }
 };
 
+const deleteMatch = async (req, res) => {
+  try {
+    const matchId = req.params.id;
+    const db = admin.firestore();
+
+    const matchRef = db.collection("matches").doc(matchId);
+    const matchDoc = await matchRef.get();
+
+    if (!matchDoc.exists) {
+      return res.status(404).json({ error: "Match not found" });
+    }
+
+    await matchRef.delete();
+
+    const eventsSnapshot = await db.collection("matchEvents")
+      .where("matchId", "==", matchId)
+      .get();
+    const batch = db.batch();
+    eventsSnapshot.forEach(doc => batch.delete(doc.ref));
+    await batch.commit();
+
+    res.status(200).json({ message: "Match deleted successfully", matchId });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
 
 export default {
   createMatch,
@@ -168,4 +194,5 @@ export default {
   addMatchEvent,
   allTeams,
   getPlayersByTeamName,
+  deleteMatch,
 };

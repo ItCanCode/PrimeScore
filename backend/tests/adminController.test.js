@@ -148,7 +148,7 @@ describe("adminController", () => {
 
     await adminController.updateScore(req, res);
 
-    expect(admin.__firestoreMock.collection).toHaveBeenCalledWith("match_events");
+    expect(admin.__firestoreMock.collection).toHaveBeenCalledWith("matchEvents");
     expect(addMock).toHaveBeenCalledWith(expect.objectContaining({
       eventType: "Goal",
       team: "Team A",
@@ -169,7 +169,7 @@ describe("adminController", () => {
 
     await adminController.addMatchEvent(req, res);
 
-    expect(admin.__firestoreMock.collection).toHaveBeenCalledWith("match_events");
+    expect(admin.__firestoreMock.collection).toHaveBeenCalledWith("matchEvents");
     expect(addMock).toHaveBeenCalledWith(expect.objectContaining({
       eventType: "Yellow Card",
       team: "Team B",

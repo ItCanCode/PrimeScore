@@ -16,16 +16,16 @@ export const getmatchEvents = async (req, res) => {
       // Only process matches with status 'ongoing'
       if (matchData.status && matchData.status.toLowerCase() === 'ongoing') {
         // Fetch the corresponding events for this match from 'match_events' collection
-        const eventDoc = await admin.firestore().collection('match_events').doc(doc.id).get();
+        const eventDoc = await admin.firestore().collection('matchEvents').doc(doc.id).get();
         if (eventDoc.exists) {
           const eventData = eventDoc.data();
           matchData.events = eventData;
           // Attach homeScore and awayScore if present
-          if (typeof eventData.home_score === 'number') {
-            matchData.homeScore = eventData.home_score;
+          if (typeof eventData.homeScore === 'number') {
+            matchData.homeScore = eventData.homeScore;
           }
-          if (typeof eventData.away_score === 'number') {
-            matchData.awayScore = eventData.away_score;
+          if (typeof eventData.awayScore === 'number') {
+            matchData.awayScore = eventData.awayScore;
           }
         } else {
           matchData.events = null;
@@ -50,7 +50,7 @@ export const getMatchEventsById = async (req, res) => {
     const { id } = req.params;
 
     // Fetch the event document for the given match ID
-    const eventDoc = await admin.firestore().collection('match_events').doc(id).get();
+    const eventDoc = await admin.firestore().collection('matchEvents').doc(id).get();
     if (!eventDoc.exists) {
       // If no event document found, return 404
       return res.status(404).json({ error: 'Match events not found' });

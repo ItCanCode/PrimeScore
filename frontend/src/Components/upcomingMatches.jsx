@@ -1,9 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Calendar, Clock, MapPin, Trophy } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { Calendar, MapPin, Trophy } from 'lucide-react';
+import { useNavigate, useLocation } from 'react-router-dom';
+
 const UpcomingMatches = () => {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
+  const location = useLocation();
   
+  // ✅ sportType passed from navigation state
+  const sportType = location.state?.sport || null;
+
   const [matches, setMatches] = useState([]);
   const [loading, setLoading] = useState(true);
   
@@ -12,67 +17,9 @@ const UpcomingMatches = () => {
       try {
         const response = await fetch('https://prime-backend.azurewebsites.net/api/users/viewMatches');
         const data = await response.json();
-        console.log(data);
         setMatches(data);
       } catch (error) {
         console.error("Error fetching matches:", error);
-        // Fallback to dummy data for development
-        setMatches([
-          {
-            id: 1,
-            homeTeam: "Manchester United",
-            awayTeam: "Liverpool",
-            venue: "Old Trafford",
-            startTime: "2025-08-20 15:00",
-            sportType: "Football",
-            status: "Scheduled"
-          },
-          {
-            id: 2,
-            homeTeam: "Lakers",
-            awayTeam: "Warriors",
-            venue: "Crypto.com Arena",
-            startTime: "2025-08-21 20:30",
-            sportType: "Basketball",
-            status: "Scheduled"
-          },
-          {
-            id: 3,
-            homeTeam: "England",
-            awayTeam: "Australia",
-            venue: "Lord's Cricket Ground",
-            startTime: "2025-08-22 11:00",
-            sportType: "Cricket",
-            status: "Confirmed"
-          },
-          {
-            id: 4,
-            homeTeam: "Real Madrid",
-            awayTeam: "Barcelona",
-            venue: "Santiago Bernabéu",
-            startTime: "2025-08-23 21:00",
-            sportType: "Football",
-            status: "Scheduled"
-          },
-          {
-            id: 5,
-            homeTeam: "Celtics",
-            awayTeam: "Heat",
-            venue: "TD Garden",
-            startTime: "2025-08-24 19:00",
-            sportType: "Basketball",
-            status: "Postponed"
-          },
-          {
-            id: 6,
-            homeTeam: "India",
-            awayTeam: "Pakistan",
-            venue: "Eden Gardens",
-            startTime: "2025-08-25 14:30",
-            sportType: "Cricket",
-            status: "Confirmed"
-          }
-        ]);
       } finally {
         setLoading(false);
       }
@@ -81,7 +28,6 @@ const UpcomingMatches = () => {
     fetchMatches();
   }, []);
 
-  // Emoji icons by sport type
   const getSportIcon = (sport) => {
     switch (sport) {
       case 'Football':
@@ -112,16 +58,18 @@ const UpcomingMatches = () => {
     return `${dateStr} at ${timeStr}`;
   };
 
-  // Only show matches with status 'Scheduled' or 'Confirmed'
-  const upcomingMatches = matches.filter(match => 
-    ['scheduled', 'confirmed'].includes((match.status || '').toLowerCase())
-  );
+  // ✅ Filter only scheduled/confirmed AND match the sportType if provided
+  const upcomingMatches = matches.filter(match => {
+    const statusOk = ['scheduled', 'confirmed'].includes((match.status || '').toLowerCase());
+    const sportOk = !sportType || (match.sportType?.toLowerCase() === sportType.toLowerCase());
+    return statusOk && sportOk;
+  });
 
   if (loading) {
     return (
       <div className="live-api-container">
         <div className="loading-container">
-          <div className="loading-text">Loading upcoming matches...</div>
+          <div className="loading-text">Loading upcoming matches</div>
         </div>
       </div>
     );
@@ -130,11 +78,16 @@ const UpcomingMatches = () => {
   return (
     <div className="live-api-container">
       {/* Header */}
-      <button onClick={() => navigate(-1)} style={{ marginBottom: '1rem', padding: '0.5rem 1rem', borderRadius: '8px', border: 'none', color: '#0e0d0dff', cursor: 'pointer' }}>Back</button>
+      <button 
+        onClick={() => navigate(-1)} 
+        style={{ marginBottom: '1rem', padding: '0.5rem 1rem', borderRadius: '8px', border: 'none', color: '#0e0d0dff', cursor: 'pointer' }}
+      >
+        Back
+      </button>
       <div className="live-api-header">
         <h1 className="live-api-title">
           <Trophy size={36} style={{ verticalAlign: 'middle', marginRight: '10px' }} />
-          Upcoming Matches
+          Upcoming {sportType ? `${sportType} ` : ''}Matches
         </h1>
         <p className="live-api-subtitle">
           Stay updated with the latest match schedules
@@ -149,7 +102,7 @@ const UpcomingMatches = () => {
 
             return (
               <div key={match.id} className="match-card">
-                {/* Match Header with Teams and Status */}
+                {/* Match Header */}
                 <div className="match-header">
                   <div className="match-teams">
                     <div className="team-name">{match.homeTeam}</div>
@@ -163,20 +116,17 @@ const UpcomingMatches = () => {
 
                 {/* Match Info */}
                 <div className="match-info">
-                  {/* Date & Time */}
                   <div className="match-datetime">
                     <Calendar className="datetime-icon" />
                     <span>{formattedDateTime}</span>
                   </div>
-
-                  {/* Venue */}
                   <div className="match-venue">
                     <MapPin className="venue-icon" />
                     <span>{match.venue}</span>
                   </div>
                 </div>
 
-                {/* Sport Type Section */}
+                {/* Sport Type */}
                 <div className="events-section">
                   <div className="events-title">
                     <Trophy size={16} />
@@ -197,7 +147,7 @@ const UpcomingMatches = () => {
         <div className="no-matches">
           <div className="no-matches-icon">🏆</div>
           <p className="no-matches-text">
-            No upcoming matches scheduled at the moment
+            No upcoming {sportType ? sportType.toLowerCase() : ''} matches scheduled at the moment
           </p>
         </div>
       )}
