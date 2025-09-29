@@ -56,11 +56,9 @@ export const getRugbyFix = async (req, res) => {
       })
       .filter(fixture => fixture.formattedDate === normalizedDate);
 
-    if (fixtures.length === 0) {
-      return res.status(200).json({ fixtures: [] }); 
-    }
 
-    res.json(fixtures);
+
+return res.status(200).json({fixtures});
   } catch (err) {
     console.error("Error fetching fixtures:", err);
     res.status(500).json({ error: "Failed to fetch fixtures" });
