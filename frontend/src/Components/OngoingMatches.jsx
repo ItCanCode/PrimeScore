@@ -57,7 +57,14 @@ const OngoingMatches = () => {
       // ✅ Filter only ongoing + by sportType if provided
       const ongoing = Array.isArray(data)
         ? data.filter(m => {
-            const statusOk = m.status && m.status.toLowerCase() === 'ongoing';
+            const status = (m.status || "").toLowerCase();
+            const hasEndTime = m.end_time || m.endTime;
+            
+            // A match is ongoing if:
+            // 1. Status is explicitly "ongoing"
+            // 2. AND it doesn't have an end_time (which would indicate completion)
+            // 3. AND it's not marked as "finished"
+            const statusOk = status === 'ongoing' && status !== 'finished' && !hasEndTime;
             const sportOk = !sportType || (m.sportType?.toLowerCase() === sportType.toLowerCase());
             return statusOk && sportOk;
           })
