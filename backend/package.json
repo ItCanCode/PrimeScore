@@ -29,7 +29,6 @@
     "roots": [
       "<rootDir>/src/controllers",
       "<rootDir>/src/services",
-      "<rootDir>/src/middleware",
       "<rootDir>/tests"
     ],
     "testMatch": [
