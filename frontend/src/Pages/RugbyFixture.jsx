@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import '../Styles/RugbyFixtures.css';
 
 const FixturesByDate = () => {
   const [fixtures, setFixtures] = useState([]);
@@ -32,7 +33,6 @@ const FixturesByDate = () => {
         return; 
       }
 
-   
       console.log("Using external API...");
       const rapidResponse = await fetch(
         `https://rugby-live-data-complete.p.rapidapi.com/fixture-by-league?year=${year}&month=${month}&day=${day}&leagueId=${leagueId}`,
@@ -65,7 +65,6 @@ const FixturesByDate = () => {
 
       setFixtures(externalFixtures);
 
- 
       if (externalFixtures.length > 0) {
         const saveResponse = await fetch(`https://prime-backend.azurewebsites.net/api/rugby/live`, {
           method: "POST",
@@ -97,6 +96,17 @@ const FixturesByDate = () => {
     fetchFixtures(year, month, day, leagueId);
   };
 
+  const getStatusClass = (status) => {
+    const statusLower = status.toLowerCase();
+    if (statusLower.includes('live') || statusLower.includes('ongoing')) {
+      return 'rugby-status-live';
+    } else if (statusLower.includes('complete') || statusLower.includes('finished')) {
+      return 'rugby-status-completed';
+    } else if (statusLower.includes('scheduled') || statusLower.includes('upcoming')) {
+      return 'rugby-status-scheduled';
+    }
+    return 'rugby-status-default';
+  };
 
   const groupedFixtures = Array.isArray(fixtures)
     ? fixtures.reduce((acc, game) => {
@@ -107,50 +117,77 @@ const FixturesByDate = () => {
     : {};
 
   return (
-    <div style={{ padding: '1rem', backgroundColor: '#121212', minHeight: '100vh' }}>
-      <h2 style={{ color: 'white' }}>Rugby Fixtures</h2>
-      <input
-        type="date"
-        value={selectedDate}
-        onChange={handleDateChange}
-        style={{ marginBottom: '1rem' }}
-      />
+    <div className="rugby-fixtures-container">
+      <div className="rugby-header">
+        <h2>🏉 Rugby Fixtures</h2>
+        <div className="rugby-date-picker">
+          <input
+            type="date"
+            value={selectedDate}
+            onChange={handleDateChange}
+            className="rugby-date-input"
+          />
+        </div>
+      </div>
 
-      {loading && <p style={{ color: 'white' }}>Loading fixtures...</p>}
-      {error && <p style={{ color: 'red' }}>Error: {error}</p>}
-      {!loading && !error && fixtures.length === 0 && (
-        <p style={{ color: 'white' }}>No fixtures found for this date.</p>
+      {loading && (
+        <div className="rugby-loading">
+          Loading fixtures...
+        </div>
       )}
 
-      <div>
+      {error && (
+        <div className="rugby-error">
+          Error: {error}
+        </div>
+      )}
+
+      {!loading && !error && fixtures.length === 0 && (
+        <div className="rugby-no-fixtures">
+          No fixtures found for this date. Please select a different date.
+        </div>
+      )}
+
+      <div className="rugby-leagues-container">
         {Object.entries(groupedFixtures).map(([leagueName, games]) => (
-          <div key={leagueName}>
-            <h2 style={{ color: "yellow" }}>{leagueName}</h2>
-            {games.map((game, index) => (
-              <div
-                key={index}
-                style={{
-                  border: "1px solid #ccc",
-                  margin: "1rem 0",
-                  padding: "1rem",
-                  borderRadius: "8px",
-                  backgroundColor: "#1e1e1e",
-                  color: "white",
-                }}
-              >
-                <h3>{game.name}</h3>
-                <p>Date: {new Date(game.date).toLocaleString()}</p>
-                <p>Status: {game.status}</p>
-                <div style={{ display: "flex", justifyContent: "space-between", maxWidth: "400px" }}>
-                  {game.score.map((s, i) => (
-                    <div key={i} style={{ textAlign: "center" }}>
-                      <p>{s.team}</p>
-                      <p>Score: {s.score}</p>
+          <div key={leagueName} className="rugby-league-section">
+            <h2 className="rugby-league-title">{leagueName}</h2>
+            <div className="rugby-games-grid">
+              {games.map((game, index) => (
+                <div key={index} className="rugby-game-card">
+                  <h3 className="rugby-game-name">{game.name}</h3>
+                  
+                  <div className="rugby-game-info">
+                    <div className="rugby-game-detail">
+                      <strong>Date:</strong>
+                      {new Date(game.date).toLocaleString()}
                     </div>
-                  ))}
+                    <div className="rugby-game-detail">
+                      <strong>Status:</strong>
+                      <span className={`rugby-game-status ${getStatusClass(game.status)}`}>
+                        {game.status}
+                      </span>
+                    </div>
+                  </div>
+
+                  {game.score && game.score.length > 0 && (
+                    <div className="rugby-scores-container">
+                      {game.score.map((s, i) => (
+                        <React.Fragment key={i}>
+                          <div className="rugby-team-score">
+                            <div className="rugby-team-name">{s.team}</div>
+                            <div className="rugby-team-score-value">{s.score}</div>
+                          </div>
+                          {i === 0 && game.score.length > 1 && (
+                            <div className="rugby-vs-separator">VS</div>
+                          )}
+                        </React.Fragment>
+                      ))}
+                    </div>
+                  )}
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         ))}
       </div>
