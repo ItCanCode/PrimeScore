@@ -1,6 +1,7 @@
 // HomePage.test.jsx
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
+import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router-dom";
 import HomePage from "../src/Pages/HomePage.jsx";
 
