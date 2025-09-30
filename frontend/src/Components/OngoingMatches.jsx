@@ -27,9 +27,6 @@ const OngoingMatches = () => {
     let fouls = [], substitutions = [], goals = [], rugbyEvents = [], netballEvents = [];
     if (Array.isArray(events)) {
       events.forEach(event => {
-        console.log(event.type)
-        
-        // Football scoring events
         if (event.type === 'goal') {
           goals.push(event);
           if (event.team === 'home') homeScore = event.home;
@@ -248,20 +245,20 @@ const OngoingMatches = () => {
           console.log(match.events.events)
           let homeScore = typeof match.homeScore === 'number' ? match.homeScore : undefined;
           let awayScore = typeof match.awayScore === 'number' ? match.awayScore : undefined;
-          let fouls = [], _substitutions = [], _goals = [];
+          let _fouls = [], _substitutions = [], _goals = [];
           if (homeScore === undefined || awayScore === undefined) {
           
             const stats = getMatchStats(match.events.events);
             if (homeScore === undefined) homeScore = stats.homeScore;
             if (awayScore === undefined) awayScore = stats.awayScore;
-            fouls = stats.fouls;
+            _fouls = stats.fouls;
             _substitutions = stats.substitutions;
           } else {
             
        
             const stats = getMatchStats(match.events.events);
-            console.log(fouls)
-            fouls = stats.fouls;
+           
+            _fouls = stats.fouls;
             _substitutions = stats.substitutions;
             _goals = stats.goals;
           }
@@ -393,35 +390,85 @@ const OngoingMatches = () => {
                 </div> */}
           <div className="ongoing-extra-stats">
             <h4 style={{ marginTop: "10px" }}>Events:</h4>
-            {Array.isArray(match.events.events) && match.events.events.length > 0 ? (
-              <ul>
-                {match.events.events.map((event, idx) => (
-                  <li key={idx} className={
-                    event.type === "foul" ? "ongoing-match-fouls" :
-                    event.type === "substitution" ? "ongoing-match-subs" :
-                    ""
-                  }>
-                    {event.type === "foul" && (
-                      <div className='ongoing-match-foul'> Foul by {event.player}</div>
-                    )}
-                    {event.type === "goal" && (
-                      <div className='ongoing-match-foul'> Goal by {event.player} ({event.team})</div>
-                    )}
-                    {event.type === "substitution" && (
-                      <> {event.playerOut} → {event.playerIn} ({event.team})</>
-                    )}
-                    {event.type === "yellow card" && (
-                      <div className='ongoing-match-foul'> Yellow Card By {event.player} ({event.team})</div>
-                    )}
-                    {event.type === "own goal" && (
-                      <div className='ongoing-match-foul'> Own goal by {event.player} ({event.team})</div>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <span>No events yet</span>
-            )}
+
+{Array.isArray(match.events.events) && match.events.events.length > 0 ? (
+  <ul>
+    {match.events.events
+      .slice() // copy to avoid mutating original array
+      .sort((a, b) => a.time - b.time)
+      .map((event, idx) => (
+        <li
+          key={idx}
+          className={
+            event.type === "foul"
+              ? "ongoing-match-fouls"
+              : event.type === "substitution"
+              ? "ongoing-match-subs"
+              : ""
+          }
+        >
+          {event.type === "foul" && (
+            <div className="ongoing-match-foul">
+              {event.time}' Foul by {event.player}
+            </div>
+          )}
+          {event.type === "goal" && (
+            <div className="ongoing-match-foul">
+              {event.time}' Goal by {event.player} ({event.team})
+            </div>
+          )}
+          {event.type === "substitution" && (
+            <>
+              {event.time}' {event.playerOut} → {event.playerIn} ({event.team})
+            </>
+          )}
+          {event.type === "yellow card" && (
+            <div className="ongoing-match-foul">
+              {event.time}' Yellow Card By {event.player} ({event.team})
+            </div>
+          )}
+          {event.type === "own goal" && (
+            <div className="ongoing-match-foul">
+              {event.time}' Own goal by {event.player} ({event.team})
+            </div>
+          )}
+          {event.type === "try" && (
+            <div className="ongoing-match-foul">
+              {event.time}' Try by {event.player} ({event.team})
+            </div>
+          )}
+          {event.type === "drop goal" && (
+            <div className="ongoing-match-foul">
+              {event.time}' Drop goal by {event.player} ({event.team})
+            </div>
+          )}
+          {event.type === "scrum" && (
+            <div className="ongoing-match-foul">
+              {event.time}' Scrum by {event.player} ({event.team})
+            </div>
+          )}
+          {event.type === "contact foul" && (
+            <div className="ongoing-match-foul">
+              {event.time}' Contact foul by {event.player}
+            </div>
+          )}
+          {event.type === "missed shot" && (
+            <div className="ongoing-match-foul">
+              {event.time}' Missed shot by {event.player}
+            </div>
+          )}
+          {event.type === "penalty pass" && (
+            <div className="ongoing-match-foul">
+              {event.time}' Penalty pass by {event.player}
+            </div>
+          )}
+        </li>
+      ))}
+  </ul>
+) : (
+  <span>No events yet</span>
+)}
+
           </div>
               </div>
             </div>
