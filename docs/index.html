@@ -796,18 +796,33 @@ npm run dev
         <li><strong>Coverage</strong> — Code coverage reports are generated and displayed in the repository (via CI pipeline).</li>
         <li><strong>Continuous Integration</strong> — Tests run automatically on GitHub Actions with every pull request.</li>
       </ul>
-
-      <h4>Implemented Test Suites</h4>
+      <h1>Frontend Testing</h1>
+      <h1>Backend Testing</h1>
+   
       <ul class="bullets">
         <li><strong>Authentication</strong>
           <ul>
-            <li><code>verifyGoogleToken</code> service — validates Google tokens.</li>
-            <li><code>googleAuth</code> controller — signup, login, error handling.</li>
+            <li><code>verifyGoogleToken</code> 
+              <ul>
+                <li>Unit: Validates valid/invalid Google tokens</li>
+                <li>Error Handling: Rejects expired/malformed tokens.</li>
+              </ul>
+            </li>
+            <li><code>googleAuth</code>
+              <ul>
+                <li>Integration: Signup & login flows with Firestore/Google.</li>
+                <li>Error Handling: Duplicate accounts, invalid credentials.</li>
+              </ul>
+            </li>
           </ul>
         </li>
         <li><strong>Manager Controller</strong>
           <ul>
-            <li><code>createTeam</code> — creates teams, handles Firestore errors.</li>
+            <li><code>createTeam</code>
+            <ul>
+
+            </ul>
+          </li>
             <li><code>addPlayers</code> — adds players, validates ownership, errors.</li>
             <li><code>myTeam</code> — fetches team by user, handles missing/error cases.</li>
           </ul>
@@ -843,7 +858,8 @@ npm run dev
         </li>
       </ul>
 
-      <pre class="code-block" aria-label="run tests"><code># Run backend tests
+      <pre class="code-block" aria-label="run tests"><code>
+      # Run backend tests
       cd backend
       npm install
       npm test
@@ -863,7 +879,6 @@ npm run dev
       </p>
 
     </section>
-
 
 <section id="npm-audit" class="section" aria-labelledby="user-feedback-title">
   <h1>PrimeScore NPM Supply Chain Security Audit – Sprint 3</h1>
