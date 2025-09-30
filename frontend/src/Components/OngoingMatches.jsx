@@ -112,7 +112,7 @@ const OngoingMatches = () => {
               
               // If total score increased, trigger animation
               if (currentTotalScore > prevTotalScore) {
-                console.log(`🎉 GOAL DETECTED for match ${match.id}! Starting animation...`);
+                console.log(`GOAL DETECTED for match ${match.id}! Starting animation...`);
                 setRecentEvents(prevRecent => ({
                   ...prevRecent,
                   [match.id]: [Date.now()] // Use timestamp as unique identifier
@@ -267,12 +267,12 @@ const OngoingMatches = () => {
             <div
               key={match.id}
               className={`ongoing-match-card ${highlightedMatchId === match.id ? "score-anim" : ""}`}
-              onAnimationEnd={() => {
-                // Use animation utilities if available
-                if (animationUtilsRef.current && animationUtilsRef.current.endAnimation) {
-                  animationUtilsRef.current.endAnimation(match.id);
+              onAnimationEnd={(e) => {
+                // Only handle the CSS scoreFlash animation, not the event animations
+                if (e.animationName === 'scoreFlash') {
+                  setHighlightedMatchId(null);
                 }
-                setHighlightedMatchId(null);
+                // Don't end the event animation here - let it complete its full duration
               }}
             >
               <div className="ongoing-sport-header">
@@ -340,7 +340,7 @@ const OngoingMatches = () => {
 
                 {/* Match Clock Display - show for ongoing matches */}
                 <div className="ongoing-match-clock">
-                  <MatchClock matchId={match.id} status={match.status} showControls={false} />
+                  <MatchClock matchId={match.id} status={match.status} showControls={false} sportType={match.sportType} />
                 </div>
 
                 <div className="ongoing-match-details">

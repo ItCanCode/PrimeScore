@@ -263,6 +263,7 @@ describe('Match Clock API Routes', () => {
 
       const response = await request(app)
         .post(`/api/match-clock/${testMatchId}/finish`)
+        .send({ reason: 'Match finished' })
         .expect(200);
 
       expect(response.body.success).toBe(true);
@@ -298,6 +299,7 @@ describe('Match Clock API Routes', () => {
 
       const response = await request(app)
         .post(`/api/match-clock/${testMatchId}/finish`)
+        .send({ reason: 'Match finished' })
         .expect(200);
 
       expect(response.body.success).toBe(true);

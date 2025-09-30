@@ -289,7 +289,8 @@ describe('MatchClock Component', () => {
         `https://prime-backend.azurewebsites.net/api/match-clock/${mockMatchId}/finish`,
         {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' }
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ reason: 'Match finished' })
         }
       );
     });
@@ -624,5 +625,143 @@ describe('MatchClock Component', () => {
     await waitFor(() => {
       expect(screen.getByText('00:00')).toBeInTheDocument();
     });
+  });
+
+  test('auto-stops football clock at 120 minutes', async () => {
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        elapsed: 7200, // 120 minutes in seconds
+        running: true,
+        matchId: mockMatchId
+      })
+    });
+
+    const finishSpy = jest.spyOn(global, 'fetch');
+
+    render(<MatchClock matchId={mockMatchId} status="ongoing" sportType="Football" />);
+    
+    await waitFor(() => {
+      expect(screen.getByText('120:00')).toBeInTheDocument();
+    });
+
+    // Advance timer to trigger auto-stop
+    act(() => {
+      jest.advanceTimersByTime(1000);
+    });
+
+    // Should call finish endpoint with auto-stop reason
+    await waitFor(() => {
+      expect(finishSpy).toHaveBeenCalledWith(
+        expect.stringContaining('/finish'),
+        expect.objectContaining({
+          method: 'POST',
+          body: expect.stringContaining('Auto-stopped: Football match completed')
+        })
+      );
+    });
+  });
+
+  test('auto-stops netball clock at 60 minutes', async () => {
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        elapsed: 3600, // 60 minutes in seconds
+        running: true,
+        matchId: mockMatchId
+      })
+    });
+
+    const finishSpy = jest.spyOn(global, 'fetch');
+
+    render(<MatchClock matchId={mockMatchId} status="ongoing" sportType="Netball" />);
+    
+    await waitFor(() => {
+      expect(screen.getByText('60:00')).toBeInTheDocument();
+    });
+
+    // Advance timer to trigger auto-stop
+    act(() => {
+      jest.advanceTimersByTime(1000);
+    });
+
+    // Should call finish endpoint with auto-stop reason
+    await waitFor(() => {
+      expect(finishSpy).toHaveBeenCalledWith(
+        expect.stringContaining('/finish'),
+        expect.objectContaining({
+          method: 'POST',
+          body: expect.stringContaining('Auto-stopped: Netball match completed')
+        })
+      );
+    });
+  });
+
+  test('auto-stops rugby clock at 90 minutes', async () => {
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        elapsed: 5400, // 90 minutes in seconds
+        running: true,
+        matchId: mockMatchId
+      })
+    });
+
+    const finishSpy = jest.spyOn(global, 'fetch');
+
+    render(<MatchClock matchId={mockMatchId} status="ongoing" sportType="Rugby" />);
+    
+    await waitFor(() => {
+      expect(screen.getByText('90:00')).toBeInTheDocument();
+    });
+
+    // Advance timer to trigger auto-stop
+    act(() => {
+      jest.advanceTimersByTime(1000);
+    });
+
+    // Should call finish endpoint with auto-stop reason
+    await waitFor(() => {
+      expect(finishSpy).toHaveBeenCalledWith(
+        expect.stringContaining('/finish'),
+        expect.objectContaining({
+          method: 'POST',
+          body: expect.stringContaining('Auto-stopped: Rugby match completed')
+        })
+      );
+    });
+  });
+
+  test('does not auto-stop for unknown sport types', async () => {
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        elapsed: 7200, // 120 minutes - would auto-stop football
+        running: true,
+        matchId: mockMatchId
+      })
+    });
+
+    const finishSpy = jest.spyOn(global, 'fetch');
+
+    render(<MatchClock matchId={mockMatchId} status="ongoing" sportType="Basketball" />);
+    
+    await waitFor(() => {
+      expect(screen.getByText('120:00')).toBeInTheDocument();
+    });
+
+    // Advance timer - should NOT trigger auto-stop for unknown sport
+    act(() => {
+      jest.advanceTimersByTime(5000);
+    });
+
+    // Should NOT call finish endpoint
+    expect(finishSpy).not.toHaveBeenCalledWith(
+      expect.stringContaining('/finish'),
+      expect.objectContaining({
+        method: 'POST',
+        body: expect.stringContaining('Auto-stopped')
+      })
+    );
   });
 });

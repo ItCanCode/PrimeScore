@@ -3,12 +3,22 @@ import React, { useEffect, useState, useRef } from "react";
 import { db } from "../firebase.js";
 import { doc, onSnapshot } from "firebase/firestore";
 
-export default function MatchClock({ matchId, status, showControls = true }) {
+export default function MatchClock({ matchId, status, showControls = true, sportType = null }) {
   const [seconds, setSeconds] = useState(0);
   const [running, setRunning] = useState(false);
   const [pausedReason, setPausedReason] = useState("");
   const intervalRef = useRef();
   const pollIntervalRef = useRef();
+
+  // Get sport-specific maximum duration in seconds
+  const getMaxDuration = (sport) => {
+    switch (sport?.toLowerCase()) {
+      case 'football': return 120 * 60; // 120 minutes
+      case 'netball': return 60 * 60;   // 60 minutes  
+      case 'rugby': return 90 * 60;     // 90 minutes
+      default: return null; // No limit for other sports
+    }
+  };
 
   // fetch current server state
   const fetchClock = async () => {
@@ -40,6 +50,14 @@ export default function MatchClock({ matchId, status, showControls = true }) {
           currentElapsed += (Date.now() - startTimeMs) / 1000;
         }
         
+        // Check if max duration is reached for this sport
+        const maxDuration = getMaxDuration(sportType);
+        if (maxDuration && currentElapsed >= maxDuration && clockData.running) {
+          // Auto-stop the clock
+          finishClockWithReason(`Auto-stopped: ${sportType} match completed (${maxDuration / 60} minutes)`);
+          return;
+        }
+        
         setSeconds(Math.floor(currentElapsed));
         setRunning(clockData.running || false);
         setPausedReason(clockData.pausedReason || "");
@@ -58,7 +76,21 @@ export default function MatchClock({ matchId, status, showControls = true }) {
 
   useEffect(() => {
     if (running) {
-      intervalRef.current = setInterval(() => setSeconds((s) => s + 1), 1000);
+      intervalRef.current = setInterval(() => {
+        setSeconds((s) => {
+          const newSeconds = s + 1;
+          
+          // Check if max duration is reached for this sport
+          const maxDuration = getMaxDuration(sportType);
+          if (maxDuration && newSeconds >= maxDuration) {
+            // Auto-stop the clock
+            finishClockWithReason(`Auto-stopped: ${sportType} match completed (${maxDuration / 60} minutes)`);
+            return maxDuration; // Cap at max duration
+          }
+          
+          return newSeconds;
+        });
+      }, 1000);
     } else {
       clearInterval(intervalRef.current);
     }
@@ -66,7 +98,7 @@ export default function MatchClock({ matchId, status, showControls = true }) {
       clearInterval(intervalRef.current);
       clearInterval(pollIntervalRef.current);
     };
-  }, [running]);
+  }, [running, sportType]);
 
   const startOrResume = async () => {
     try {
@@ -95,16 +127,21 @@ export default function MatchClock({ matchId, status, showControls = true }) {
     }
   };
 
-  const finishClock = async () => {
+  const finishClockWithReason = async (reason = 'Match finished') => {
     try {
       await fetch(`https://prime-backend.azurewebsites.net/api/match-clock/${matchId}/finish`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reason })
       });
       fetchClock();
     } catch (error) {
       console.error('Error finishing clock:', error);
     }
+  };
+
+  const finishClock = async () => {
+    await finishClockWithReason('Match finished');
   };
 
   const format = (secs) => {

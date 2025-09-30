@@ -97,6 +97,7 @@ router.post("/:matchId/pause", async (req, res) => {
 // Force stop (when match finished or 3 hours reached)
 router.post("/:matchId/finish", async (req, res) => {
   const { matchId } = req.params;
+  const { reason } = req.body; // Get custom reason from request body
   
   try {
     const clockRef = db.collection('match_clocks').doc(matchId);
@@ -115,12 +116,12 @@ router.post("/:matchId/finish", async (req, res) => {
       finalElapsed += (Date.now() - startTimeMs) / 1000;
     }
     
-    // Stop the clock
+    // Stop the clock with custom reason or default
     await clockRef.update({
       elapsed: finalElapsed,
       running: false,
       startTime: null,
-      pausedReason: 'Match finished',
+      pausedReason: reason || 'Match finished',
       updatedAt: admin.firestore.FieldValue.serverTimestamp()
     });
     
