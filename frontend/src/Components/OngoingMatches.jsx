@@ -24,14 +24,29 @@ const OngoingMatches = () => {
 
   const getMatchStats = (events) => {
     let homeScore = 0, awayScore = 0;
-    let fouls = [], substitutions = [];
+    let fouls = [], substitutions = [], goals = [], rugbyEvents = [], netballEvents = [];
     if (Array.isArray(events)) {
       events.forEach(event => {
         console.log(event.type)
+        
+        // Football scoring events
         if (event.type === 'goal') {
+          goals.push(event);
           if (event.team === 'home') homeScore = event.home;
           if (typeof event.away === 'number') awayScore = event.away;
         }
+        
+        // Rugby scoring events
+        if (event.type === 'try' || event.type === 'Try') rugbyEvents.push({...event, type: 'try', points: 5});
+        if (event.type === 'conversion' || event.type === 'Conversion') rugbyEvents.push({...event, type: 'conversion', points: 2});
+        if (event.type === 'drop goal' || event.type === 'Drop Goal') rugbyEvents.push({...event, type: 'drop goal', points: 3});
+        
+        // Netball scoring events
+        if ((event.type === 'goal' || event.type === 'Goal') && event.sport?.toLowerCase() === 'netball') {
+          netballEvents.push({...event, type: 'netball goal', points: 1});
+        }
+        
+        // Non-scoring events
         if (event.type === 'foul') fouls.push(event);
         if (event.type === 'substitution') substitutions.push(event);
       });
@@ -40,8 +55,11 @@ const OngoingMatches = () => {
       if (typeof events.awayScore === 'number') awayScore = events.awayScore;
       if (Array.isArray(events.fouls)) fouls = events.fouls;
       if (Array.isArray(events.substitutions)) substitutions = events.substitutions;
+      if (Array.isArray(events.goals)) goals = events.goals;
+      if (Array.isArray(events.rugbyEvents)) rugbyEvents = events.rugbyEvents;
+      if (Array.isArray(events.netballEvents)) netballEvents = events.netballEvents;
     }
-    return { homeScore, awayScore, fouls, substitutions };
+    return { homeScore, awayScore, fouls, substitutions, goals, rugbyEvents, netballEvents };
   };
 
   // Wrap fetchOngoingMatches in useCallback to fix the dependency warning
@@ -276,13 +294,51 @@ const OngoingMatches = () => {
                   <div className="ongoing-vs">VS</div>
                   <div className="ongoing-team-name">{match.awayTeam}</div>
                 </div>
-                <div className={`ongoing-score-row ${animationUtilsRef.current?.isMatchAnimating(match.id) ? "goal-animate" : ""}`}>
+                <div className={`ongoing-score-row ${animationUtilsRef.current?.isMatchAnimating(match.id) ? "event-animate" : ""}`}>
                   <span className="ongoing-score">{homeScore} - {awayScore}</span>
-                  {animationUtilsRef.current?.isMatchAnimating(match.id) && (
-                    <span style={{ fontSize: '12px', color: '#ffd700', marginLeft: '10px' }}>
-                       GOAL!
-                    </span>
-                  )}
+                  {animationUtilsRef.current?.isMatchAnimating(match.id) && (() => {
+                    const animationData = animationUtilsRef.current?.getAnimationData(match.id);
+                    const eventType = animationData?.type || 'goal';
+                    
+                    const getEventDisplay = (type) => {
+                      switch(type.toLowerCase()) {
+                        // Football events
+                        case 'goal': return { text: 'GOAL!', color: '#ffd700', icon: '⚽' };
+                        case 'foul': return { text: 'FOUL!', color: '#ff6b6b', icon: '🟨' };
+                        case 'substitution': return { text: 'SUB!', color: '#4ecdc4', icon: '🔄' };
+                        case 'yellow card': return { text: 'YELLOW!', color: '#ffed4a', icon: '🟨' };
+                        case 'red card': return { text: 'RED CARD!', color: '#e74c3c', icon: '🟥' };
+                        
+                        // Rugby events
+                        case 'try': return { text: 'TRY!', color: '#32cd32', icon: '🏉' };
+                        case 'conversion': return { text: 'CONVERSION!', color: '#ff8c00', icon: '🎯' };
+                        case 'drop goal': return { text: 'DROP GOAL!', color: '#9370db', icon: '🥅' };
+                        case 'penalty': return { text: 'PENALTY!', color: '#dc143c', icon: '⚠️' };
+                        
+                        // Netball events
+                        case 'netball goal': return { text: 'GOAL!', color: '#ff1493', icon: '🏐' };
+                        case 'interception': return { text: 'INTERCEPT!', color: '#00ced1', icon: '✋' };
+                        case 'turnover': return { text: 'TURNOVER!', color: '#ff4500', icon: '🔄' };
+                        case 'rebound': return { text: 'REBOUND!', color: '#228b22', icon: '↩️' };
+                        
+                        default: return { text: 'EVENT!', color: '#ffd700', icon: '⚡' };
+                      }
+                    };
+                    
+                    const display = getEventDisplay(eventType);
+                    
+                    return (
+                      <span style={{ 
+                        fontSize: '12px', 
+                        color: display.color, 
+                        marginLeft: '10px',
+                        fontWeight: 'bold',
+                        textShadow: `0 0 8px ${display.color}40`
+                      }}>
+                        {display.icon} {display.text}
+                      </span>
+                    );
+                  })()}
                 </div>
 
                 {/* Match Clock Display - show for ongoing matches */}

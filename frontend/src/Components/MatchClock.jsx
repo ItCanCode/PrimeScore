@@ -1,5 +1,5 @@
 // src/components/MatchClock.js
-import { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 
 export default function MatchClock({ matchId, status, showControls = true }) {
   const [seconds, setSeconds] = useState(0);
