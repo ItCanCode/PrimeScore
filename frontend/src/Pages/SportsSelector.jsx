@@ -1,4 +1,4 @@
-import { useState ,useEffect,useContext} from 'react';
+import React, { useState ,useEffect,useContext} from 'react';
 import { useNavigate,Link  } from 'react-router-dom';
 import { ChevronRight, Home, Trophy, Users, Calendar, X } from 'lucide-react';
 import LeagueModal from '../Components/leagueModal.jsx';
