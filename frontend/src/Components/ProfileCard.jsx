@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import "../Styles/Profile.css";
 import Loading from "./Loading";
 function ProfileCard() {
@@ -95,7 +95,7 @@ function ProfileCard() {
       <section className="profile-picture">
         <img src={picture} alt={username} className="picture" />
         {isEditing && (
-          <input type="file" accept="image/*" onChange={handlePictureChange} />
+          <input type="file" accept="image/*" onChange={handlePictureChange} data-testid="profile-file-input"/>
         )}
         <button className="edit-btn" onClick={() => setIsEditing(!isEditing)}>
           {isEditing ? "Cancel" : "Edit Profile"}

@@ -1,18 +1,18 @@
-name: Backend CI and Coverage
+name: CI and Coverage
 
 on:
   push:
-    branches: [ main, Testing ]
+    branches: [main, Testing, frontend-testing]
   pull_request:
-    branches: [ main, Testing ]
+    branches: [main, Testing, frontend-testing]
 
 jobs:
   test-backend:
-    name: Run Backend Tests
+    name: Run Backend & Frontend Tests
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: backend  # all commands run in backend folder
+        working-directory: backend
 
     steps:
       - name: Checkout repository
@@ -31,16 +31,30 @@ jobs:
         env:
           JEST_JUNIT_OUTPUT: ./backend/junit.xml
 
+      - name: Install frontend dependencies
+        run: npm ci
+        working-directory: frontend
+
+      - name: Run frontend tests with coverage
+        run: npm test -- --coverage --coverageReporters=lcov
+        working-directory: frontend
+        env:
+          JEST_JUNIT_OUTPUT: ./junit.xml
+
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./coverage/lcov.info
-          flags: backend
+          files: |
+            backend/coverage/lcov.info
+            frontend/coverage/lcov.info
+          flags: backend,frontend
           slug: ItCanCode/PrimeScore
 
       - name: Upload test results to Codecov
         uses: codecov/test-results-action@v1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./backend/junit.xml
+          files: |
+            backend/junit.xml
+            frontend/junit.xml

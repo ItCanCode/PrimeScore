@@ -11,3 +11,6 @@ flags:
   backend:
     paths:
       - backend/
+  frontend:
+    paths:
+      - frontend/
