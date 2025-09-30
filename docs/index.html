@@ -813,7 +813,7 @@ npm test -- --coverage
   <p>Result:</p>
   <pre class="code-block"><code>firebase
 lucide-react</code></pre>
-  <p class="check">✅ No direct references to compromised packages found.</p>
+  <p class="check"> No direct references to compromised packages found.</p>
 
   <p>Inspect transitive dependencies in <code>package-lock.json</code>:</p>
   <pre class="code-block"><code>jq -r '.dependencies | keys[]' package-lock.json</code></pre>
@@ -826,13 +826,13 @@ is-arrayish slice-ansi color-convert wrap-ansi ansi-regex supports-color strip-a
   if [ -d "node_modules/$p" ]; then echo "FOUND: $p in node_modules"; fi
 done</code></pre>
 
-  <p class="check">✅ No direct matches detected.</p>
+  <p class="check"> No direct matches detected.</p>
 
   <p>Trace key compromised packages with <code>npm ls</code>:</p>
   <pre class="code-block"><code>npm ls debug chalk ansi-regex supports-color --all</code></pre>
   <pre class="code-block"><code>PrimeScore@ C:\...\PrimeScore
 └── (empty)</code></pre>
-  <p class="check">✅ No direct installation of these packages.</p>
+  <p class="check"> No direct installation of these packages.</p>
 
   <p>Run <code>npm audit</code> to detect known vulnerabilities:</p>
   <pre class="code-block"><code>npm audit --json > audit.json</code></pre>
@@ -860,13 +860,13 @@ done</code></pre>
     }
   }
 }</code></pre>
-  <p class="check">✅ No known vulnerabilities detected by npm audit.</p>
+  <p class="check"> No known vulnerabilities detected by npm audit.</p>
 
   <p>Check package publish times for suspicious versions:</p>
   <pre class="code-block"><code>npm view debug time
 npm view chalk time</code></pre>
   <p>Detected malicious versions published around 2025-09-08</p>
-  <p class="check">✅ PrimeScore does not reference these recent versions.</p>
+  <p class="check"> PrimeScore does not reference these recent versions.</p>
 
   <h3>Interpretation (4.1)</h3>
   <p>PrimeScore has no direct compromised packages.</p>
@@ -893,9 +893,9 @@ Transitive dependencies: Present → included via other packages (likely chalk o
 Installed node_modules: Confirmed</code></pre>
 
   <h3>Interpretation</h3>
-  <p>Direct findings: <span class="check">✅ No immediate compromise.</span></p>
-  <p>Transitive findings: <span class="warning">⚠️ Compromised packages exist deeper in dependency tree.</span></p>
-  <p>Installed packages: <span class="warning">⚠️ Remediation needed to remove malicious versions if present.</span></p>
+  <p>Direct findings: <span class="check"> No immediate compromise.</span></p>
+  <p>Transitive findings: <span class="warning"> Compromised packages exist deeper in dependency tree.</span></p>
+  <p>Installed packages: <span class="warning"> Remediation needed to remove malicious versions if present.</span></p>
 
   <h3>Recommended Actions</h3>
   <ul>
