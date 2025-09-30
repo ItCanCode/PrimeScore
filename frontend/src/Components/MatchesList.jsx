@@ -86,7 +86,7 @@ const MatchesList = ({
                     {/* Match Clock Display - show for ongoing matches */}
                 {match.status === 'ongoing' && (
                   <div className="mai-match-clock">
-                    <MatchClock matchId={match.id} status={match.status} />
+                    <MatchClock matchId={match.id} status={match.status} sportType={match.sportType} />
                   </div>
                 )}
 

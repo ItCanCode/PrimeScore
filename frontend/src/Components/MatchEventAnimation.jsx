@@ -185,7 +185,7 @@ const MatchEventAnimation = ({
     let homeScore = 0, awayScore = 0;
     let fouls = [], substitutions = [], goals = [], cards = [], rugbyEvents = [], netballEvents = [];
     
-    console.log(`📊 Parsing events:`, events);
+    console.log(` Parsing events:`, events);
     
     // Handle different event structures
     let eventArray = [];

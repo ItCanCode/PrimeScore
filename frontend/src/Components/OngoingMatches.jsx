@@ -115,7 +115,7 @@ const OngoingMatches = () => {
               
               // If total score increased, trigger animation
               if (currentTotalScore > prevTotalScore) {
-                console.log(`🎉 GOAL DETECTED for match ${match.id}! Starting animation...`);
+                console.log(`GOAL DETECTED for match ${match.id}! Starting animation...`);
                 setRecentEvents(prevRecent => ({
                   ...prevRecent,
                   [match.id]: [Date.now()] // Use timestamp as unique identifier
@@ -343,7 +343,7 @@ const OngoingMatches = () => {
 
                 {/* Match Clock Display - show for ongoing matches */}
                 <div className="ongoing-match-clock">
-                  <MatchClock matchId={match.id} status={match.status} showControls={false} />
+                  <MatchClock matchId={match.id} status={match.status} showControls={false} sportType={match.sportType} />
                 </div>
 
                 <div className="ongoing-match-details">
