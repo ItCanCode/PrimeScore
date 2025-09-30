@@ -1,4 +1,6 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
+import { db } from '../firebase.js';
+import { doc, onSnapshot } from 'firebase/firestore';
 
 /**
  * MatchEventAnimation Component
@@ -39,6 +41,8 @@ const MatchEventAnimation = ({
   const previousMatchesRef = useRef({});
   const isInitialLoadRef = useRef(true);
   const animatingMatchesRef = useRef({});
+  const listenersRef = useRef({});
+  const pollIntervalRef = useRef();
 
   // LocalStorage helper functions
   const getViewedAnimationsKey = () => 'primescore_viewed_animations';
@@ -181,8 +185,31 @@ const MatchEventAnimation = ({
     let homeScore = 0, awayScore = 0;
     let fouls = [], substitutions = [], goals = [], cards = [], rugbyEvents = [], netballEvents = [];
     
+    console.log(`📊 Parsing events:`, events);
+    
+    // Handle different event structures
+    let eventArray = [];
     if (Array.isArray(events)) {
-      events.forEach(event => {
+      eventArray = events;
+    } else if (events && Array.isArray(events.events)) {
+      // Handle nested structure like { events: [...], homeScore: 0, awayScore: 0 }
+      eventArray = events.events;
+      if (typeof events.homeScore === 'number') homeScore = events.homeScore;
+      if (typeof events.awayScore === 'number') awayScore = events.awayScore;
+    } else if (events && typeof events === 'object') {
+      // Handle flat structure with mixed properties
+      if (typeof events.homeScore === 'number') homeScore = events.homeScore;
+      if (typeof events.awayScore === 'number') awayScore = events.awayScore;
+      if (Array.isArray(events.fouls)) fouls = events.fouls;
+      if (Array.isArray(events.substitutions)) substitutions = events.substitutions;
+      if (Array.isArray(events.goals)) goals = events.goals;
+      if (Array.isArray(events.cards)) cards = events.cards;
+      if (Array.isArray(events.rugbyEvents)) rugbyEvents = events.rugbyEvents;
+      if (Array.isArray(events.netballEvents)) netballEvents = events.netballEvents;
+    }
+    
+    if (eventArray.length > 0) {
+      eventArray.forEach(event => {
         if (event.type === 'score') {
           if (typeof event.home === 'number') homeScore = event.home;
           if (typeof event.away === 'number') awayScore = event.away;
@@ -206,39 +233,15 @@ const MatchEventAnimation = ({
         if (event.type === 'substitution') substitutions.push(event);
         if (event.type === 'yellow card' || event.type === 'red card') cards.push(event);
       });
-    } else if (events && typeof events === 'object') {
-      if (typeof events.homeScore === 'number') homeScore = events.homeScore;
-      if (typeof events.awayScore === 'number') awayScore = events.awayScore;
-      if (Array.isArray(events.fouls)) fouls = events.fouls;
-      if (Array.isArray(events.substitutions)) substitutions = events.substitutions;
-      if (Array.isArray(events.goals)) goals = events.goals;
-      if (Array.isArray(events.cards)) cards = events.cards;
-      if (Array.isArray(events.rugbyEvents)) rugbyEvents = events.rugbyEvents;
-      if (Array.isArray(events.netballEvents)) netballEvents = events.netballEvents;
-      
-      // Handle nested events structure like match.events.events
-      if (Array.isArray(events.events)) {
-        events.events.forEach(event => {
-          // Football scoring events
-          if (event.type === 'goal') goals.push(event);
-          
-          // Rugby scoring events
-          if (event.type === 'try' || event.type === 'Try') rugbyEvents.push({...event, type: 'try', points: 5});
-          if (event.type === 'conversion' || event.type === 'Conversion') rugbyEvents.push({...event, type: 'conversion', points: 2});
-          if (event.type === 'drop goal' || event.type === 'Drop Goal') rugbyEvents.push({...event, type: 'drop goal', points: 3});
-          
-          // Netball scoring events
-          if ((event.type === 'goal' || event.type === 'Goal') && event.sport?.toLowerCase() === 'netball') {
-            netballEvents.push({...event, type: 'netball goal', points: 1});
-          }
-          
-          // Non-scoring events
-          if (event.type === 'foul') fouls.push(event);
-          if (event.type === 'substitution') substitutions.push(event);
-          if (event.type === 'yellow card' || event.type === 'red card') cards.push(event);
-        });
-      }
     }
+    
+    console.log(`📋 Parsed stats:`, { 
+      homeScore, awayScore, 
+      fouls: fouls.length, 
+      substitutions: substitutions.length, 
+      goals: goals.length, 
+      cards: cards.length 
+    });
     
     return { homeScore, awayScore, fouls, substitutions, goals, cards, rugbyEvents, netballEvents };
   }, []);
@@ -287,6 +290,15 @@ const MatchEventAnimation = ({
       if (previousMatch) {
         // Existing match - check for new events
         const prevStats = getMatchStats(previousMatch.events);
+        
+        // Debug logging for event detection
+        console.log(`🔍 Checking match ${match.id} for new events:`);
+        console.log(`  Previous substitutions: ${prevStats.substitutions.length}`);
+        console.log(`  Current substitutions: ${currentStats.substitutions.length}`);
+        console.log(`  Previous fouls: ${prevStats.fouls.length}`);
+        console.log(`  Current fouls: ${currentStats.fouls.length}`);
+        console.log(`  Previous cards: ${prevStats.cards.length}`);
+        console.log(`  Current cards: ${currentStats.cards.length}`);
         
         // Check for football score changes (goals)
         const prevTotalScore = prevStats.homeScore + prevStats.awayScore;
@@ -584,6 +596,157 @@ const MatchEventAnimation = ({
     }
   }, [matches, shouldShowAnimations, hasUserSeenAnimation, isEventRecentEnough, createEventIdentifier, onAnimationTrigger, getMatchStats]);
 
+  // Helper function to process a single match for new events
+  const processMatchForNewEvents = useCallback(async (match) => {
+    // Check if animations should be shown for this match
+    const shouldShowAnims = await shouldShowAnimations(match);
+    if (!shouldShowAnims) return;
+
+    const currentStats = getMatchStats(match.events);
+    const previousMatch = previousMatchesRef.current[match.id];
+    
+    if (previousMatch) {
+      const prevStats = getMatchStats(previousMatch.events);
+      
+      // Check for new goals
+      const prevTotalScore = prevStats.homeScore + prevStats.awayScore;
+      const currentTotalScore = currentStats.homeScore + currentStats.awayScore;
+      
+      if (currentTotalScore > prevTotalScore) {
+        const eventTimestamp = Date.now();
+        const eventIdentifier = createEventIdentifier(
+          match.id, 
+          currentStats.homeScore, 
+          currentStats.awayScore, 
+          'goal', 
+          eventTimestamp
+        );
+        
+        console.log(`🔥 REAL-TIME GOAL DETECTED: ${match.id} (${prevTotalScore} → ${currentTotalScore})`);
+        
+        if (!hasUserSeenAnimation(match.id, eventIdentifier) && isEventRecentEnough(eventTimestamp)) {
+          console.log(`✅ Starting real-time goal animation for match ${match.id}`);
+          
+          setAnimatingMatches(prev => ({
+            ...prev,
+            [match.id]: {
+              type: 'goal',
+              identifier: eventIdentifier,
+              timestamp: eventTimestamp,
+              homeScore: currentStats.homeScore,
+              awayScore: currentStats.awayScore
+            }
+          }));
+          
+          onAnimationTrigger(match.id, 'goal');
+        }
+      }
+
+      // Check for other new events (fouls, cards, substitutions, etc.)
+      const checkEventType = (currentEvents, prevEvents, eventType) => {
+        if (currentEvents.length > prevEvents.length) {
+          const newEvents = currentEvents.slice(prevEvents.length);
+          newEvents.forEach(event => {
+            const eventTimestamp = Date.now();
+            const eventIdentifier = createEventIdentifier(
+              match.id, 
+              0, 
+              0, 
+              eventType, 
+              eventTimestamp
+            );
+            
+            console.log(`🔥 REAL-TIME ${eventType.toUpperCase()} DETECTED: ${match.id}`);
+            
+            if (!hasUserSeenAnimation(match.id, eventIdentifier) && isEventRecentEnough(eventTimestamp)) {
+              console.log(`✅ Starting real-time ${eventType} animation for match ${match.id}`);
+              
+              setAnimatingMatches(prev => ({
+                ...prev,
+                [match.id]: {
+                  type: eventType,
+                  identifier: eventIdentifier,
+                  timestamp: eventTimestamp,
+                  ...event
+                }
+              }));
+              
+              onAnimationTrigger(match.id, eventType);
+            }
+          });
+        }
+      };
+
+      // Check all event types
+      checkEventType(currentStats.fouls, prevStats.fouls, 'foul');
+      checkEventType(currentStats.cards, prevStats.cards, 'card');
+      checkEventType(currentStats.substitutions, prevStats.substitutions, 'substitution');
+      checkEventType(currentStats.rugbyEvents, prevStats.rugbyEvents, 'rugby');
+      checkEventType(currentStats.netballEvents, prevStats.netballEvents, 'netball');
+    }
+
+    // Update previous match data
+    previousMatchesRef.current[match.id] = match;
+  }, [shouldShowAnimations, getMatchStats, createEventIdentifier, hasUserSeenAnimation, isEventRecentEnough, onAnimationTrigger]);
+
+  // Firebase real-time listeners for match events
+  useEffect(() => {
+    if (!matches || matches.length === 0) return;
+
+    // Set up real-time listeners for each ongoing match
+    matches.forEach(match => {
+      if (match.status === 'ongoing' && !listenersRef.current[match.id]) {
+        try {
+          // Listen for real-time updates to the specific matchEvents document
+          const matchEventsDocRef = doc(db, 'matchEvents', match.id);
+          
+          const unsubscribe = onSnapshot(matchEventsDocRef, (docSnapshot) => {
+            if (docSnapshot.exists()) {
+              const updatedEvents = docSnapshot.data();
+              console.log(`🔥 Real-time match events update detected: ${match.id}`);
+              
+              // Create updated match object with new events
+              const updatedMatch = {
+                ...match,
+                events: updatedEvents,
+                homeScore: updatedEvents.homeScore || match.homeScore,
+                awayScore: updatedEvents.awayScore || match.awayScore
+              };
+              
+              // Process the updated match for new events immediately
+              processMatchForNewEvents(updatedMatch);
+            }
+          }, (error) => {
+            console.warn(`Firebase listener error for match events ${match.id}:`, error);
+          });
+
+          listenersRef.current[match.id] = unsubscribe;
+        } catch (error) {
+          console.warn(`Failed to setup Firebase listener for match ${match.id}:`, error);
+        }
+      }
+    });
+
+    // Set up fallback polling for reliability
+    if (!pollIntervalRef.current) {
+      pollIntervalRef.current = setInterval(() => {
+        console.log('🔄 Polling for match updates as fallback');
+        // The polling interval will be handled by parent components
+        // This interval is just to ensure Firebase listeners are working
+      }, 10000); // Poll every 10 seconds as fallback
+    }
+
+    return () => {
+      // Cleanup listeners for matches no longer in the list
+      Object.keys(listenersRef.current).forEach(matchId => {
+        if (!matches.find(m => m.id === matchId)) {
+          listenersRef.current[matchId]();
+          delete listenersRef.current[matchId];
+        }
+      });
+    };
+  }, [matches, processMatchForNewEvents]);
+
   // Keep ref in sync with state for cleanup
   useEffect(() => {
     animatingMatchesRef.current = animatingMatches;
@@ -617,7 +780,7 @@ const MatchEventAnimation = ({
     return () => timers.forEach(clearTimeout);
   }, [animatingMatches, animationDuration, markAnimationAsViewed, onAnimationEnd]);
 
-  // Cleanup on unmount - mark all current animations as viewed
+  // Cleanup on unmount - mark all current animations as viewed and cleanup listeners
   useEffect(() => {
     return () => {
       // Get current animating matches at cleanup time from ref
@@ -638,6 +801,20 @@ const MatchEventAnimation = ({
           }
         }
       });
+
+      // Cleanup Firebase listeners
+      Object.keys(listenersRef.current).forEach(matchId => {
+        console.log(`🧹 Cleanup: unsubscribing Firebase listener for match ${matchId}`);
+        listenersRef.current[matchId]();
+      });
+      listenersRef.current = {};
+
+      // Cleanup polling interval
+      if (pollIntervalRef.current) {
+        console.log('🧹 Cleanup: clearing polling interval');
+        clearInterval(pollIntervalRef.current);
+        pollIntervalRef.current = null;
+      }
     };
   }, []); // Only run on unmount
 

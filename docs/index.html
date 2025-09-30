@@ -32,11 +32,13 @@
         <li><a href="#backlog">Sprint Backlog</a></li>
         <li><a href="#stories">User Stories</a></li>
         <li><a href="#sprint2-bugs">Sprint 2 Bug Tracking</a></li>
+        <li><a href="#agile">Agile methodology</a></li>
         <li><a href="#setup">Setup Guide</a></li>
         <li><a href="#git">Git Workflow</a></li>
         <li><a href="#database">Database</a></li>
         <li><a href="#testing">Testing</a></li>
         <li><a href="#userfeedback">User Feedback</a></li>
+
     </div>
   </nav>
 
@@ -452,7 +454,7 @@
     <!-- Backlog -->
     <section id="backlog" class="section" aria-labelledby="backlog-title">
       <header class="section-header">
-        <h2 id="backlog-title">Current Sprint Backlog</h2>
+        <h2 id="backlog-title">Current Product Backlog</h2>
       </header>
       <ul class="checklist">
         <li>Implement real-time live score updates for ongoing matches</li>
@@ -489,7 +491,7 @@
       </ol>
     </section>
 
-        <section id="stories" class="section" aria-labelledby="stories-title">
+    <section id="stories" class="section" aria-labelledby="stories-title">
       <header class="section-header">
         <h2 id="stories-title">Sprint 2 User Stories</h2>
       </header>
@@ -511,6 +513,8 @@
       <ol class="ordered">
         <li>As a viewer, I want to see netball,rugby and football options so i can watch a sport of my choice </li>
         <li>As a viewer, I want to see animations for current match events so I don't have to refresh to see changes</li>
+        <li>As an admin, I want to see match clock so I can add event with correct time</li>
+        <li>As an admin, I want to see a predefined list of players and teams so I don't write teams and players not in the database</li>
       </ol>
     </section>
     <!-- Sprint 2 Bug Resolution -->
@@ -550,7 +554,7 @@
         <li><strong>Overdue:</strong> 3 improvement tasks carried over to Sprint 3</li>
         <li><strong>In Progress:</strong> 1 open bug card by sprint close</li>
       </ul>
-
+ 
       <h3>Outcome</h3>
 
       <p>
@@ -565,7 +569,92 @@
       </figure>
 
     </section>
+    <!-- Agile -->
+    <section id="agile" class="section" aria-labelledby="testing-title">
+      <header class="section-header">
+        <h2 id="user-feedback-title">Agile Methodology</h2>
+      </header>
+    </section>
 
+    
+    <section id="agile" class="section" aria-labelledby="testing-title">
+      <header class="section-header">
+        <h2 id="user-feedback-title">Sprint 01 - agile</h2>
+      </header>
+    </section>
+
+    <section id="agile" class="section" aria-labelledby="testing-title">
+      <header class="section-header">
+        <h2 id="user-feedback-title">Sprint 02 - agile</h2>
+      </header>
+    </section>
+
+    <section id="agile" class="section" aria-labelledby="testing-title">
+      <header class="section-header">
+        <h2 id="user-feedback-title">Sprint 03 - Agile</h2>
+      </header>
+
+      <figure class="figure">
+
+      <figure class="figure">
+        <img src="sprint3_planning.jpg" alt="Sprint 3 planning board screenshot">
+        <figcaption>Figure 1 — Sprint 3 Planning Board</figcaption>
+      </figure>
+      <strong><p>
+        The Sprint 3 planning meeting focused on prioritizing carryover tasks from Sprint 2 and 
+        addressing technical improvements. The discussion as issued by the tutor was based on ensuring that aspects 
+        of our projects are well documented and improving documentation from Sprint 02.
+      </p></strong>
+
+      <strong>
+        <ul>
+        <li>Bug, Third-Party, and feedback documentation.</li>
+        <li>Past matches from local leagues and more as indicated under bug tracking.</li>
+        <li>Add more sports including Netball and Rugby.</li>
+      </ul>
+      </strong>
+
+      <figure class="figure">
+        <img src="sprint3_daily.jpg" alt="Sprint 3 Daily standups screenshot">
+        <figcaption>Figure 2 - Sprint 3 Daily standups</figcaption>
+      </figure>
+      <strong>
+        <p>
+          Main issues discussed during the daily standups were the following:
+          <ul>
+            <li>Resolving bugs more quickly to allow focus on current sprint tasks</li>
+            <li>Leveraging free APIs to meet the system’s basic requirements</li>
+            <li>Expanding the system to support all sports in a more general way</li>
+            <li>Ensuring that documentation is clear, structured, and well-maintained</li>
+          </ul>
+        </p>
+      </strong>
+
+      <figure class="figure">
+        <img src="sprint3_review.jpg" alt="Sprint 3 review meeting screenshot">
+        <figcaption>Figure 3 — Sprint 3 Review Meeting</figcaption>
+      </figure>
+      <strong>
+      <p>
+        The stakeholder saw the progress of the app, which included the Rugby Fixtures, and 
+        suggested we add the results from the API to our database to avoid exceeding the 
+        limit of API requests.
+      </p></strong>
+      <figure class="figure">
+        <img src="sprint3_retro.jpg" alt="Sprint 3 retrospective board screenshot">
+        <figcaption>Figure 4 — Sprint 3 Retrospective</figcaption>
+      </figure>
+      <strong>
+      <p>
+        The retrospective was a moment of reflection but also focused on introducing 
+        <strong>Jest</strong> for automated testing. Every team member was assigned a 
+        number of Components and Pages to test. Although some members were still fixing 
+        bugs and making app improvements, the testing effort was considered a partial 
+        success and set a foundation for stronger test coverage in future sprints.
+      </p>
+      </strong>
+
+    </section>
     <!-- Setup -->
     <section id="setup" class="section" aria-labelledby="setup-title">
       <header class="section-header">
@@ -625,7 +714,7 @@ npm run dev
       </ul>
     </section>
 
-        <!-- Database -->
+    <!-- Database -->
     <section id="database" class="section" aria-labelledby="db-title">
       <header class="section-header">
         <h2 id="db-title">Database Documentation</h2>
@@ -693,12 +782,230 @@ npm run dev
       </p>
     </section>
 
-        <!-- Testing -->
+    <!-- Testing -->
     <section id="testing" class="section" aria-labelledby="testing-title">
       <header class="section-header">
         <h2 id="testing-title">Testing Documentation</h2>
       </header>
+      <h3>Automated Testing</h3>
+      <p>
+        Automated testing is set up to ensure system reliability and quick feedback during development.
+      </p>
+      <ul class="bullets">
+        <li><strong>Unit Testing</strong> — Implemented with Jest (backend) and React Testing Library (frontend).</li>
+        <li><strong>Coverage</strong> — Code coverage reports are generated and displayed in the repository (via CI pipeline).</li>
+        <li><strong>Continuous Integration</strong> — Tests run automatically on GitHub Actions with every pull request.</li>
+      </ul>
 
+      <h4>Implemented Test Suites</h4>
+      <ul class="bullets">
+        <li><strong>Authentication</strong>
+          <ul>
+            <li><code>verifyGoogleToken</code> service — validates Google tokens.</li>
+            <li><code>googleAuth</code> controller — signup, login, error handling.</li>
+          </ul>
+        </li>
+        <li><strong>Manager Controller</strong>
+          <ul>
+            <li><code>createTeam</code> — creates teams, handles Firestore errors.</li>
+            <li><code>addPlayers</code> — adds players, validates ownership, errors.</li>
+            <li><code>myTeam</code> — fetches team by user, handles missing/error cases.</li>
+          </ul>
+        </li>
+        <li><strong>Admin Controller</strong>
+          <ul>
+            <li><code>createMatch</code> — creates matches, error handling.</li>
+            <li><code>updateMatchStatus</code> — updates match status, not-found errors.</li>
+            <li><code>updateScore</code> — updates scores, records goals as events.</li>
+            <li><code>addMatchEvent</code> — adds events like cards or fouls.</li>
+            <li><code>allTeams</code> — fetches all teams, filters by sport type, handles errors.</li>
+          </ul>
+        </li>
+        <li><strong>LiveSport Controller</strong>
+          <ul>
+            <li>Adds upcoming matches in batch.</li>
+            <li>Handles empty or invalid requests.</li>
+          </ul>
+        </li>
+        <li><strong>Feed Controller</strong>
+          <ul>
+            <li><code>startMatch</code> — initializes match events.</li>
+            <li><code>recordGoal</code> — handles home/away goals, increments scores.</li>
+            <li><code>recordSubstitution</code> — adds substitutions, validates fields.</li>
+            <li><code>recordFoul</code> — records fouls with/without cards.</li>
+          </ul>
+        </li>
+        <li><strong>Display Controller</strong>
+          <ul>
+            <li><code>getMatchEventsById</code> — fetches specific match events.</li>
+            <li><code>getmatchEvents</code> — fetches all ongoing matches and events.</li>
+          </ul>
+        </li>
+      </ul>
+
+      <pre class="code-block" aria-label="run tests"><code># Run backend tests
+      cd backend
+      npm install
+      npm test
+
+      # Run frontend tests
+      cd frontend
+      npm install
+      npm test
+
+      # To view full coverage:
+      npm test -- --coverage
+      </code></pre>
+
+      <p class="note">
+        Developers are required to write tests for all new features and bug fixes before merging.  
+        This ensures that user feedback and automated verification work together to maintain quality.
+      </p>
+
+    </section>
+
+
+<section id="npm-audit" class="section" aria-labelledby="user-feedback-title">
+  <h1>PrimeScore NPM Supply Chain Security Audit – Sprint 3</h1>
+
+  <p><strong>Date:</strong> 29 September 2025</p>
+  <p><strong>Scope:</strong> Check for presence of compromised NPM packages 
+    from the September 2025 “debug & chalk” attack.</p>
+
+  <h2>Compromised Packages (Baseline, from Aikido)</h2>
+  <p>
+    backslash, chalk-template, supports-hyperlinks, has-ansi, simple-swizzle, color-string,
+    error-ex, color-name, is-arrayish, slice-ansi, color-convert, wrap-ansi, ansi-regex,
+    supports-color, strip-ansi, chalk, debug, ansi-styles
+  </p>
+
+  <h2>4.1 Manual / Quick Checklist</h2>
+  <h3>Objective</h3>
+  <p>Quickly inspect PrimeScore’s dependencies for 
+    compromised packages using manual commands and npm audit tools.</p>
+
+  <h3>Steps & Commands</h3>
+  <p>List all direct dependencies in <code>package.json</code>:</p>
+  <pre class="code-block"><code>jq -r '.dependencies + .devDependencies | keys[]' package.json</code></pre>
+
+  <p>Result:</p>
+  <pre class="code-block"><code>firebase
+lucide-react</code></pre>
+  <p class="check"> No direct references to compromised packages found.</p>
+
+  <p>Inspect transitive dependencies in <code>package-lock.json</code>:</p>
+  <pre class="code-block"><code>jq -r '.dependencies | keys[]' package-lock.json</code></pre>
+  <p class="warning">⚠️ Encountered error at line 1078: null has no keys</p>
+  <p>Reason: Some dependencies may be optional or malformed. Proceed to node_modules scan.</p>
+
+  <p>Check if compromised packages exist in <code>node_modules</code>:</p>
+  <pre class="code-block"><code>for p in backslash chalk-template supports-hyperlinks has-ansi simple-swizzle color-string error-ex color-name \
+is-arrayish slice-ansi color-convert wrap-ansi ansi-regex supports-color strip-ansi chalk debug ansi-styles; do
+  if [ -d "node_modules/$p" ]; then echo "FOUND: $p in node_modules"; fi
+done</code></pre>
+
+  <p class="check"> No direct matches detected.</p>
+
+  <p>Trace key compromised packages with <code>npm ls</code>:</p>
+  <pre class="code-block"><code>npm ls debug chalk ansi-regex supports-color --all</code></pre>
+  <pre class="code-block"><code>PrimeScore@ C:\...\PrimeScore
+└── (empty)</code></pre>
+  <p class="check"> No direct installation of these packages.</p>
+
+  <p>Run <code>npm audit</code> to detect known vulnerabilities:</p>
+  <pre class="code-block"><code>npm audit --json > audit.json</code></pre>
+
+  <h3>audit.json Full Output</h3>
+  <pre class="code-block" style="max-height:300px; overflow:auto;"><code>{
+  "auditReportVersion": 2,
+  "vulnerabilities": {},
+  "metadata": {
+    "vulnerabilities": {
+      "info": 0,
+      "low": 0,
+      "moderate": 0,
+      "high": 0,
+      "critical": 0,
+      "total": 0
+    },
+    "dependencies": {
+      "prod": 88,
+      "dev": 0,
+      "optional": 0,
+      "peer": 1,
+      "peerOptional": 0,
+      "total": 88
+    }
+  }
+}</code></pre>
+  <p class="check"> No known vulnerabilities detected by npm audit.</p>
+
+  <p>Check package publish times for suspicious versions:</p>
+  <pre class="code-block"><code>npm view debug time
+npm view chalk time</code></pre>
+  <p>Detected malicious versions published around 2025-09-08</p>
+  <p class="check"> PrimeScore does not reference these recent versions.</p>
+
+  <h3>Interpretation (4.1)</h3>
+  <p>PrimeScore has no direct compromised packages.</p>
+  <p>Manual inspection shows potential risk only in transitive dependencies, which requires deeper automated scanning.</p>
+
+  <h2>4.2 Automated Scan – Python</h2>
+  <h3>Objective</h3>
+  <p>Use <code>scan_compromised.py</code> to recursively check both direct and transitive dependencies and installed node_modules.</p>
+
+  <p>Command:</p>
+  <pre class="code-block"><code>python3 scan_compromised.py</code></pre>
+
+  <h3>Results</h3>
+  <pre class="code-block"><code>Package            Location in Project
+ansi-regex          node_modules/ansi-regex
+ansi-styles         node_modules/ansi-styles
+color-convert       node_modules/color-convert
+color-name          node_modules/color-name
+strip-ansi          node_modules/strip-ansi
+wrap-ansi           node_modules/wrap-ansi
+
+Direct dependencies: None
+Transitive dependencies: Present → included via other packages (likely chalk or similar)
+Installed node_modules: Confirmed</code></pre>
+
+  <h3>Interpretation</h3>
+  <p>Direct findings: <span class="check"> No immediate compromise.</span></p>
+  <p>Transitive findings: <span class="warning"> Compromised packages exist deeper in dependency tree.</span></p>
+  <p>Installed packages: <span class="warning"> Remediation needed to remove malicious versions if present.</span></p>
+
+  <h3>Recommended Actions</h3>
+  <ul>
+    <li>Identify which top-level packages pull in the transitive compromised packages:
+      <pre class="code-block"><code>npm ls ansi-regex wrap-ansi color-convert color-name strip-ansi</code></pre>
+    </li>
+    <li>Update or replace top-level packages if safe versions exist.</li>
+    <li>Regenerate lockfile and reinstall dependencies:
+      <pre class="code-block"><code>rm -rf node_modules package-lock.json
+npm install</code></pre>
+    </li>
+    <li>Continue running <code>scan_compromised.py</code> after every dependency update.</li>
+    <li>Use SCA tools (Snyk, GitHub Dependabot, GitHub code scanning) for continuous monitoring.</li>
+    <li>Educate developers to avoid phishing attacks targeting maintainers.</li>
+  </ul>
+
+  <h2>Conclusion</h2>
+  <p>PrimeScore is not directly compromised by the recent NPM supply chain attacks.</p>
+  <p>Transitive dependencies contain compromised packages. Immediate remediation recommended:</p>
+  <ul>
+    <li>Trace top-level packages</li>
+    <li>Update or lock safe versions</li>
+    <li>Regenerate node_modules and lockfile</li>
+  </ul>
+  <p>This audit ensures PrimeScore’s supply chain remains safe against the September 2025 NPM malware.</p>
+</section>
+
+
+    <section id="userfeedback" class="section" aria-labelledby="testing-title">
+      <header class="section-header">
+        <h2 id="user-feedback-title">User Feedback</h2>
+      </header>
       <h3>User Feedback Process</h3>
       <p>
         We follow a structured process to collect and integrate user feedback:
@@ -709,90 +1016,6 @@ npm run dev
         <li><strong>Prioritization</strong> — Items are logged into the product backlog and tagged for the appropriate sprint.</li>
         <li><strong>Follow-up</strong> — Users are notified when their feedback results in an update.</li>
       </ol>
-
-<h3>Automated Testing</h3>
-<p>
-  Automated testing is set up to ensure system reliability and quick feedback during development.
-</p>
-<ul class="bullets">
-  <li><strong>Unit Testing</strong> — Implemented with Jest (backend) and React Testing Library (frontend).</li>
-  <li><strong>Coverage</strong> — Code coverage reports are generated and displayed in the repository (via CI pipeline).</li>
-  <li><strong>Continuous Integration</strong> — Tests run automatically on GitHub Actions with every pull request.</li>
-</ul>
-
-<h4>Implemented Test Suites</h4>
-<ul class="bullets">
-  <li><strong>Authentication</strong>
-    <ul>
-      <li><code>verifyGoogleToken</code> service — validates Google tokens.</li>
-      <li><code>googleAuth</code> controller — signup, login, error handling.</li>
-    </ul>
-  </li>
-  <li><strong>Manager Controller</strong>
-    <ul>
-      <li><code>createTeam</code> — creates teams, handles Firestore errors.</li>
-      <li><code>addPlayers</code> — adds players, validates ownership, errors.</li>
-      <li><code>myTeam</code> — fetches team by user, handles missing/error cases.</li>
-    </ul>
-  </li>
-  <li><strong>Admin Controller</strong>
-    <ul>
-      <li><code>createMatch</code> — creates matches, error handling.</li>
-      <li><code>updateMatchStatus</code> — updates match status, not-found errors.</li>
-      <li><code>updateScore</code> — updates scores, records goals as events.</li>
-      <li><code>addMatchEvent</code> — adds events like cards or fouls.</li>
-      <li><code>allTeams</code> — fetches all teams, filters by sport type, handles errors.</li>
-    </ul>
-  </li>
-  <li><strong>LiveSport Controller</strong>
-    <ul>
-      <li>Adds upcoming matches in batch.</li>
-      <li>Handles empty or invalid requests.</li>
-    </ul>
-  </li>
-  <li><strong>Feed Controller</strong>
-    <ul>
-      <li><code>startMatch</code> — initializes match events.</li>
-      <li><code>recordGoal</code> — handles home/away goals, increments scores.</li>
-      <li><code>recordSubstitution</code> — adds substitutions, validates fields.</li>
-      <li><code>recordFoul</code> — records fouls with/without cards.</li>
-    </ul>
-  </li>
-  <li><strong>Display Controller</strong>
-    <ul>
-      <li><code>getMatchEventsById</code> — fetches specific match events.</li>
-      <li><code>getmatchEvents</code> — fetches all ongoing matches and events.</li>
-    </ul>
-  </li>
-</ul>
-
-<pre class="code-block" aria-label="run tests"><code># Run backend tests
-cd backend
-npm install
-npm test
-
-# Run frontend tests
-cd frontend
-npm install
-npm test
-
-# To view full coverage:
-npm test -- --coverage
-</code></pre>
-
-<p class="note">
-  Developers are required to write tests for all new features and bug fixes before merging.  
-  This ensures that user feedback and automated verification work together to maintain quality.
-</p>
-
-    </section>
-
-    
-    <section id="userfeedback" class="section" aria-labelledby="user-feedback-title">
-      <header class="section-header">
-        <h2 id="user-feedback-title">User Feedback</h2>
-      </header>
-
       <p>
         A survey was conducted with <strong>28 participants</strong> to gather feedback on the app.The resuls are sumarized below.
       </p>
