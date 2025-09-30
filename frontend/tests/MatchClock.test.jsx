@@ -1,10 +1,24 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import MatchClock from '../src/Components/MatchClock.jsx';
 
 // Mock fetch
 global.fetch = jest.fn();
+
+// Mock Firebase
+jest.mock('../src/firebase.js', () => ({
+  db: {},
+}));
+
+// Mock Firebase Firestore functions
+jest.mock('firebase/firestore', () => ({
+  doc: jest.fn(),
+  onSnapshot: jest.fn((ref, callback, errorCallback) => {
+    // Return a mock unsubscribe function
+    return () => {};
+  }),
+}));
 
 describe('MatchClock Component', () => {
   const mockMatchId = 'test-match-123';
@@ -12,11 +26,23 @@ describe('MatchClock Component', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     jest.useFakeTimers();
+    
+    // Suppress React act() warnings for testing
+    const originalError = console.error;
+    jest.spyOn(console, 'error').mockImplementation((...args) => {
+      if (args[0]?.includes?.('act(...)')) {
+        return; // Suppress act() warnings in tests
+      }
+      originalError(...args);
+    });
   });
 
   afterEach(() => {
-    jest.runOnlyPendingTimers();
+    act(() => {
+      jest.runOnlyPendingTimers();
+    });
     jest.useRealTimers();
+    jest.restoreAllMocks();
   });
 
   test('renders initial clock display', async () => {
@@ -76,7 +102,9 @@ describe('MatchClock Component', () => {
     });
 
     // Advance timer by 3 seconds
-    jest.advanceTimersByTime(3000);
+    act(() => {
+      jest.advanceTimersByTime(3000);
+    });
     
     await waitFor(() => {
       expect(screen.getByText('00:33')).toBeInTheDocument();
@@ -346,5 +374,255 @@ describe('MatchClock Component', () => {
     expect(fetch).toHaveBeenCalledTimes(1); // Only the initial fetch
 
     promptSpy.mockRestore();
+  });
+
+  test('handles Firebase listener error and falls back to polling', async () => {
+    // Mock Firebase onSnapshot to trigger error callback
+    const { onSnapshot } = require('firebase/firestore');
+    onSnapshot.mockImplementation((ref, callback, errorCallback) => {
+      // Simulate Firebase error
+      setTimeout(() => errorCallback(new Error('Firebase connection failed')), 100);
+      return () => {}; // mock unsubscribe
+    });
+
+    const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+    render(<MatchClock matchId={mockMatchId} status="ongoing" />);
+
+    // Wait for Firebase error to be handled
+    await waitFor(() => {
+      expect(consoleSpy).toHaveBeenCalledWith('Error listening to clock updates:', expect.any(Error));
+    });
+
+    consoleSpy.mockRestore();
+  });
+
+  test('handles Firebase listener with running clock data', async () => {
+    const mockClockData = {
+      elapsed: 300,
+      running: true,
+      startTime: {
+        toDate: () => new Date(Date.now() - 10000) // 10 seconds ago
+      },
+      pausedReason: null
+    };
+
+    const { onSnapshot } = require('firebase/firestore');
+    onSnapshot.mockImplementation((ref, callback) => {
+      // Simulate Firebase update
+      setTimeout(() => {
+        callback({
+          exists: () => true,
+          data: () => mockClockData
+        });
+      }, 100);
+      return () => {}; // mock unsubscribe
+    });
+
+    render(<MatchClock matchId={mockMatchId} status="ongoing" />);
+
+    // Wait for Firebase data to be processed
+    await waitFor(() => {
+      // Should show calculated time (300 + 10 seconds)
+      expect(screen.getByText('05:10')).toBeInTheDocument();
+    });
+  });
+
+  test('handles start/resume API error', async () => {
+    fetch
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          elapsed: 600,
+          running: false,
+          pausedReason: 'Break',
+          matchId: mockMatchId
+        })
+      })
+      .mockRejectedValueOnce(new Error('Network error')); // API error
+
+    const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+    render(<MatchClock matchId={mockMatchId} status="ongoing" />);
+    
+    await waitFor(() => {
+      expect(screen.getByText('Resume')).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByText('Resume'));
+
+    await waitFor(() => {
+      expect(consoleSpy).toHaveBeenCalledWith('Error starting/resuming clock:', expect.any(Error));
+    });
+
+    consoleSpy.mockRestore();
+  });
+
+  test('handles pause API error', async () => {
+    fetch
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          elapsed: 900,
+          running: true,
+          matchId: mockMatchId
+        })
+      })
+      .mockRejectedValueOnce(new Error('API error')); // Pause API error
+
+    const promptSpy = jest.spyOn(window, 'prompt').mockReturnValue('Technical issue');
+    const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+    render(<MatchClock matchId={mockMatchId} status="ongoing" />);
+    
+    await waitFor(() => {
+      expect(screen.getByText('Pause')).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByText('Pause'));
+
+    await waitFor(() => {
+      expect(consoleSpy).toHaveBeenCalledWith('Error pausing clock:', expect.any(Error));
+    });
+
+    promptSpy.mockRestore();
+    consoleSpy.mockRestore();
+  });
+
+  test('handles finish API error', async () => {
+    fetch
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          elapsed: 1500,
+          running: true,
+          matchId: mockMatchId
+        })
+      })
+      .mockRejectedValueOnce(new Error('Finish API error'));
+
+    const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+    render(<MatchClock matchId={mockMatchId} status="ongoing" />);
+    
+    await waitFor(() => {
+      expect(screen.getByText('Stop')).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByText('Stop'));
+
+    await waitFor(() => {
+      expect(consoleSpy).toHaveBeenCalledWith('Error finishing clock:', expect.any(Error));
+    });
+
+    consoleSpy.mockRestore();
+  });
+
+  test('handles fetch clock API error', async () => {
+    fetch.mockRejectedValueOnce(new Error('Fetch error'));
+
+    const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+    render(<MatchClock matchId={mockMatchId} status="ongoing" />);
+
+    await waitFor(() => {
+      expect(consoleSpy).toHaveBeenCalledWith('Error fetching clock data:', expect.any(Error));
+    });
+
+    consoleSpy.mockRestore();
+  });
+
+  test('renders without controls when showControls is false', async () => {
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        elapsed: 300,
+        running: true,
+        matchId: mockMatchId
+      })
+    });
+
+    render(<MatchClock matchId={mockMatchId} status="ongoing" showControls={false} />);
+    
+    await waitFor(() => {
+      expect(screen.getByText('05:00')).toBeInTheDocument();
+    });
+
+    // Should not show control buttons
+    expect(screen.queryByText('Pause')).not.toBeInTheDocument();
+    expect(screen.queryByText('Stop')).not.toBeInTheDocument();
+  });
+
+  test('does not show controls when status is not ongoing', async () => {
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        elapsed: 300,
+        running: false,
+        matchId: mockMatchId
+      })
+    });
+
+    render(<MatchClock matchId={mockMatchId} status="finished" />);
+    
+    await waitFor(() => {
+      expect(screen.getByText('05:00')).toBeInTheDocument();
+    });
+
+    // Should not show control buttons for finished matches
+    expect(screen.queryByText('Resume')).not.toBeInTheDocument();
+    expect(screen.queryByText('Stop')).not.toBeInTheDocument();
+  });
+
+  test('formats time correctly for various durations', async () => {
+    const testCases = [
+      { elapsed: 0, expected: '00:00' },
+      { elapsed: 59, expected: '00:59' },
+      { elapsed: 60, expected: '01:00' },
+      { elapsed: 3599, expected: '59:59' },
+      { elapsed: 3600, expected: '60:00' },
+      { elapsed: 7200, expected: '120:00' }
+    ];
+
+    for (const testCase of testCases) {
+      fetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          elapsed: testCase.elapsed,
+          running: false,
+          matchId: mockMatchId
+        })
+      });
+
+      const { unmount } = render(<MatchClock matchId={mockMatchId} status="ongoing" />);
+      
+      await waitFor(() => {
+        expect(screen.getByText(testCase.expected)).toBeInTheDocument();
+      });
+
+      unmount();
+      jest.clearAllMocks();
+    }
+  });
+
+  test('handles Firebase document that does not exist', async () => {
+    const { onSnapshot } = require('firebase/firestore');
+    onSnapshot.mockImplementation((ref, callback) => {
+      // Simulate Firebase document not existing
+      setTimeout(() => {
+        callback({
+          exists: () => false,
+          data: () => null
+        });
+      }, 100);
+      return () => {}; // mock unsubscribe
+    });
+
+    render(<MatchClock matchId={mockMatchId} status="ongoing" />);
+
+    // Component should still render normally even if Firebase doc doesn't exist
+    await waitFor(() => {
+      expect(screen.getByText('00:00')).toBeInTheDocument();
+    });
   });
 });

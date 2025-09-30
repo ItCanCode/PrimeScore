@@ -1,143 +1,189 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="jest tests" tests="56" failures="0" errors="0" time="13.564">
-  <testsuite name="handleUpdateScore" errors="0" failures="0" skipped="0" timestamp="2025-09-29T23:36:45" time="4.67" tests="2">
-    <testcase classname="handleUpdateScore updates scores optimistically and calls service" name="handleUpdateScore updates scores optimistically and calls service" time="0.027">
+<testsuites name="jest tests" tests="78" failures="0" errors="0" time="6.015">
+  <testsuite name="Loading component" errors="0" failures="0" skipped="0" timestamp="2025-09-30T10:57:11" time="2.252" tests="3">
+    <testcase classname="Loading component renders loading text" name="Loading component renders loading text" time="0.113">
     </testcase>
-    <testcase classname="handleUpdateScore sets error message if service fails" name="handleUpdateScore sets error message if service fails" time="0.002">
+    <testcase classname="Loading component renders loader circle" name="Loading component renders loader circle" time="0.011">
+    </testcase>
+    <testcase classname="Loading component renders three dots with correct classes" name="Loading component renders three dots with correct classes" time="0.008">
     </testcase>
   </testsuite>
-  <testsuite name="handleSubmitService" errors="0" failures="0" skipped="0" timestamp="2025-09-29T23:36:45" time="4.669" tests="3">
-    <testcase classname="handleSubmitService creates a new match successfully" name="handleSubmitService creates a new match successfully" time="0.023">
+  <testsuite name="ProfileDetails" errors="0" failures="0" skipped="0" timestamp="2025-09-30T10:57:11" time="2.503" tests="4">
+    <testcase classname="ProfileDetails renders fetched user info" name="ProfileDetails renders fetched user info" time="0.145">
+    </testcase>
+    <testcase classname="ProfileDetails toggles edit mode" name="ProfileDetails toggles edit mode" time="0.066">
+    </testcase>
+    <testcase classname="ProfileDetails updates input fields and saves" name="ProfileDetails updates input fields and saves" time="0.094">
+    </testcase>
+    <testcase classname="ProfileDetails toggles favorite sports selection" name="ProfileDetails toggles favorite sports selection" time="0.103">
+    </testcase>
+  </testsuite>
+  <testsuite name="UserProfile" errors="0" failures="0" skipped="0" timestamp="2025-09-30T10:57:11" time="2.381" tests="2">
+    <testcase classname="UserProfile renders back button and child components" name="UserProfile renders back button and child components" time="0.201">
+    </testcase>
+    <testcase classname="UserProfile calls navigate when back button is clicked" name="UserProfile calls navigate when back button is clicked" time="0.032">
+    </testcase>
+  </testsuite>
+  <testsuite name="ProfileCard" errors="0" failures="0" skipped="0" timestamp="2025-09-30T10:57:11" time="2.595" tests="3">
+    <testcase classname="ProfileCard renders loading first and then user info" name="ProfileCard renders loading first and then user info" time="0.14">
+    </testcase>
+    <testcase classname="ProfileCard toggles edit mode and updates input fields" name="ProfileCard toggles edit mode and updates input fields" time="0.158">
+    </testcase>
+    <testcase classname="ProfileCard handles image upload" name="ProfileCard handles image upload" time="0.087">
+    </testcase>
+  </testsuite>
+  <testsuite name="LeagueModal" errors="0" failures="0" skipped="0" timestamp="2025-09-30T10:57:11" time="2.644" tests="4">
+    <testcase classname="LeagueModal does not render when isOpen=false" name="LeagueModal does not render when isOpen=false" time="0.101">
+    </testcase>
+    <testcase classname="LeagueModal renders when isOpen=true" name="LeagueModal renders when isOpen=true" time="0.046">
+    </testcase>
+    <testcase classname="LeagueModal calls onClose when close button is clicked" name="LeagueModal calls onClose when close button is clicked" time="0.236">
+    </testcase>
+    <testcase classname="LeagueModal calls onSelect with league id when a league is clicked" name="LeagueModal calls onSelect with league id when a league is clicked" time="0.016">
+    </testcase>
+  </testsuite>
+  <testsuite name="handleAddMatchEvent" errors="0" failures="0" skipped="0" timestamp="2025-09-30T10:57:14" time="0.161" tests="3">
+    <testcase classname="handleAddMatchEvent adds a new event and updates state on success" name="handleAddMatchEvent adds a new event and updates state on success" time="0.006">
+    </testcase>
+    <testcase classname="handleAddMatchEvent sorts events by time when adding a new event" name="handleAddMatchEvent sorts events by time when adding a new event" time="0.002">
+    </testcase>
+    <testcase classname="handleAddMatchEvent sets error message on service failure" name="handleAddMatchEvent sets error message on service failure" time="0.008">
+    </testcase>
+  </testsuite>
+  <testsuite name="handleUpdateMatchStatus" errors="0" failures="0" skipped="0" timestamp="2025-09-30T10:57:14" time="0.123" tests="2">
+    <testcase classname="handleUpdateMatchStatus updates match status optimistically and calls service" name="handleUpdateMatchStatus updates match status optimistically and calls service" time="0.005">
+    </testcase>
+    <testcase classname="handleUpdateMatchStatus rolls back status and sets error message if service fails" name="handleUpdateMatchStatus rolls back status and sets error message if service fails" time="0.001">
+    </testcase>
+  </testsuite>
+  <testsuite name="matchService" errors="0" failures="0" skipped="0" timestamp="2025-09-30T10:57:14" time="0.302" tests="10">
+    <testcase classname="matchService adds a goal event" name="matchService adds a goal event" time="0.009">
+    </testcase>
+    <testcase classname="matchService throws if saveMatchService formData invalid" name="matchService throws if saveMatchService formData invalid" time="0.096">
+    </testcase>
+    <testcase classname="matchService saves a match successfully" name="matchService saves a match successfully" time="0.009">
+    </testcase>
+    <testcase classname="matchService starts match after scheduled time" name="matchService starts match after scheduled time" time="0.001">
+    </testcase>
+    <testcase classname="matchService fetches matches" name="matchService fetches matches" time="0.004">
+    </testcase>
+    <testcase classname="matchService updates match status" name="matchService updates match status" time="0.001">
+    </testcase>
+    <testcase classname="matchService updates score" name="matchService updates score" time="0.008">
+    </testcase>
+    <testcase classname="matchService deletes a match" name="matchService deletes a match" time="0.001">
+    </testcase>
+    <testcase classname="matchService fetches teams" name="matchService fetches teams" time="0.001">
+    </testcase>
+    <testcase classname="matchService fetches live stats" name="matchService fetches live stats" time="0.004">
+    </testcase>
+  </testsuite>
+  <testsuite name="handleSubmitService" errors="0" failures="0" skipped="0" timestamp="2025-09-30T10:57:14" time="0.125" tests="3">
+    <testcase classname="handleSubmitService creates a new match successfully" name="handleSubmitService creates a new match successfully" time="0.005">
     </testcase>
     <testcase classname="handleSubmitService updates an existing match successfully" name="handleSubmitService updates an existing match successfully" time="0.002">
     </testcase>
-    <testcase classname="handleSubmitService sets error message if saveMatchService fails" name="handleSubmitService sets error message if saveMatchService fails" time="0.003">
+    <testcase classname="handleSubmitService sets error message if saveMatchService fails" name="handleSubmitService sets error message if saveMatchService fails" time="0.005">
     </testcase>
   </testsuite>
-  <testsuite name="handleDeleteMatch" errors="0" failures="0" skipped="0" timestamp="2025-09-29T23:36:45" time="4.663" tests="3">
-    <testcase classname="handleDeleteMatch calls deleteMatchService and updates state on confirmation" name="handleDeleteMatch calls deleteMatchService and updates state on confirmation" time="0.026">
+  <testsuite name="Navbar" errors="0" failures="0" skipped="0" timestamp="2025-09-30T10:57:11" time="2.854" tests="5">
+    <testcase classname="Navbar renders PrimeScore logo" name="Navbar renders PrimeScore logo" time="0.109">
     </testcase>
-    <testcase classname="handleDeleteMatch does nothing if user cancels confirmation" name="handleDeleteMatch does nothing if user cancels confirmation" time="0.001">
+    <testcase classname="Navbar renders Manager links when role=manager" name="Navbar renders Manager links when role=manager" time="0.019">
     </testcase>
-    <testcase classname="handleDeleteMatch sets error message if deleteMatchService fails" name="handleDeleteMatch sets error message if deleteMatchService fails" time="0.002">
+    <testcase classname="Navbar calls setShowForm when Create Match clicked" name="Navbar calls setShowForm when Create Match clicked" time="0.038">
     </testcase>
-  </testsuite>
-  <testsuite name="handleAddMatchEvent" errors="0" failures="0" skipped="0" timestamp="2025-09-29T23:36:45" time="4.685" tests="3">
-    <testcase classname="handleAddMatchEvent adds a new event and updates state on success" name="handleAddMatchEvent adds a new event and updates state on success" time="0.019">
+    <testcase classname="Navbar toggles dropdown menu" name="Navbar toggles dropdown menu" time="0.227">
     </testcase>
-    <testcase classname="handleAddMatchEvent sorts events by time when adding a new event" name="handleAddMatchEvent sorts events by time when adding a new event" time="0.005">
-    </testcase>
-    <testcase classname="handleAddMatchEvent sets error message on service failure" name="handleAddMatchEvent sets error message on service failure" time="0.035">
+    <testcase classname="Navbar navigates when Profile clicked" name="Navbar navigates when Profile clicked" time="0.069">
     </testcase>
   </testsuite>
-  <testsuite name="sportService utilities" errors="0" failures="0" skipped="0" timestamp="2025-09-29T23:36:45" time="4.667" tests="7">
-    <testcase classname="sportService utilities returns the list of sports" name="sportService utilities returns the list of sports" time="0.018">
+  <testsuite name="sportService utilities" errors="0" failures="0" skipped="0" timestamp="2025-09-30T10:57:14" time="0.147" tests="7">
+    <testcase classname="sportService utilities returns the list of sports" name="sportService utilities returns the list of sports" time="0.003">
     </testcase>
-    <testcase classname="sportService utilities returns football leagues" name="sportService utilities returns football leagues" time="0.002">
+    <testcase classname="sportService utilities returns football leagues" name="sportService utilities returns football leagues" time="0.003">
     </testcase>
-    <testcase classname="sportService utilities returns leagues for a given sport" name="sportService utilities returns leagues for a given sport" time="0.005">
+    <testcase classname="sportService utilities returns leagues for a given sport" name="sportService utilities returns leagues for a given sport" time="0.001">
     </testcase>
-    <testcase classname="sportService utilities maps league parameters correctly" name="sportService utilities maps league parameters correctly" time="0.002">
+    <testcase classname="sportService utilities maps league parameters correctly" name="sportService utilities maps league parameters correctly" time="0.001">
     </testcase>
     <testcase classname="sportService utilities getMatchTypeNavigation returns correct path for local-leagues" name="sportService utilities getMatchTypeNavigation returns correct path for local-leagues" time="0.001">
     </testcase>
-    <testcase classname="sportService utilities getMatchTypeNavigation returns correct path for live match types and non-rugby sport" name="sportService utilities getMatchTypeNavigation returns correct path for live match types and non-rugby sport" time="0">
+    <testcase classname="sportService utilities getMatchTypeNavigation returns correct path for live match types and non-rugby sport" name="sportService utilities getMatchTypeNavigation returns correct path for live match types and non-rugby sport" time="0.001">
     </testcase>
     <testcase classname="sportService utilities getMatchTypeNavigation returns fallback path for unhandled cases" name="sportService utilities getMatchTypeNavigation returns fallback path for unhandled cases" time="0">
     </testcase>
   </testsuite>
-  <testsuite name="handleUpdateMatchStatus" errors="0" failures="0" skipped="0" timestamp="2025-09-29T23:36:45" time="4.751" tests="2">
-    <testcase classname="handleUpdateMatchStatus updates match status optimistically and calls service" name="handleUpdateMatchStatus updates match status optimistically and calls service" time="0.055">
+  <testsuite name="handleUpdateScore" errors="0" failures="0" skipped="0" timestamp="2025-09-30T10:57:14" time="0.102" tests="2">
+    <testcase classname="handleUpdateScore updates scores optimistically and calls service" name="handleUpdateScore updates scores optimistically and calls service" time="0.003">
     </testcase>
-    <testcase classname="handleUpdateMatchStatus rolls back status and sets error message if service fails" name="handleUpdateMatchStatus rolls back status and sets error message if service fails" time="0.008">
-    </testcase>
-  </testsuite>
-  <testsuite name="matchService" errors="0" failures="0" skipped="0" timestamp="2025-09-29T23:36:45" time="4.795" tests="10">
-    <testcase classname="matchService adds a goal event" name="matchService adds a goal event" time="0.032">
-    </testcase>
-    <testcase classname="matchService throws if saveMatchService formData invalid" name="matchService throws if saveMatchService formData invalid" time="0.1">
-    </testcase>
-    <testcase classname="matchService saves a match successfully" name="matchService saves a match successfully" time="0.009">
-    </testcase>
-    <testcase classname="matchService starts match after scheduled time" name="matchService starts match after scheduled time" time="0.004">
-    </testcase>
-    <testcase classname="matchService fetches matches" name="matchService fetches matches" time="0.003">
-    </testcase>
-    <testcase classname="matchService updates match status" name="matchService updates match status" time="0.003">
-    </testcase>
-    <testcase classname="matchService updates score" name="matchService updates score" time="0.002">
-    </testcase>
-    <testcase classname="matchService deletes a match" name="matchService deletes a match" time="0.003">
-    </testcase>
-    <testcase classname="matchService fetches teams" name="matchService fetches teams" time="0.004">
-    </testcase>
-    <testcase classname="matchService fetches live stats" name="matchService fetches live stats" time="0.002">
+    <testcase classname="handleUpdateScore sets error message if service fails" name="handleUpdateScore sets error message if service fails" time="0.001">
     </testcase>
   </testsuite>
-  <testsuite name="Loading component" errors="0" failures="0" skipped="0" timestamp="2025-09-29T23:36:45" time="7.139" tests="3">
-    <testcase classname="Loading component renders loading text" name="Loading component renders loading text" time="0.188">
+  <testsuite name="handleDeleteMatch" errors="0" failures="0" skipped="0" timestamp="2025-09-30T10:57:14" time="0.105" tests="3">
+    <testcase classname="handleDeleteMatch calls deleteMatchService and updates state on confirmation" name="handleDeleteMatch calls deleteMatchService and updates state on confirmation" time="0.004">
     </testcase>
-    <testcase classname="Loading component renders loader circle" name="Loading component renders loader circle" time="0.051">
+    <testcase classname="handleDeleteMatch does nothing if user cancels confirmation" name="handleDeleteMatch does nothing if user cancels confirmation" time="0.001">
     </testcase>
-    <testcase classname="Loading component renders three dots with correct classes" name="Loading component renders three dots with correct classes" time="0.024">
-    </testcase>
-  </testsuite>
-  <testsuite name="UserProfile" errors="0" failures="0" skipped="0" timestamp="2025-09-29T23:36:45" time="7.286" tests="2">
-    <testcase classname="UserProfile renders back button and child components" name="UserProfile renders back button and child components" time="0.392">
-    </testcase>
-    <testcase classname="UserProfile calls navigate when back button is clicked" name="UserProfile calls navigate when back button is clicked" time="0.045">
+    <testcase classname="handleDeleteMatch sets error message if deleteMatchService fails" name="handleDeleteMatch sets error message if deleteMatchService fails" time="0.001">
     </testcase>
   </testsuite>
-  <testsuite name="ProfileCard" errors="0" failures="0" skipped="0" timestamp="2025-09-29T23:36:45" time="7.471" tests="3">
-    <testcase classname="ProfileCard renders loading first and then user info" name="ProfileCard renders loading first and then user info" time="0.373">
+  <testsuite name="ConfirmModal" errors="0" failures="0" skipped="0" timestamp="2025-09-30T10:57:14" time="0.662" tests="5">
+    <testcase classname="ConfirmModal does not render when show=false" name="ConfirmModal does not render when show=false" time="0.008">
     </testcase>
-    <testcase classname="ProfileCard toggles edit mode and updates input fields" name="ProfileCard toggles edit mode and updates input fields" time="0.144">
+    <testcase classname="ConfirmModal renders event confirmation details" name="ConfirmModal renders event confirmation details" time="0.035">
     </testcase>
-    <testcase classname="ProfileCard handles image upload" name="ProfileCard handles image upload" time="0.098">
+    <testcase classname="ConfirmModal renders match confirmation details" name="ConfirmModal renders match confirmation details" time="0.06">
     </testcase>
-  </testsuite>
-  <testsuite name="ProfileDetails" errors="0" failures="0" skipped="0" timestamp="2025-09-29T23:36:45" time="7.818" tests="4">
-    <testcase classname="ProfileDetails renders fetched user info" name="ProfileDetails renders fetched user info" time="0.277">
+    <testcase classname="ConfirmModal calls onClose when Cancel is clicked" name="ConfirmModal calls onClose when Cancel is clicked" time="0.029">
     </testcase>
-    <testcase classname="ProfileDetails toggles edit mode" name="ProfileDetails toggles edit mode" time="0.101">
-    </testcase>
-    <testcase classname="ProfileDetails updates input fields and saves" name="ProfileDetails updates input fields and saves" time="0.34">
-    </testcase>
-    <testcase classname="ProfileDetails toggles favorite sports selection" name="ProfileDetails toggles favorite sports selection" time="0.114">
+    <testcase classname="ConfirmModal calls onClose and confirmAction when Confirm is clicked" name="ConfirmModal calls onClose and confirmAction when Confirm is clicked" time="0.028">
     </testcase>
   </testsuite>
-  <testsuite name="LeagueModal" errors="0" failures="0" skipped="0" timestamp="2025-09-29T23:36:45" time="8.134" tests="4">
-    <testcase classname="LeagueModal does not render when isOpen=false" name="LeagueModal does not render when isOpen=false" time="0.126">
+  <testsuite name="MatchClock Component" errors="0" failures="0" skipped="0" timestamp="2025-09-30T10:57:11" time="3.496" tests="22">
+    <testcase classname="MatchClock Component renders initial clock display" name="MatchClock Component renders initial clock display" time="0.054">
     </testcase>
-    <testcase classname="LeagueModal renders when isOpen=true" name="LeagueModal renders when isOpen=true" time="0.068">
+    <testcase classname="MatchClock Component formats time correctly" name="MatchClock Component formats time correctly" time="0.012">
     </testcase>
-    <testcase classname="LeagueModal calls onClose when close button is clicked" name="LeagueModal calls onClose when close button is clicked" time="0.694">
+    <testcase classname="MatchClock Component starts counting when running is true" name="MatchClock Component starts counting when running is true" time="0.011">
     </testcase>
-    <testcase classname="LeagueModal calls onSelect with league id when a league is clicked" name="LeagueModal calls onSelect with league id when a league is clicked" time="0.04">
+    <testcase classname="MatchClock Component shows resume button when paused" name="MatchClock Component shows resume button when paused" time="0.007">
     </testcase>
-  </testsuite>
-  <testsuite name="ConfirmModal" errors="0" failures="0" skipped="0" timestamp="2025-09-29T23:36:45" time="8.181" tests="5">
-    <testcase classname="ConfirmModal does not render when show=false" name="ConfirmModal does not render when show=false" time="0.077">
+    <testcase classname="MatchClock Component shows pause button when running" name="MatchClock Component shows pause button when running" time="0.009">
     </testcase>
-    <testcase classname="ConfirmModal renders event confirmation details" name="ConfirmModal renders event confirmation details" time="0.322">
+    <testcase classname="MatchClock Component calls start API when resume button clicked" name="MatchClock Component calls start API when resume button clicked" time="0.009">
     </testcase>
-    <testcase classname="ConfirmModal renders match confirmation details" name="ConfirmModal renders match confirmation details" time="0.433">
+    <testcase classname="MatchClock Component calls pause API when pause button clicked" name="MatchClock Component calls pause API when pause button clicked" time="0.013">
     </testcase>
-    <testcase classname="ConfirmModal calls onClose when Cancel is clicked" name="ConfirmModal calls onClose when Cancel is clicked" time="0.06">
+    <testcase classname="MatchClock Component calls finish API when stop button clicked" name="MatchClock Component calls finish API when stop button clicked" time="0.004">
     </testcase>
-    <testcase classname="ConfirmModal calls onClose and confirmAction when Confirm is clicked" name="ConfirmModal calls onClose and confirmAction when Confirm is clicked" time="0.039">
+    <testcase classname="MatchClock Component hides controls when showControls is false" name="MatchClock Component hides controls when showControls is false" time="0.006">
     </testcase>
-  </testsuite>
-  <testsuite name="Navbar" errors="0" failures="0" skipped="0" timestamp="2025-09-29T23:36:45" time="8.332" tests="5">
-    <testcase classname="Navbar renders PrimeScore logo" name="Navbar renders PrimeScore logo" time="0.163">
+    <testcase classname="MatchClock Component hides controls when status is not ongoing" name="MatchClock Component hides controls when status is not ongoing" time="0.004">
     </testcase>
-    <testcase classname="Navbar renders Manager links when role=manager" name="Navbar renders Manager links when role=manager" time="0.043">
+    <testcase classname="MatchClock Component handles fetch errors gracefully" name="MatchClock Component handles fetch errors gracefully" time="0.004">
     </testcase>
-    <testcase classname="Navbar calls setShowForm when Create Match clicked" name="Navbar calls setShowForm when Create Match clicked" time="0.079">
+    <testcase classname="MatchClock Component handles pause cancellation (no reason provided)" name="MatchClock Component handles pause cancellation (no reason provided)" time="0.005">
     </testcase>
-    <testcase classname="Navbar toggles dropdown menu" name="Navbar toggles dropdown menu" time="0.756">
+    <testcase classname="MatchClock Component handles Firebase listener error and falls back to polling" name="MatchClock Component handles Firebase listener error and falls back to polling" time="0.033">
     </testcase>
-    <testcase classname="Navbar navigates when Profile clicked" name="Navbar navigates when Profile clicked" time="0.089">
+    <testcase classname="MatchClock Component handles Firebase listener with running clock data" name="MatchClock Component handles Firebase listener with running clock data" time="0.018">
+    </testcase>
+    <testcase classname="MatchClock Component handles start/resume API error" name="MatchClock Component handles start/resume API error" time="0.006">
+    </testcase>
+    <testcase classname="MatchClock Component handles pause API error" name="MatchClock Component handles pause API error" time="0.006">
+    </testcase>
+    <testcase classname="MatchClock Component handles finish API error" name="MatchClock Component handles finish API error" time="0.006">
+    </testcase>
+    <testcase classname="MatchClock Component handles fetch clock API error" name="MatchClock Component handles fetch clock API error" time="0.003">
+    </testcase>
+    <testcase classname="MatchClock Component renders without controls when showControls is false" name="MatchClock Component renders without controls when showControls is false" time="0.005">
+    </testcase>
+    <testcase classname="MatchClock Component does not show controls when status is not ongoing" name="MatchClock Component does not show controls when status is not ongoing" time="0.006">
+    </testcase>
+    <testcase classname="MatchClock Component formats time correctly for various durations" name="MatchClock Component formats time correctly for various durations" time="0.03">
+    </testcase>
+    <testcase classname="MatchClock Component handles Firebase document that does not exist" name="MatchClock Component handles Firebase document that does not exist" time="0.007">
     </testcase>
   </testsuite>
 </testsuites>
