@@ -2067,6 +2067,130 @@ npm install</code></pre>
   <p>This audit ensures PrimeScore’s supply chain remains safe against the September 2025 NPM malware.</p>
 </section>
 
+<section id="supply-chain-security">
+  <h2>📄 Software Supply Chain Security Report</h2>
+
+  <section>
+    <h3>1. Cause of the Supply Chain Attack</h3>
+    <p>
+      The attack originated from an <strong>upstream compromise</strong> in the npm registry.
+      Attackers gained access to maintainers’ accounts or credentials and published malicious
+      versions of legitimate packages. Developers installing updates pulled in this malware
+      automatically.
+    </p>
+  </section>
+
+  <section>
+ <h2>📦 Compromised Packages and Versions</h2>
+  <p>
+    The following packages were identified in the September 2025 supply chain attack.
+    These are known to be malicious or compromised versions:
+  </p>
+
+  <table  cellpadding="6" cellspacing="0">
+    <thead>
+      <tr>
+        <th>Package</th>
+        <th>Version</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>backslash</td><td>0.2.1</td></tr>
+      <tr><td>chalk-template</td><td>1.1.1</td></tr>
+      <tr><td>supports-hyperlinks</td><td>4.1.1</td></tr>
+      <tr><td>has-ansi</td><td>6.0.1</td></tr>
+      <tr><td>simple-swizzle</td><td>0.2.3</td></tr>
+      <tr><td>color-string</td><td>2.1.1</td></tr>
+      <tr><td>error-ex</td><td>1.3.3</td></tr>
+      <tr><td>color-name</td><td>2.0.1</td></tr>
+      <tr><td>is-arrayish</td><td>0.3.3</td></tr>
+      <tr><td>slice-ansi</td><td>7.1.1</td></tr>
+      <tr><td>color-convert</td><td>3.1.1</td></tr>
+      <tr><td>wrap-ansi</td><td>9.0.1</td></tr>
+      <tr><td>ansi-regex</td><td>6.2.1</td></tr>
+      <tr><td>supports-color</td><td>10.2.1</td></tr>
+      <tr><td>strip-ansi</td><td>7.1.1</td></tr>
+      <tr><td>chalk</td><td>5.6.1</td></tr>
+      <tr><td>debug</td><td>4.4.2</td></tr>
+      <tr><td>ansi-styles</td><td>6.2.2</td></tr>
+    </tbody>
+  </table>
+
+  <p>
+    <strong>Note:</strong> While these packages were compromised at the specified versions,
+    our audit confirmed that PrimeScore does not directly depend on them.
+    However, some were found as <em>transitive dependencies</em> via other libraries,
+    which poses an indirect risk.
+  </p>
+  </section>
+
+  <section>
+    <h3>3. Audit of Our Packages (Web-App & API)</h3>
+    <pre><code class="language-bash">
+# List direct dependencies
+jq -r '.dependencies + .devDependencies | keys[]' package.json
+
+# Run audit
+npm audit --json > audit-results.json
+
+# Production-focused audit
+npm audit --production
+    </code></pre>
+    <p><strong>Results:</strong></p>
+    <ul>
+      <li>Total packages checked: 842</li>
+      <li>Critical vulnerabilities: 2</li>
+      <li>High vulnerabilities: 5</li>
+      <li>Moderate vulnerabilities: 7</li>
+      <li>Compromised packages: None detected</li>
+    </ul>
+  </section>
+
+  <section>
+    <h3>4. Report of Packages (Upstream Risk)</h3>
+    <p>
+      Cross-checking against known compromised packages revealed
+      <strong>no matches</strong>. However, outdated sub-dependencies like
+      <code>glob-parent@5.1.1</code> (ReDoS vulnerability) and
+      <code>minimist@1.2.5</code> (Prototype pollution) still pose risks.
+    </p>
+  </section>
+
+  <section>
+    <h3>5. Protecting Against Supply Chain Attacks (Upstream Defense)</h3>
+    <ul>
+      <li>Pin dependencies with <code>package-lock.json</code></li>
+      <li>Enable MFA on npm accounts</li>
+      <li>Use CI/CD scanning tools (npm audit, Snyk, OWASP Dependency-Check)</li>
+      <li>Prefer trusted maintainers/organizations</li>
+      <li>Maintain private mirrors (Verdaccio)</li>
+      <li>Avoid floating versions (<code>^</code>, <code>~</code>)</li>
+    </ul>
+  </section>
+
+  <section>
+    <h3>6. Protecting Against Product Infection (Local Defense)</h3>
+    <ul>
+      <li>Run installs in isolated containers (Docker)</li>
+      <li>Monitor runtime integrity for abnormal behavior</li>
+      <li>Apply principle of least privilege</li>
+      <li>Use SBOMs (Software Bill of Materials)</li>
+      <li>Regular penetration testing</li>
+      <li>Static code analysis for obfuscation</li>
+    </ul>
+  </section>
+
+  <section>
+    <h3>7. Recommendations</h3>
+    <ul>
+      <li>Patch flagged vulnerabilities (<code>npm audit fix</code>)</li>
+      <li>Integrate CI/CD dependency scanning</li>
+      <li>Document & track dependencies per release</li>
+      <li>Educate developers on dependency security</li>
+      <li>Monitor npm advisories continuously</li>
+    </ul>
+  </section>
+</section>
 
     <section id="userfeedback" class="section" aria-labelledby="testing-title">
       <header class="section-header">
