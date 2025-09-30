@@ -110,7 +110,7 @@ const PastMatches = () => {
             const formattedDateTime = formatDateTime(match.startTime);
 
             return (
-              <div key={match.id} className="match-card">
+              <div key={match.id} className="match-card" role="article">
                 {/* Header */}
                 <div className="match-header">
                   <div className="match-teams">
