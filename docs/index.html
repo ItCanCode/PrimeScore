@@ -31,11 +31,13 @@
         <li><a href="#backlog">Sprint Backlog</a></li>
         <li><a href="#stories">User Stories</a></li>
         <li><a href="#sprint2-bugs">Sprint 2 Bug Tracking</a></li>
+        <li><a href="#agile">Agile methodology</a></li>
         <li><a href="#setup">Setup Guide</a></li>
         <li><a href="#git">Git Workflow</a></li>
         <li><a href="#database">Database</a></li>
         <li><a href="#testing">Testing</a></li>
         <li><a href="#userfeedback">User Feedback</a></li>
+
     </div>
   </nav>
 
@@ -226,7 +228,7 @@
     <!-- Backlog -->
     <section id="backlog" class="section" aria-labelledby="backlog-title">
       <header class="section-header">
-        <h2 id="backlog-title">Current Sprint Backlog</h2>
+        <h2 id="backlog-title">Current Product Backlog</h2>
       </header>
       <ul class="checklist">
         <li>Implement real-time live score updates for ongoing matches</li>
@@ -263,7 +265,7 @@
       </ol>
     </section>
 
-        <section id="stories" class="section" aria-labelledby="stories-title">
+    <section id="stories" class="section" aria-labelledby="stories-title">
       <header class="section-header">
         <h2 id="stories-title">Sprint 2 User Stories</h2>
       </header>
@@ -285,6 +287,8 @@
       <ol class="ordered">
         <li>As a viewer, I want to see netball,rugby and football options so i can watch a sport of my choice </li>
         <li>As a viewer, I want to see animations for current match events so I don't have to refresh to see changes</li>
+        <li>As an admin, I want to see match clock so I can add event with correct time</li>
+        <li>As an admin, I want to see a predefined list of players and teams so I don't write teams and players not in the database</li>
       </ol>
     </section>
     <!-- Sprint 2 Bug Resolution -->
@@ -324,7 +328,7 @@
         <li><strong>Overdue:</strong> 3 improvement tasks carried over to Sprint 3</li>
         <li><strong>In Progress:</strong> 1 open bug card by sprint close</li>
       </ul>
-
+ 
       <h3>Outcome</h3>
 
       <p>
@@ -339,7 +343,92 @@
       </figure>
 
     </section>
+    <!-- Agile -->
+    <section id="agile" class="section" aria-labelledby="testing-title">
+      <header class="section-header">
+        <h2 id="user-feedback-title">Agile Methodology</h2>
+      </header>
+    </section>
 
+    
+    <section id="agile" class="section" aria-labelledby="testing-title">
+      <header class="section-header">
+        <h2 id="user-feedback-title">Sprint 01 - agile</h2>
+      </header>
+    </section>
+
+    <section id="agile" class="section" aria-labelledby="testing-title">
+      <header class="section-header">
+        <h2 id="user-feedback-title">Sprint 02 - agile</h2>
+      </header>
+    </section>
+
+    <section id="agile" class="section" aria-labelledby="testing-title">
+      <header class="section-header">
+        <h2 id="user-feedback-title">Sprint 03 - Agile</h2>
+      </header>
+
+      <figure class="figure">
+
+      <figure class="figure">
+        <img src="sprint3_planning.jpg" alt="Sprint 3 planning board screenshot">
+        <figcaption>Figure 1 — Sprint 3 Planning Board</figcaption>
+      </figure>
+      <strong><p>
+        The Sprint 3 planning meeting focused on prioritizing carryover tasks from Sprint 2 and 
+        addressing technical improvements. The discussion as issued by the tutor was based on ensuring that aspects 
+        of our projects are well documented and improving documentation from Sprint 02.
+      </p></strong>
+
+      <strong>
+        <ul>
+        <li>Bug, Third-Party, and feedback documentation.</li>
+        <li>Past matches from local leagues and more as indicated under bug tracking.</li>
+        <li>Add more sports including Netball and Rugby.</li>
+      </ul>
+      </strong>
+
+      <figure class="figure">
+        <img src="sprint3_daily.jpg" alt="Sprint 3 Daily standups screenshot">
+        <figcaption>Figure 2 - Sprint 3 Daily standups</figcaption>
+      </figure>
+      <strong>
+        <p>
+          Main issues discussed during the daily standups were the following:
+          <ul>
+            <li>Resolving bugs more quickly to allow focus on current sprint tasks</li>
+            <li>Leveraging free APIs to meet the system’s basic requirements</li>
+            <li>Expanding the system to support all sports in a more general way</li>
+            <li>Ensuring that documentation is clear, structured, and well-maintained</li>
+          </ul>
+        </p>
+      </strong>
+
+      <figure class="figure">
+        <img src="sprint3_review.jpg" alt="Sprint 3 review meeting screenshot">
+        <figcaption>Figure 3 — Sprint 3 Review Meeting</figcaption>
+      </figure>
+      <strong>
+      <p>
+        The stakeholder saw the progress of the app, which included the Rugby Fixtures, and 
+        suggested we add the results from the API to our database to avoid exceeding the 
+        limit of API requests.
+      </p></strong>
+      <figure class="figure">
+        <img src="sprint3_retro.jpg" alt="Sprint 3 retrospective board screenshot">
+        <figcaption>Figure 4 — Sprint 3 Retrospective</figcaption>
+      </figure>
+      <strong>
+      <p>
+        The retrospective was a moment of reflection but also focused on introducing 
+        <strong>Jest</strong> for automated testing. Every team member was assigned a 
+        number of Components and Pages to test. Although some members were still fixing 
+        bugs and making app improvements, the testing effort was considered a partial 
+        success and set a foundation for stronger test coverage in future sprints.
+      </p>
+      </strong>
+
+    </section>
     <!-- Setup -->
     <section id="setup" class="section" aria-labelledby="setup-title">
       <header class="section-header">
@@ -399,7 +488,7 @@ npm run dev
       </ul>
     </section>
 
-        <!-- Database -->
+    <!-- Database -->
     <section id="database" class="section" aria-labelledby="db-title">
       <header class="section-header">
         <h2 id="db-title">Database Documentation</h2>
@@ -467,12 +556,94 @@ npm run dev
       </p>
     </section>
 
-        <!-- Testing -->
+    <!-- Testing -->
     <section id="testing" class="section" aria-labelledby="testing-title">
       <header class="section-header">
         <h2 id="testing-title">Testing Documentation</h2>
       </header>
+      <h3>Automated Testing</h3>
+      <p>
+        Automated testing is set up to ensure system reliability and quick feedback during development.
+      </p>
+      <ul class="bullets">
+        <li><strong>Unit Testing</strong> — Implemented with Jest (backend) and React Testing Library (frontend).</li>
+        <li><strong>Coverage</strong> — Code coverage reports are generated and displayed in the repository (via CI pipeline).</li>
+        <li><strong>Continuous Integration</strong> — Tests run automatically on GitHub Actions with every pull request.</li>
+      </ul>
 
+      <h4>Implemented Test Suites</h4>
+      <ul class="bullets">
+        <li><strong>Authentication</strong>
+          <ul>
+            <li><code>verifyGoogleToken</code> service — validates Google tokens.</li>
+            <li><code>googleAuth</code> controller — signup, login, error handling.</li>
+          </ul>
+        </li>
+        <li><strong>Manager Controller</strong>
+          <ul>
+            <li><code>createTeam</code> — creates teams, handles Firestore errors.</li>
+            <li><code>addPlayers</code> — adds players, validates ownership, errors.</li>
+            <li><code>myTeam</code> — fetches team by user, handles missing/error cases.</li>
+          </ul>
+        </li>
+        <li><strong>Admin Controller</strong>
+          <ul>
+            <li><code>createMatch</code> — creates matches, error handling.</li>
+            <li><code>updateMatchStatus</code> — updates match status, not-found errors.</li>
+            <li><code>updateScore</code> — updates scores, records goals as events.</li>
+            <li><code>addMatchEvent</code> — adds events like cards or fouls.</li>
+            <li><code>allTeams</code> — fetches all teams, filters by sport type, handles errors.</li>
+          </ul>
+        </li>
+        <li><strong>LiveSport Controller</strong>
+          <ul>
+            <li>Adds upcoming matches in batch.</li>
+            <li>Handles empty or invalid requests.</li>
+          </ul>
+        </li>
+        <li><strong>Feed Controller</strong>
+          <ul>
+            <li><code>startMatch</code> — initializes match events.</li>
+            <li><code>recordGoal</code> — handles home/away goals, increments scores.</li>
+            <li><code>recordSubstitution</code> — adds substitutions, validates fields.</li>
+            <li><code>recordFoul</code> — records fouls with/without cards.</li>
+          </ul>
+        </li>
+        <li><strong>Display Controller</strong>
+          <ul>
+            <li><code>getMatchEventsById</code> — fetches specific match events.</li>
+            <li><code>getmatchEvents</code> — fetches all ongoing matches and events.</li>
+          </ul>
+        </li>
+      </ul>
+
+      <pre class="code-block" aria-label="run tests"><code># Run backend tests
+      cd backend
+      npm install
+      npm test
+
+      # Run frontend tests
+      cd frontend
+      npm install
+      npm test
+
+      # To view full coverage:
+      npm test -- --coverage
+      </code></pre>
+
+      <p class="note">
+        Developers are required to write tests for all new features and bug fixes before merging.  
+        This ensures that user feedback and automated verification work together to maintain quality.
+      </p>
+
+    </section>
+
+
+    
+    <section id="userfeedback" class="section" aria-labelledby="user-feedback-title">
+      <header class="section-header">
+        <h2 id="user-feedback-title">User Feedback</h2>
+      </header>
       <h3>User Feedback Process</h3>
       <p>
         We follow a structured process to collect and integrate user feedback:
@@ -483,90 +654,6 @@ npm run dev
         <li><strong>Prioritization</strong> — Items are logged into the product backlog and tagged for the appropriate sprint.</li>
         <li><strong>Follow-up</strong> — Users are notified when their feedback results in an update.</li>
       </ol>
-
-<h3>Automated Testing</h3>
-<p>
-  Automated testing is set up to ensure system reliability and quick feedback during development.
-</p>
-<ul class="bullets">
-  <li><strong>Unit Testing</strong> — Implemented with Jest (backend) and React Testing Library (frontend).</li>
-  <li><strong>Coverage</strong> — Code coverage reports are generated and displayed in the repository (via CI pipeline).</li>
-  <li><strong>Continuous Integration</strong> — Tests run automatically on GitHub Actions with every pull request.</li>
-</ul>
-
-<h4>Implemented Test Suites</h4>
-<ul class="bullets">
-  <li><strong>Authentication</strong>
-    <ul>
-      <li><code>verifyGoogleToken</code> service — validates Google tokens.</li>
-      <li><code>googleAuth</code> controller — signup, login, error handling.</li>
-    </ul>
-  </li>
-  <li><strong>Manager Controller</strong>
-    <ul>
-      <li><code>createTeam</code> — creates teams, handles Firestore errors.</li>
-      <li><code>addPlayers</code> — adds players, validates ownership, errors.</li>
-      <li><code>myTeam</code> — fetches team by user, handles missing/error cases.</li>
-    </ul>
-  </li>
-  <li><strong>Admin Controller</strong>
-    <ul>
-      <li><code>createMatch</code> — creates matches, error handling.</li>
-      <li><code>updateMatchStatus</code> — updates match status, not-found errors.</li>
-      <li><code>updateScore</code> — updates scores, records goals as events.</li>
-      <li><code>addMatchEvent</code> — adds events like cards or fouls.</li>
-      <li><code>allTeams</code> — fetches all teams, filters by sport type, handles errors.</li>
-    </ul>
-  </li>
-  <li><strong>LiveSport Controller</strong>
-    <ul>
-      <li>Adds upcoming matches in batch.</li>
-      <li>Handles empty or invalid requests.</li>
-    </ul>
-  </li>
-  <li><strong>Feed Controller</strong>
-    <ul>
-      <li><code>startMatch</code> — initializes match events.</li>
-      <li><code>recordGoal</code> — handles home/away goals, increments scores.</li>
-      <li><code>recordSubstitution</code> — adds substitutions, validates fields.</li>
-      <li><code>recordFoul</code> — records fouls with/without cards.</li>
-    </ul>
-  </li>
-  <li><strong>Display Controller</strong>
-    <ul>
-      <li><code>getMatchEventsById</code> — fetches specific match events.</li>
-      <li><code>getmatchEvents</code> — fetches all ongoing matches and events.</li>
-    </ul>
-  </li>
-</ul>
-
-<pre class="code-block" aria-label="run tests"><code># Run backend tests
-cd backend
-npm install
-npm test
-
-# Run frontend tests
-cd frontend
-npm install
-npm test
-
-# To view full coverage:
-npm test -- --coverage
-</code></pre>
-
-<p class="note">
-  Developers are required to write tests for all new features and bug fixes before merging.  
-  This ensures that user feedback and automated verification work together to maintain quality.
-</p>
-
-    </section>
-
-    
-    <section id="userfeedback" class="section" aria-labelledby="user-feedback-title">
-      <header class="section-header">
-        <h2 id="user-feedback-title">User Feedback</h2>
-      </header>
-
       <p>
         A survey was conducted with <strong>28 participants</strong> to gather feedback on the app.The resuls are sumarized below.
       </p>
