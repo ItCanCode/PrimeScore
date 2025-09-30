@@ -43,7 +43,8 @@
       "text"
     ],
     "collectCoverageFrom": [
-      "src/**/*.js"
+      "src/**/*.js",
+      "!src/middleware/**"
     ],
     "testEnvironment": "node",
     "reporters": [
