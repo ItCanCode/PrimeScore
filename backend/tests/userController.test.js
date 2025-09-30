@@ -2,9 +2,12 @@ import {
   getMatches,
   getCurrentUser,
   updateUser,
+  uploadImage,
 } from "../src/controllers/userController.js";
 
-// Mock Firestore and Auth inline
+import cloudinary from "../src/config/cloudinary.js";
+
+// Mock Firestore and Auth
 jest.mock("../src/config/firebaseAdmin.js", () => {
   const mockGet = jest.fn();
   const mockUpdate = jest.fn();
@@ -28,6 +31,18 @@ jest.mock("../src/config/firebaseAdmin.js", () => {
   };
 });
 
+// Mock Cloudinary
+jest.mock("../src/config/cloudinary.js", () => ({
+  uploader: {
+    upload_stream: jest.fn((opts, cb) => {
+      const fakeStream = {
+        end: (buffer) => cb(null, { secure_url: "https://fakeurl.com/image.jpg" }),
+      };
+      return fakeStream;
+    }),
+  },
+}));
+
 let req;
 let res;
 
@@ -37,6 +52,7 @@ beforeEach(() => {
     body: {},
     headers: {},
     user: { uid: "user123" },
+    file: null,
   };
   res = {
     status: jest.fn().mockReturnThis(),
@@ -55,12 +71,6 @@ describe("UserController", () => {
           { id: "m1", data: () => ({ sportType: "Soccer" }) },
           { id: "m2", data: () => ({ sportType: "Basketball" }) },
         ],
-        forEach: (cb) => {
-          [
-            { id: "m1", data: () => ({ sportType: "Soccer" }) },
-            { id: "m2", data: () => ({ sportType: "Basketball" }) },
-          ].forEach(cb);
-        },
       });
 
       await getMatches(req, res);
@@ -167,6 +177,36 @@ describe("UserController", () => {
       expect(res.json).toHaveBeenCalledWith({
         error: "Failed",
       });
+    });
+  });
+
+  describe("uploadImage", () => {
+    it("should upload file successfully", async () => {
+      req.file = { originalname: "file.jpg", buffer: Buffer.from("test") };
+
+      await uploadImage(req, res);
+
+      expect(res.json).toHaveBeenCalledWith({ url: "https://fakeurl.com/image.jpg" });
+    });
+
+    it("should return 400 if no file provided", async () => {
+      await uploadImage(req, res);
+
+      expect(res.status).toHaveBeenCalledWith(400);
+      expect(res.json).toHaveBeenCalledWith({ error: "No file uploaded" });
+    });
+
+    it("should return 500 if Cloudinary fails", async () => {
+      req.file = { originalname: "file.jpg", buffer: Buffer.from("test") };
+      cloudinary.uploader.upload_stream.mockImplementationOnce((opts, cb) => {
+        const fakeStream = { end: () => cb(new Error("Upload failed"), null) };
+        return fakeStream;
+      });
+
+      await uploadImage(req, res);
+
+      expect(res.status).toHaveBeenCalledWith(500);
+      expect(res.json).toHaveBeenCalledWith({ error: "Image upload failed" });
     });
   });
 });

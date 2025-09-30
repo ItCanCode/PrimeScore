@@ -44,30 +44,27 @@
     "whatwg-fetch": "^3.6.20"
   },
   "jest": {
-    "testEnvironment": "jsdom",
-    "transform": {
-      "^.+\\.[jt]sx?$": "babel-jest"
-    },
-    "moduleFileExtensions": [
-      "js",
-      "jsx"
-    ],
-    "moduleNameMapper": {
-      "\\.(css|less|scss|sass)$": "identity-obj-proxy"
-    },
-    "setupFiles": [
-      "whatwg-fetch",
-      "<rootDir>/jest.setup.js"
-    ],
-    "collectCoverage": true,
-    "coverageDirectory": "coverage",
-    "coverageReporters": [
-      "lcov",
-      "text"
-    ],
-    "reporters": [
-      "default",
-      ["jest-junit", { "outputDirectory": "./", "outputName": "junit.xml" }]
-    ]
-  }
+  "testEnvironment": "jsdom",
+  "transform": {
+    "^.+\\.[jt]sx?$": "babel-jest"
+  },
+  "moduleFileExtensions": ["js", "jsx"],
+  "moduleNameMapper": {
+    "\\.(css|less|scss|sass)$": "identity-obj-proxy"
+  },
+  "setupFiles": [
+    "whatwg-fetch",
+    "<rootDir>/jest.setup.js"
+  ],
+  "collectCoverage": true,
+  "coverageDirectory": "coverage",
+  "coverageReporters": [
+    "lcov",
+    "text"
+  ],
+  "reporters": [
+    "default",
+    ["jest-junit", { "outputDirectory": "./", "outputName": "junit.xml" }]
+  ]
+}
 }
