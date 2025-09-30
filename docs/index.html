@@ -28,6 +28,7 @@
         <li><a href="#overview">Overview</a></li>
         <li><a href="#architecture">Architecture</a></li>
         <li><a href="#api">APIs</a></li>
+        <li><a href="#components">Components</a></li>
         <li><a href="#backlog">Sprint Backlog</a></li>
         <li><a href="#stories">User Stories</a></li>
         <li><a href="#sprint2-bugs">Sprint 2 Bug Tracking</a></li>
@@ -219,6 +220,231 @@
     <li>Maintain code quality with testing and linting tools.</li>
     <li>Deliver polished UX with icons and fast builds.</li>
   </ul>
+</section>
+
+<section id="components" class="section" aria-labelledby="component-title">
+  <header class="section-header">
+    <h2 id="component-title">Components used in Primescore</h2>
+  </header>
+  
+  <p>
+    This section documents custom React components developed for PrimeScore.
+    These components were carefully designed to provide reusable, efficient solutions for match event handling and user interface animations.
+  </p>
+
+  <h3>Custom Components</h3>
+
+  <h4>MatchEventAnimation</h4>
+  <ul>
+    <li><strong>Purpose:</strong> Reusable React component for handling match event animations with intelligent display rules and user tracking.</li>
+    <li><strong>Why Used:</strong> Provides consistent animation behavior across different pages while preventing users from seeing the same animation multiple times.</li>
+    <li><strong>Challenges:</strong> Managing localStorage tracking, preventing infinite re-renders, and creating stable event identifiers.</li>
+  </ul>
+
+  <h4>Key Features</h4>
+  <ul>
+    <li><strong>15-second Animation Duration</strong> — Animations automatically disappear after exactly 15 seconds</li>
+    <li><strong>User Tracking with localStorage</strong> — Each animation is tracked per user to prevent showing the same animation twice</li>
+    <li><strong>5-minute Time Window</strong> — Only shows animations for events that happened within the last 5 minutes</li>
+    <li><strong>Stable Event Identification</strong> — Uses match state (scores) and rounded timestamps to create consistent identifiers</li>
+    <li><strong>Real-time Event Detection</strong> — Monitors match data for scoring events and triggers animations automatically</li>
+    <li><strong>Cleanup on Unmount</strong> — Properly handles component lifecycle and memory cleanup</li>
+  </ul>
+
+
+  <h4>Animation Rules</h4>
+  <ol>
+    <li><strong>First Visit:</strong> User sees animation for recent scoring events (within 5 minutes)</li>
+    <li><strong>Refresh/Reopen:</strong> Same scoring events won't trigger animations again</li>
+    <li><strong>New Events:</strong> Only genuinely new scoring events trigger animations</li>
+    <li><strong>Persistence:</strong> Works across browser sessions via localStorage</li>
+    <li><strong>Time Limit:</strong> After 5 minutes from an event, no animations are shown</li>
+    <li><strong>Duration:</strong> Each animation runs for exactly 15 seconds</li>
+  </ol>
+
+  <h4>Browser Compatibility</h4>
+  <ul>
+    <li>Supports all modern browsers with localStorage and React support</li>
+    <li>Graceful fallback handling for localStorage errors</li>
+    <li>No external dependencies beyond React</li>
+    <li>Efficient match data comparison and automatic cleanup</li>
+  </ul>
+
+  <h4>MatchClock Component</h4>
+  <ul>
+    <li><strong>Purpose:</strong> The MatchClock component is a React component that provides real-time match timing functionality with server synchronization capabilities.</li>
+    <li><strong>Why Used:</strong> This component displays the elapsed time of a match and offers clock control features for authorized users during ongoing matches.</li>
+  </ul>
+
+  <h4>Props and Configuration</h4>
+  <ul>
+    <li><strong>matchId (required)</strong> — Unique identifier for the match, used for API calls</li>
+    <li><strong>status (required)</strong> — Current match status, controls are only shown when status is "ongoing"</li>
+    <li><strong>showControls (optional)</strong> — Boolean that defaults to true, toggles visibility of control buttons</li>
+    <li><strong>Server Synchronization</strong> — Automatically fetches current clock state from backend on mount</li>
+    <li><strong>Real-time Updates</strong> — Local timer increments every second when running for smooth UI</li>
+    <li><strong>Pause Functionality</strong> — Allows pausing with custom reason via browser prompt</li>
+  </ul>
+
+  <h4>Clock Control Features</h4>
+  <ol>
+    <li><strong>Start/Resume:</strong> Sends POST request to start or resume the match clock</li>
+    <li><strong>Pause:</strong> Prompts for reason and pauses clock with explanation stored</li>
+    <li><strong>Stop:</strong> Immediately ends timing and updates server state</li>
+    <li><strong>Time Display:</strong> Shows elapsed time in MM:SS format with proper zero-padding</li>
+    <li><strong>Pause Reason Display:</strong> Shows pause explanation when clock is stopped</li>
+    <li><strong>Auto-refresh:</strong> Syncs with server after each control action</li>
+  </ol>
+
+  <h4>API Integration</h4>
+  <ul>
+    <li>Uses GET /api/match-clock/{matchId} for fetching current state</li>
+    <li>Uses POST /api/match-clock/{matchId}/start for starting/resuming</li>
+    <li>Uses POST /api/match-clock/{matchId}/pause for pausing with reason</li>
+    <li>Uses POST /api/match-clock/{matchId}/finish for stopping the clock</li>
+    <li>Includes comprehensive error handling with console logging</li>
+    <li>Automatically cleans up intervals to prevent memory leaks</li>
+  </ul>
+
+   <h4>OngoingMatches Component</h4>
+  <ul>
+    <li><strong>Purpose:</strong> A comprehensive React component that displays real-time ongoing matches with live scores, events, and match statistics.</li>
+    <li><strong>Why Used:</strong> Provides users with a centralized view of all active matches, including live updates, match clocks, event tracking, and animated notifications for scoring events.</li>
+  </ul>
+
+  <h4>Key Features</h4>
+  <ul>
+    <li><strong>Real-time Updates</strong> — Polls server every 10 seconds for live match data</li>
+    <li><strong>Sport Filtering</strong> — Displays matches filtered by sport type when provided via navigation state</li>
+    <li><strong>Live Score Tracking</strong> — Shows current scores with automatic goal detection and animation</li>
+    <li><strong>Match Event Display</strong> — Lists fouls, substitutions, goals, and cards in chronological order</li>
+    <li><strong>Match Clock Integration</strong> — Displays elapsed time using MatchClock component</li>
+    <li><strong>Goal Animations</strong> — Triggers visual animations when new goals are scored</li>
+    <li><strong>Status Filtering</strong> — Only displays matches with "ongoing" status and no end time</li>
+  </ul>
+
+  <h4>State Management</h4>
+  <ol>
+    <li><strong>Match Data:</strong> Stores array of ongoing matches with live updates</li>
+    <li><strong>Loading States:</strong> Manages initial loading and update indicators</li>
+    <li><strong>Event Tracking:</strong> Monitors scoring events for animation triggers</li>
+    <li><strong>Error Handling:</strong> Displays user-friendly error messages for API failures</li>
+    <li><strong>Animation State:</strong> Tracks highlighted matches and animation timing</li>
+    <li><strong>Last Updated:</strong> Shows timestamp of most recent data refresh</li>
+  </ol>
+
+  <h4>Event Processing</h4>
+  <ul>
+    <li><strong>Score Calculation</strong> — Processes match events to calculate current scores</li>
+    <li><strong>Goal Detection</strong> — Compares previous and current scores to detect new goals</li>
+    <li><strong>Event Categorization</strong> — Separates fouls, substitutions, goals, and cards</li>
+    <li><strong>Animation Triggering</strong> — Initiates goal animations with unique identifiers</li>
+    <li><strong>Match Highlighting</strong> — Applies visual effects to matches with recent events</li>
+    <li><strong>Event Cleanup</strong> — Removes animation states after completion</li>
+  </ul>
+
+  <h4>API Integration & Data Flow</h4>
+  <ul>
+    <li>Fetches data from GET /api/display/display-matches endpoint</li>
+    <li>Filters matches by status ("ongoing") and sport type if specified</li>
+    <li>Implements automatic polling with 10-second intervals for real-time updates</li>
+    <li>Detects data changes using JSON comparison to trigger updates only when needed</li>
+    <li>Integrates with MatchClock component for individual match timing</li>
+    <li>Handles network errors gracefully with user feedback</li>
+  </ul>
+
+    <h4>UpcomingMatches Component</h4>
+  <ul>
+    <li><strong>Purpose:</strong> A React component that displays scheduled and confirmed matches that haven't started yet, providing users with comprehensive upcoming match information.</li>
+    <li><strong>Why Used:</strong> Allows users to view future match schedules, plan attendance, and stay informed about upcoming sporting events with detailed match information including venues, times, and teams.</li>
+  </ul>
+
+  <h4>Key Features</h4>
+  <ul>
+    <li><strong>Sport Filtering</strong> — Displays matches filtered by sport type when provided via navigation state</li>
+    <li><strong>Status-based Filtering</strong> — Only shows matches with "scheduled" or "confirmed" status</li>
+    <li><strong>Date and Time Formatting</strong> — Presents match start times in user-friendly format with weekday, date, and time</li>
+    <li><strong>Venue Information</strong> — Shows match location with map pin icon for easy identification</li>
+    <li><strong>Sport Icons</strong> — Visual indicators for different sports (⚽ Football, 🏀 Basketball, 🏏 Cricket)</li>
+    <li><strong>Responsive Grid Layout</strong> — Displays matches in organized card format with consistent styling</li>
+  </ul>
+
+  <h4>Data Management</h4>
+  <ol>
+    <li><strong>Match Fetching:</strong> Retrieves all matches from /api/users/viewMatches endpoint</li>
+    <li><strong>Client-side Filtering:</strong> Filters matches by status and sport type after data retrieval</li>
+    <li><strong>Loading States:</strong> Shows loading indicator while fetching match data</li>
+    <li><strong>Error Handling:</strong> Logs errors to console and gracefully handles API failures</li>
+    <li><strong>Empty State:</strong> Displays user-friendly message when no upcoming matches exist</li>
+    <li><strong>Sport Context:</strong> Receives sport type from navigation state for targeted filtering</li>
+  </ol>
+
+  <h4>Display Components</h4>
+  <ul>
+    <li><strong>Match Cards</strong> — Individual cards showing team matchups, status, and timing</li>
+    <li><strong>Team Display</strong> — Shows home vs away team names with "VS" separator</li>
+    <li><strong>DateTime Section</strong> — Calendar icon with formatted date and time display</li>
+    <li><strong>Venue Section</strong> — Map pin icon with venue location information</li>
+    <li><strong>Sport Identification</strong> — Trophy icon with sport type and competition details</li>
+    <li><strong>Navigation Controls</strong> — Back button for returning to previous view</li>
+  </ul>
+
+  <h4>API Integration & Filtering</h4>
+  <ul>
+    <li>Fetches data from GET /api/users/viewMatches endpoint on component mount</li>
+    <li>Applies dual filtering: status must be "scheduled" or "confirmed"</li>
+    <li>Matches sport type from navigation state when provided (case-insensitive)</li>
+    <li>Handles missing or undefined sport types gracefully</li>
+    <li>Uses single API call with client-side filtering for performance</li>
+    <li>Provides fallback display when no matches meet filter criteria</li>
+  </ul>
+
+   <h4>MatchEvents Component</h4>
+  <ul>
+    <li><strong>Purpose:</strong> An administrative React component that allows authorized users to record live match events during ongoing games.</li>
+    <li><strong>Why Used:</strong> Provides match officials and administrators with a streamlined interface to log goals, fouls, and substitutions in real-time, ensuring accurate match records and live score updates.</li>
+  </ul>
+
+  <h4>Key Features</h4>
+  <ul>
+    <li><strong>Multi-Event Support</strong> — Handles three event types: goals, fouls, and substitutions</li>
+    <li><strong>Dynamic Form Fields</strong> — Form inputs change based on selected event type</li>
+    <li><strong>Team Selection</strong> — Allows selection between home and away teams for all events</li>
+    <li><strong>Player Management</strong> — Single player input for goals/fouls, dual player input for substitutions</li>
+    <li><strong>Time Validation</strong> — Accepts match time between 1-120 minutes (including extra time)</li>
+    <li><strong>Admin Authorization</strong> — Includes admin role header for API authentication</li>
+    <li><strong>Status Feedback</strong> — Displays success/error messages after event submission</li>
+  </ul>
+
+  <h4>Event Type Handling</h4>
+  <ol>
+    <li><strong>Goals:</strong> Records player name, team, and time with POST to /api/feed/{matchId}/goal</li>
+    <li><strong>Fouls:</strong> Records player name, team, and time with POST to /api/feed/{matchId}/foul</li>
+    <li><strong>Substitutions:</strong> Records both incoming and outgoing players with POST to /api/feed/{matchId}/substitution</li>
+    <li><strong>Dynamic Validation:</strong> Required fields change based on event type selection</li>
+    <li><strong>Form Reset:</strong> Clears all input fields after successful submission</li>
+    <li><strong>Error Handling:</strong> Displays user-friendly error messages for failed submissions</li>
+  </ol>
+
+  <h4>Form Management</h4>
+  <ul>
+    <li><strong>State Management</strong> — Uses React hooks for form state and user feedback</li>
+    <li><strong>Conditional Rendering</strong> — Shows relevant input fields based on event type</li>
+    <li><strong>Input Validation</strong> — Enforces required fields and time range constraints</li>
+    <li><strong>Auto-clear Fields</strong> — Resets form inputs after successful event recording</li>
+    <li><strong>Status Messages</strong> — Provides immediate feedback on submission success or failure</li>
+    <li><strong>Hardcoded Match ID</strong> — Currently uses fixed match ID for demonstration purposes</li>
+  </ul>
+
+  <h4>API Integration & Security</h4>
+  <ul>
+    <li>Uses POST requests to three different feed endpoints based on event type</li>
+    <li>Includes "x-user-role: admin" header for authorization verification</li>
+    <li>Sends JSON payload with event-specific data structure</li>
+    <li>Handles HTTP errors with try-catch blocks and user notifications</li>
+    <li>Currently targets hardcoded match ID "9WiywRUkmwXChq4IGEQo"</li>
+    <li>Requires backend API authentication for all event recording operations</li>
+  </ul> 
 </section>
 
 

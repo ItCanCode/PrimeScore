@@ -27,17 +27,37 @@ const PastMatches = () => {
     fetchMatches();
   }, []);
 
-  // Only past matches
-  const pastMatches = matches.filter(
-    (match) => (match.status || "").toLowerCase() === "finished"
-  );
+  // Only past matches - check both status and potential end_time
+  const pastMatches = matches.filter((match) => {
+    const status = (match.status || "").toLowerCase().trim();
+    const hasEndTime = match.end_time || match.endTime;
+    
+    // Debug logging
+    console.log(`Match ${match.id}: status="${match.status}" (normalized: "${status}"), hasEndTime:`, !!hasEndTime);
+    
+    // A match is considered past if:
+    // 1. Status is explicitly "finished"
+    // 2. Or it has an end_time set (indicating completion)
+    // 3. Also handle alternative status values that might indicate completion
+    const isFinished = status === "finished" || status === "complete" || status === "completed" || status === "ended";
+    const isPast = isFinished || (hasEndTime && status !== "ongoing");
+    
+    console.log(`Match ${match.id}: isPast = ${isPast}`);
+    return isPast;
+  });
 
-  // If sportType is set, filter further
+  // If sportType is set, filter further (case-insensitive)
   const filteredMatches = sportType
-    ? pastMatches.filter((m) => m.sportType === sportType)
+    ? pastMatches.filter((m) => 
+        m.sportType && m.sportType.toLowerCase() === sportType.toLowerCase()
+      )
     : pastMatches;
-    console.log(sportType)
-  console.log(filteredMatches);
+    
+  console.log('All matches:', matches.length);
+  console.log('Past matches:', pastMatches.length);
+  console.log('Sport type filter:', sportType);
+  console.log('Filtered matches:', filteredMatches.length);
+  console.log('Sample match statuses:', matches.slice(0, 3).map(m => ({ id: m.id, status: m.status, sportType: m.sportType })));
   const getSportIcon = (sport) => {
     switch (sport) {
       case "Football":
