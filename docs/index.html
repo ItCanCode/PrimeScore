@@ -788,23 +788,169 @@ npm run dev
         <h2 id="testing-title">Testing Documentation</h2>
       </header>
       <h3>Automated Testing</h3>
-      <p>
-        Automated testing is set up to ensure system reliability and quick feedback during development.
-      </p>
-      <ul class="bullets">
-        <li><strong>Unit Testing</strong> — Implemented with Jest (backend) and React Testing Library (frontend).</li>
-        <li><strong>Coverage</strong> — Code coverage reports are generated and displayed in the repository (via CI pipeline).</li>
-        <li><strong>Continuous Integration</strong> — Tests run automatically on GitHub Actions with every pull request.</li>
-      </ul>
+
       <h1>Frontend Testing</h1>
+            <h2>
+        Test coverage reports indicate that the UI implementation is largely accurate. 
+        Detailed coverage metrics can be reviewed on 
+        <a href="https://app.codecov.io/github/ItCanCode/PrimeScore/tree/main/frontend%2Fsrc" target="_blank">
+         Frontend Codecov
+        </a>.
+      </h2>
+      <ul class="bullets">
+          <ul>
+            <li><strong>ConfirmModal</strong>
+              <ul>
+                <li>Render: Renders modal correctly.</li>
+                <li>Interaction: Opens/closes on confirm/cancel.</li>
+                <li>Error Handling: Invalid/missing props.</li>
+              </ul>
+            </li>
+            <li><strong>LeagueModal</strong>
+              <ul>
+                <li>Render: Displays league creation form.</li>
+                <li>Interaction: Submits with valid input, rejects invalid input.</li>
+              </ul>
+            </li>
+            <li><strong><code>Loading</code>, <code>NavBar</code></strong>
+              <ul>
+                <li>Render: Loading spinner/nav elements visible.</li>
+                <li>Interaction: Nav links redirect correctly.</li>
+              </ul>
+            </li>
+            <li><strong>PastMatch</strong>, <strong>PastMatches</strong>
+              <ul>
+                <li>Render: Shows past match cards/list.</li>
+                <li>Props: Displays correct team names, scores.</li>
+                <li>Error Handling: Handles empty/no data gracefully.</li>
+              </ul>
+            </li>
+            <li><strong>TeamManagement</strong>
+              <ul>
+                <li>Render: Management dashboard loads.</li>
+                <li>Interaction: Adding/removing players.</li>
+                <li>Integration: Updates state & context correctly.</li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+
+        
+          <ul>
+            <li><strong>LoginModal</strong>, <strong>SignupModal</strong>
+              <ul>
+                <li>Render: Forms load correctly.</li>
+                <li>Interaction: Form validation (empty, invalid input).</li>
+                <li>Integration: API/auth calls triggered on submit.</li>
+              </ul>
+            </li>
+            <li><strong>context</strong>
+              <ul>
+                <li>Unit: Provides global state.</li>
+                <li>Integration: Wraps components and shares auth/user state.</li>
+              </ul>
+            </li>
+            <li><strong>MatchEventForm</strong>
+              <ul>
+                <li>Render: Loads form fields.</li>
+                <li>Interaction: Submits valid events, rejects invalid fields.</li>
+              </ul>
+            </li>
+            <li><strong>MatchAdminInterface</strong>
+              <ul>
+                <li>Render: Admin dashboard loads.</li>
+                <li>Interaction: Start/stop match, update scores/events.</li>
+                <li>Integration: Fetches from backend & updates UI.</li>
+              </ul>
+            </li>
+            <li><strong>WelcomePage</strong>, <strong>SportsSelector</strong>
+              <ul>
+                <li>Render: Loads landing page & sport options.</li>
+                <li>Interaction: Selecting sport updates navigation.</li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+          <ul>
+            <li><strong>MatchClock</strong>, <strong>MatchType</strong>, <strong>TimerSelector</strong>
+              <ul>
+                <li>Render: Displays time, type, and timer options.</li>
+                <li>Interaction: Countdown works, type selection updates state.</li>
+                <li>Error Handling: Invalid timer values.</li>
+              </ul>
+            </li>
+            <li><strong>HomePage</strong>
+              <ul>
+                <li>Render: Loads homepage layout.</li>
+                <li>Integration: Fetches data from services.</li>
+              </ul>
+            </li>
+            <li><strong>UpcomingMatches</strong>
+              <ul>
+                <li>Render: Lists upcoming matches.</li>
+                <li>Error Handling: Displays fallback for no matches.</li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+
+        
+          <ul>
+            <li><strong>services (6)</strong>
+              <ul>
+                <li>Unit: Test API calls individually (mocks).</li>
+                <li>Integration: Valid responses update components.</li>
+                <li>Error Handling: Failed requests handled with fallback.</li>
+              </ul>
+            </li>
+            <li><strong><code>ProfileCard</code>, <code>ProfileDetails</code>, <code>UserProfile</code></strong>
+              <ul>
+                <li>Render: Display user info.</li>
+                <li>Props: Correctly shows passed-in user data.</li>
+                <li>Integration: Edits update user profile context/state.</li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+
+          <ul>
+            <li><strong><code>MatchesList</code>, <code>OngoingMatches</code>, <code>LiveMatches</code></strong>
+              <ul>
+                <li>Render: Displays matches list.</li>
+                <li>Interaction: Updates when a match goes live.</li>
+                <li>Integration: Fetch data from backend services.</li>
+              </ul>
+            </li>
+            <li><strong><code>AdminHomepage</code></strong>
+              <ul>
+                <li>Render: Loads admin dashboard.</li>
+                <li>Interaction: Navigation to management tools.</li>
+              </ul>
+            </li>
+            <li><strong><code>RugbyFixture</code></strong>
+              <ul>
+                <li>Render: Displays rugby fixtures.</li>
+                <li>Error Handling: No fixtures → empty state message.</li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+      </ul>
       <h1>Backend Testing</h1>
-   
+      
+      <h2>
+        Test coverage reports confirm that the backend functionality is well tested across controllers, services, and integrations. 
+        A detailed breakdown of backend coverage can be viewed on 
+        <a href="https://app.codecov.io/github/ItCanCode/PrimeScore/tree/main/backend%2Fsrc" target="_blank">
+          Backend Codecov
+        </a>.
+      </h2>
       <ul class="bullets">
         <li><strong>Authentication</strong>
           <ul>
             <li><code>verifyGoogleToken</code> 
               <ul>
-                <li>Unit: Validates valid/invalid Google tokens</li>
+                <li>Unit: Validates valid/invalid Google tokens.</li>
                 <li>Error Handling: Rejects expired/malformed tokens.</li>
               </ul>
             </li>
@@ -816,44 +962,130 @@ npm run dev
             </li>
           </ul>
         </li>
+
         <li><strong>Manager Controller</strong>
           <ul>
             <li><code>createTeam</code>
-            <ul>
-
-            </ul>
-          </li>
-            <li><code>addPlayers</code> — adds players, validates ownership, errors.</li>
-            <li><code>myTeam</code> — fetches team by user, handles missing/error cases.</li>
+              <ul>
+                <li>Unit: Creates a team object.</li>
+                <li>Integration: Saves team in Firestore.</li>
+                <li>Error Handling: Firestore write failure.</li>
+              </ul>
+            </li>
+            <li><code>addPlayers</code> 
+              <ul>
+                <li>Unit: Validates player input & ownership.</li>
+                <li>Integration: Updates Firestore team with players.</li>
+                <li>Error Handling: Invalid owner, missing player data.</li>
+              </ul>
+            </li>
+            <li><code>myTeam</code>
+              <ul>
+                <li>Unit: Retrieves team by user ID.</li>
+                <li>Error Handling: Team not found, Firestore errors.</li>
+              </ul>
+            </li>
           </ul>
         </li>
+
         <li><strong>Admin Controller</strong>
           <ul>
-            <li><code>createMatch</code> — creates matches, error handling.</li>
-            <li><code>updateMatchStatus</code> — updates match status, not-found errors.</li>
-            <li><code>updateScore</code> — updates scores, records goals as events.</li>
-            <li><code>addMatchEvent</code> — adds events like cards or fouls.</li>
-            <li><code>allTeams</code> — fetches all teams, filters by sport type, handles errors.</li>
+            <li><code>createMatch</code>
+              <ul>
+                <li>Unit: Creates match object.</li>
+                <li>Integration: Saves match in Firestore.</li>
+                <li>Error Handling: Invalid data, Firestore errors.</li>
+              </ul>
+            </li>
+            <li><code>updateMatchStatus</code>
+              <ul>
+                <li>Unit: Updates match status values.</li>
+                <li>Error Handling: Match not found, invalid status.</li>
+              </ul>
+            </li>
+            <li><code>updateScore</code>
+              <ul>
+                <li>Unit: Increments score fields.</li>
+                <li>Integration: Records goals as events.</li>
+                <li>Error Handling: Invalid match ID, Firestore errors.</li>
+              </ul>
+            </li>
+            <li><code>addMatchEvent</code>
+              <ul>
+                <li>Unit: Validates event type (card, foul, etc).</li>
+                <li>Integration: Adds event to Firestore.</li>
+                <li>Error Handling: Invalid payload, match not found.</li>
+              </ul>
+            </li>
+            <li><code>allTeams</code>
+              <ul>
+                <li>Unit: Fetches list of teams.</li>
+                <li>Integration: Filters by sport type.</li>
+                <li>Error Handling: Empty collection, Firestore failure.</li>
+              </ul>
+            </li>
           </ul>
         </li>
+
         <li><strong>LiveSport Controller</strong>
           <ul>
-            <li>Adds upcoming matches in batch.</li>
-            <li>Handles empty or invalid requests.</li>
+            <li><code>batchAddMatches</code>
+              <ul>
+                <li>Unit: Accepts bulk match payload.</li>
+                <li>Error Handling: Empty payload, invalid fields.</li>
+              </ul>
+            </li>
           </ul>
         </li>
+
         <li><strong>Feed Controller</strong>
           <ul>
-            <li><code>startMatch</code> — initializes match events.</li>
-            <li><code>recordGoal</code> — handles home/away goals, increments scores.</li>
-            <li><code>recordSubstitution</code> — adds substitutions, validates fields.</li>
-            <li><code>recordFoul</code> — records fouls with/without cards.</li>
+            <li><code>startMatch</code>
+              <ul>
+                <li>Unit: Initializes match events object.</li>
+                <li>Integration: Links to match ID.</li>
+                <li>Error Handling: Invalid match reference.</li>
+              </ul>
+            </li>
+            <li><code>recordGoal</code>
+              <ul>
+                <li>Unit: Updates home/away scores.</li>
+                <li>Integration: Records goal event.</li>
+                <li>Error Handling: Invalid team side, missing match.</li>
+              </ul>
+            </li>
+            <li><code>recordSubstitution</code>
+              <ul>
+                <li>Unit: Validates substitution fields.</li>
+                <li>Integration: Saves substitution event.</li>
+                <li>Error Handling: Invalid player data.</li>
+              </ul>
+            </li>
+            <li><code>recordFoul</code>
+              <ul>
+                <li>Unit: Records foul type (with/without card).</li>
+                <li>Integration: Links foul event to match.</li>
+                <li>Error Handling: Invalid foul input.</li>
+              </ul>
+            </li>
           </ul>
         </li>
+
         <li><strong>Display Controller</strong>
           <ul>
-            <li><code>getMatchEventsById</code> — fetches specific match events.</li>
-            <li><code>getmatchEvents</code> — fetches all ongoing matches and events.</li>
+            <li><code>getMatchEventsById</code>
+              <ul>
+                <li>Unit: Fetches events by match ID.</li>
+                <li>Error Handling: Invalid ID, no events.</li>
+              </ul>
+            </li>
+            <li><code>getmatchEvents</code>
+              <ul>
+                <li>Unit: Fetches all ongoing matches.</li>
+                <li>Integration: Includes linked events.</li>
+                <li>Error Handling: No active matches, Firestore errors.</li>
+              </ul>
+            </li>
           </ul>
         </li>
       </ul>
