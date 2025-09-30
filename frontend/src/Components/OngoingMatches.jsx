@@ -267,12 +267,12 @@ const OngoingMatches = () => {
             <div
               key={match.id}
               className={`ongoing-match-card ${highlightedMatchId === match.id ? "score-anim" : ""}`}
-              onAnimationEnd={() => {
-                // Use animation utilities if available
-                if (animationUtilsRef.current && animationUtilsRef.current.endAnimation) {
-                  animationUtilsRef.current.endAnimation(match.id);
+              onAnimationEnd={(e) => {
+                // Only handle the CSS scoreFlash animation, not the event animations
+                if (e.animationName === 'scoreFlash') {
+                  setHighlightedMatchId(null);
                 }
-                setHighlightedMatchId(null);
+                // Don't end the event animation here - let it complete its full duration
               }}
             >
               <div className="ongoing-sport-header">
