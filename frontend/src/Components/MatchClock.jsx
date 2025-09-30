@@ -1,11 +1,14 @@
 // src/components/MatchClock.js
 import React, { useEffect, useState, useRef } from "react";
+import { db } from "../firebase.js";
+import { doc, onSnapshot } from "firebase/firestore";
 
 export default function MatchClock({ matchId, status, showControls = true }) {
   const [seconds, setSeconds] = useState(0);
   const [running, setRunning] = useState(false);
   const [pausedReason, setPausedReason] = useState("");
   const intervalRef = useRef();
+  const pollIntervalRef = useRef();
 
   // fetch current server state
   const fetchClock = async () => {
@@ -21,7 +24,36 @@ export default function MatchClock({ matchId, status, showControls = true }) {
   };
 
   useEffect(() => {
+    // Initial fetch
     fetchClock();
+    
+    // Set up Firebase real-time listener for instant updates
+    const clockDocRef = doc(db, 'match_clocks', matchId);
+    const unsubscribe = onSnapshot(clockDocRef, (docSnapshot) => {
+      if (docSnapshot.exists()) {
+        const clockData = docSnapshot.data();
+        
+        // Calculate current elapsed time
+        let currentElapsed = clockData.elapsed || 0;
+        if (clockData.running && clockData.startTime) {
+          const startTimeMs = clockData.startTime.toDate().getTime();
+          currentElapsed += (Date.now() - startTimeMs) / 1000;
+        }
+        
+        setSeconds(Math.floor(currentElapsed));
+        setRunning(clockData.running || false);
+        setPausedReason(clockData.pausedReason || "");
+      }
+    }, (error) => {
+      console.error('Error listening to clock updates:', error);
+      // Fallback to periodic polling if real-time listener fails
+      pollIntervalRef.current = setInterval(fetchClock, 5000);
+    });
+    
+    return () => {
+      unsubscribe();
+      clearInterval(pollIntervalRef.current);
+    };
   }, [matchId]);
 
   useEffect(() => {
@@ -30,7 +62,10 @@ export default function MatchClock({ matchId, status, showControls = true }) {
     } else {
       clearInterval(intervalRef.current);
     }
-    return () => clearInterval(intervalRef.current);
+    return () => {
+      clearInterval(intervalRef.current);
+      clearInterval(pollIntervalRef.current);
+    };
   }, [running]);
 
   const startOrResume = async () => {
