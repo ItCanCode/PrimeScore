@@ -223,6 +223,355 @@
     <li>Maintain code quality with testing and linting tools.</li>
     <li>Deliver polished UX with icons and fast builds.</li>
   </ul>
+
+  <h3>API Implementation</h3>
+  <p>
+    <strong>All endpoints are implemented and mostly bug-free</strong>, providing comprehensive sports data management, user authentication, and real-time match functionality. The API follows RESTful principles with role-based access control and comprehensive error handling.
+  </p>
+
+  <h4>1. Authentication Endpoints</h4>
+  <p><strong>Base URL:</strong> /auth</p>
+  
+  <h5>POST /auth/google</h5>
+  <p><strong>Purpose:</strong> Google OAuth authentication for user login and signup</p>
+  <p><strong>Access:</strong> Public</p>
+  <p><strong>Request Body:</strong></p>
+  <pre><code>{
+  "idToken": "string (Google ID token)",
+  "action": "login" | "signup"
+}</code></pre>
+  <p><strong>Response (Success):</strong></p>
+  <pre><code>{
+  "message": "Login successful" | "Signup successful",
+  "user": {
+    "username": "string",
+    "email": "string", 
+    "role": "admin" | "manager" | "viewer",
+    "picture": "string (URL)",
+    "profile": {},
+    "createdAt": "timestamp"
+  }
+}</code></pre>
+  <p><strong>Features:</strong></p>
+  <ul>
+    <li>Creates new users with default "viewer" role on signup</li>
+    <li>Validates Google ID tokens using Firebase Admin SDK</li>
+    <li>Prevents duplicate user registration</li>
+    <li>Returns user data with role-based permissions</li>
+  </ul>
+
+  <h4>2. User Management Endpoints</h4>
+  <p><strong>Base URL:</strong> /api/users</p>
+  
+  <h5>GET /api/users/me</h5>
+  <p><strong>Purpose:</strong> Get current authenticated user profile</p>
+  <p><strong>Access:</strong> Requires Bearer token authentication</p>
+  <p><strong>Headers:</strong> <code>Authorization: Bearer {token}</code></p>
+  <p><strong>Response:</strong> Current user profile data with role and preferences</p>
+  
+  <h5>PUT /api/users/me</h5>
+  <p><strong>Purpose:</strong> Update current user profile information</p>
+  <p><strong>Access:</strong> Requires Bearer token authentication</p>
+  <p><strong>Request Body:</strong> Updated user profile fields</p>
+  
+  <h5>POST /api/users/upload</h5>
+  <p><strong>Purpose:</strong> Upload profile image to Cloudinary storage</p>
+  <p><strong>Access:</strong> Public</p>
+  <p><strong>Content-Type:</strong> multipart/form-data</p>
+  <p><strong>Body:</strong> Form data with 'picture' file field</p>
+  <p><strong>Response:</strong> Cloudinary URL of uploaded image</p>
+  
+  <h5>GET /api/users/viewMatches</h5>
+  <p><strong>Purpose:</strong> Get all matches available for viewing</p>
+  <p><strong>Access:</strong> Public endpoint</p>
+  <p><strong>Response:</strong> Array of all matches with basic information</p>
+
+  <h4>3. Admin Management Endpoints</h4>
+  <p><strong>Base URL:</strong> /api/admin</p>
+  <p><strong>Access Level:</strong> Admin role required for all endpoints</p>
+  
+  <h5>POST /api/admin/createMatch</h5>
+  <p><strong>Purpose:</strong> Create new match with teams, timing, and competition details</p>
+  <p><strong>Request Body:</strong></p>
+  <pre><code>{
+  "homeTeam": "string",
+  "awayTeam": "string", 
+  "competition": "string",
+  "date": "ISO date string",
+  "venue": "string",
+  "sport": "soccer" | "rugby"
+}</code></pre>
+  
+  <h5>PATCH /api/admin/updateMatchStatus/:id</h5>
+  <p><strong>Purpose:</strong> Update match status (upcoming, live, finished, postponed)</p>
+  <p><strong>Parameters:</strong> id - Match document ID</p>
+  <p><strong>Request Body:</strong> <code>{ "status": "live" | "finished" | "postponed" }</code></p>
+  
+  <h5>PATCH /api/admin/updateScore/:id</h5>
+  <p><strong>Purpose:</strong> Update live match scores</p>
+  <p><strong>Parameters:</strong> id - Match document ID</p>
+  <p><strong>Request Body:</strong></p>
+  <pre><code>{
+  "homeScore": number,
+  "awayScore": number
+}</code></pre>
+  
+  <h5>POST /api/admin/addMatchEvent/:id</h5>
+  <p><strong>Purpose:</strong> Add match events (goals, cards, substitutions, tries)</p>
+  <p><strong>Parameters:</strong> id - Match document ID</p>
+  <p><strong>Request Body:</strong></p>
+  <pre><code>{
+  "type": "goal" | "card" | "substitution" | "try" | "conversion",
+  "team": "home" | "away",
+  "player": "string",
+  "minute": number,
+  "details": "additional info"
+}</code></pre>
+  
+  <h5>GET /api/admin/allTeams</h5>
+  <p><strong>Purpose:</strong> Get all registered teams in the system</p>
+  <p><strong>Response:</strong> Array of team objects with names, logos, and details</p>
+  
+  <h5>GET /api/admin/teams/:teamName/players</h5>
+  <p><strong>Purpose:</strong> Get all players for a specific team</p>
+  <p><strong>Parameters:</strong> teamName - Name of the team</p>
+  <p><strong>Response:</strong> Array of player objects with positions and details</p>
+  
+  <h5>DELETE /api/admin/deleteMatch/:id</h5>
+  <p><strong>Purpose:</strong> Permanently delete a match and all associated data</p>
+  <p><strong>Parameters:</strong> id - Match document ID</p>
+  <p><strong>Response:</strong> Confirmation of deletion</p>
+
+  <h4>4. Team Manager Endpoints</h4>
+  <p><strong>Base URL:</strong> /api/manager</p>
+  <p><strong>Access Level:</strong> Authentication required for all endpoints</p>
+  
+  <h5>POST /api/manager/createTeam</h5>
+  <p><strong>Purpose:</strong> Create a new team with manager ownership</p>
+  <p><strong>Request Body:</strong></p>
+  <pre><code>{
+  "name": "string",
+  "sport": "soccer" | "rugby",
+  "logo": "string (URL)",
+  "description": "string"
+}</code></pre>
+  
+  <h5>POST /api/manager/addPlayers</h5>
+  <p><strong>Purpose:</strong> Add players to manager's team</p>
+  <p><strong>Request Body:</strong></p>
+  <pre><code>{
+  "teamId": "string",
+  "players": [{
+    "name": "string",
+    "position": "string", 
+    "number": number,
+    "age": number
+  }]
+}</code></pre>
+  
+  <h5>GET /api/manager/myTeam</h5>
+  <p><strong>Purpose:</strong> Get teams owned by the authenticated manager</p>
+  <p><strong>Response:</strong> Manager's team data with player roster</p>
+  
+  <h5>GET /api/manager/players/:teamId</h5>
+  <p><strong>Purpose:</strong> Get all players for a specific team</p>
+  <p><strong>Parameters:</strong> teamId - Team document ID</p>
+  
+  <h5>DELETE /api/manager/player/:playerId</h5>
+  <p><strong>Purpose:</strong> Remove a player from team roster</p>
+  <p><strong>Parameters:</strong> playerId - Player document ID</p>
+
+  <h4>5. Display & Match Data Endpoints</h4>
+  <p><strong>Base URL:</strong> /api/display</p>
+  <p><strong>Access Level:</strong> Public endpoints for match viewing</p>
+  
+  <h5>GET /api/display/display-matches</h5>
+  <p><strong>Purpose:</strong> Get all match events formatted for display components</p>
+  <p><strong>Access:</strong> Public</p>
+  <p><strong>Response:</strong> Array of matches with live events, scores, and timing</p>
+  <p><strong>Used By:</strong> Live match displays, scoreboards, match cards</p>
+  
+  <h5>GET /api/display/past-matches</h5>
+  <p><strong>Purpose:</strong> Get completed matches with final results</p>
+  <p><strong>Access:</strong> Public</p>
+  <p><strong>Response:</strong> Historical match data with final scores and statistics</p>
+  <p><strong>Used By:</strong> Past matches page, results displays</p>
+  
+  <h5>GET /api/display/match-events/:id</h5>
+  <p><strong>Purpose:</strong> Get detailed events for a specific match</p>
+  <p><strong>Parameters:</strong> id - Match document ID</p>
+  <p><strong>Access:</strong> Public</p>
+  <p><strong>Response:</strong></p>
+  <pre><code>{
+  "matchId": "string",
+  "events": [{
+    "type": "goal" | "card" | "substitution",
+    "minute": number,
+    "team": "home" | "away", 
+    "player": "string",
+    "timestamp": "ISO date"
+  }],
+  "score": {
+    "home": number,
+    "away": number
+  }
+}</code></pre>
+  <p><strong>Used By:</strong> Match detail pages, event timelines</p>
+  
+  <h5>POST /api/storeMatch</h5>
+  <p><strong>Purpose:</strong> Store match data retrieved from external sports APIs</p>
+  <p><strong>Access:</strong> Internal use</p>
+  <p><strong>Request Body:</strong> Match data from SoccerDataAPI or Rugby API</p>
+  <p><strong>Features:</strong></p>
+  <ul>
+    <li>Processes data from SoccerDataAPI and ScoreDataAPI</li>
+    <li>Maps external API format to internal database schema</li>
+    <li>Handles league ID mapping and date/time parsing</li>
+    <li>Updates existing matches or creates new ones</li>
+  </ul>
+
+  <h4>6. Live Feed Endpoints</h4>
+  <p><strong>Base URL:</strong> /api/feed</p>
+  
+  <h5>POST /api/feed/:matchId/start</h5>
+  <p><strong>Purpose:</strong> Initialize live match feed and start real-time updates</p>
+  <p><strong>Parameters:</strong> matchId - Match document ID</p>
+  <p><strong>Request Body:</strong> Match start configuration</p>
+  
+  <h5>POST /api/feed/:matchId/event</h5>
+  <p><strong>Purpose:</strong> Add real-time events to live match feed</p>
+  <p><strong>Parameters:</strong> matchId - Match document ID</p>
+  <p><strong>Request Body:</strong> Event data (goals, cards, etc.)</p>
+  <p><strong>Features:</strong></p>
+  <ul>
+    <li>Real-time Firebase updates to connected clients</li>
+    <li>Event validation and formatting</li>
+    <li>Automatic score calculation</li>
+  </ul>
+
+  <h4>7. Rugby Live Data Endpoints</h4>
+  <p><strong>Base URL:</strong> /api/rugby/live</p>
+  
+  <h5>POST /api/rugby/live</h5>
+  <p><strong>Purpose:</strong> Get live rugby match data from ScoreDataAPI</p>
+  <p><strong>Request Body:</strong> Competition and date filters</p>
+  <p><strong>Response:</strong> Live rugby matches with scores and events</p>
+  
+  <h5>GET /api/rugby/live/:date</h5>
+  <p><strong>Purpose:</strong> Get rugby fixtures for a specific date</p>
+  <p><strong>Parameters:</strong> date - Date in YYYY-MM-DD format</p>
+  <p><strong>Response:</strong> Scheduled rugby matches for the date</p>
+  <p><strong>Coverage:</strong></p>
+  <ul>
+    <li>Rugby World Cup matches</li>
+    <li>Rugby Championship fixtures</li>
+    <li>URC (United Rugby Championship)</li>
+    <li>Currie Cup competitions</li>
+  </ul>
+
+  <h4>8. Match Clock Endpoints (Restricted Access)</h4>
+  <p><strong>Base URL:</strong> /api/match-clock</p>
+  <p><strong>Access Level:</strong> Admin/Official roles only with strict authentication</p>
+  
+  <p>
+    <strong>Match clock endpoints are intentionally NOT made publicly available</strong> for the following critical security and operational reasons:
+  </p>
+  
+  <h5>Why Match Clocks Are Not Publicly Available:</h5>
+  <ul>
+    <li><strong>Match Integrity Protection</strong> — Only authorized match officials should control timing to prevent score manipulation and match-fixing attempts</li>
+    <li><strong>Role-Based Security</strong> — Clock control requires verified admin/official roles with proper authentication tokens to ensure only qualified personnel manage matches</li>
+    <li><strong>Abuse Prevention</strong> — Public access could allow unauthorized users to disrupt live matches, pause games inappropriately, or cause confusion among spectators</li>
+    <li><strong>Official Supervision</strong> — Match timing must remain under strict official supervision per international sports regulations and governing body requirements</li>
+    <li><strong>Data Consistency</strong> — Centralized control ensures accurate, synchronized match timing across all platforms, mobile apps, and broadcast systems</li>
+    <li><strong>Competition Integrity</strong> — Prevents external interference in official match timing that could affect player performance, betting odds, or tournament outcomes</li>
+    <li><strong>Audit Trail</strong> — Restricted access allows proper logging of all timing changes for post-match reviews and dispute resolution</li>
+  </ul>
+  
+  <h5>Available Endpoints (Admin/Official Access Only):</h5>
+  
+  <h6>POST /api/match-clock/:matchId/start</h6>
+  <p><strong>Purpose:</strong> Start or resume the match clock</p>
+  <p><strong>Parameters:</strong> matchId - Match document ID</p>
+  <p><strong>Request Body:</strong></p>
+  <pre><code>{
+  "startTime": "ISO timestamp",
+  "period": "first_half" | "second_half" | "extra_time",
+  "reason": "match_start" | "resume_play"
+}</code></pre>
+  
+  <h6>POST /api/match-clock/:matchId/pause</h6>
+  <p><strong>Purpose:</strong> Pause the match clock for official stoppages</p>
+  <p><strong>Request Body:</strong></p>
+  <pre><code>{
+  "reason": "injury" | "substitution" | "var_check" | "weather",
+  "pausedAt": "ISO timestamp"
+}</code></pre>
+  
+  <h6>POST /api/match-clock/:matchId/stop</h6>
+  <p><strong>Purpose:</strong> Stop the match clock (end of period/match)</p>
+  <p><strong>Request Body:</strong></p>
+  <pre><code>{
+  "finalTime": "ISO timestamp",
+  "period": "half_time" | "full_time" | "extra_time_end",
+  "reason": "period_end" | "match_end"
+}</code></pre>
+  
+  <h6>GET /api/match-clock/:matchId</h6>
+  <p><strong>Purpose:</strong> Get current clock state and timing information</p>
+  <p><strong>Response:</strong></p>
+  <pre><code>{
+  "matchId": "string",
+  "startTime": "ISO timestamp",
+  "elapsed": number, 
+  "running": boolean,
+  "period": "string",
+  "pausedReason": "string | null",
+  "lastUpdated": "ISO timestamp"
+}</code></pre>
+  
+  <h6>DELETE /api/match-clock/:matchId</h6>
+  <p><strong>Purpose:</strong> Reset or delete match clock (emergency use)</p>
+  <p><strong>Access:</strong> Super admin only</p>
+  <p><strong>Response:</strong> Confirmation of clock reset</p>
+
+  <h4>9. General API Features & Security</h4>
+  
+  <h5>Security & Access Control</h5>
+  <ul>
+    <li><strong>CORS Protection</strong> — Configured specifically for Vercel frontend (prime-score.vercel.app) and localhost development (port 5173)</li>
+    <li><strong>Role-Based Access Control</strong> — Three-tier system: admin (full access), manager (team management), viewer (read-only)</li>
+    <li><strong>JWT Token Verification</strong> — Bearer token authentication using Firebase Admin SDK for all protected endpoints</li>
+    <li><strong>Admin Middleware</strong> — Dedicated middleware for admin-only operations with role verification</li>
+    <li><strong>Authentication Middleware</strong> — General auth middleware for user-specific operations</li>
+  </ul>
+  
+  <h5>Technical Implementation</h5>
+  <ul>
+    <li><strong>Firebase Integration</strong> — Real-time database updates, authentication, and Firestore document management</li>
+    <li><strong>Cloudinary Integration</strong> — Secure image upload and storage with API key authentication</li>
+    <li><strong>Error Handling</strong> — Comprehensive error responses with proper HTTP status codes (400, 401, 403, 404, 500)</li>
+    <li><strong>Request Validation</strong> — Input validation and sanitization for all endpoints</li>
+    <li><strong>Rate Limiting</strong> — Built-in protection against API abuse and excessive requests</li>
+  </ul>
+  
+  <h5>Data Processing</h5>
+  <ul>
+    <li><strong>External API Integration</strong> — Seamless data import from SoccerDataAPI and ScoreDataAPI</li>
+    <li><strong>Real-time Synchronization</strong> — Firebase listeners ensure instant updates across all connected clients</li>
+    <li><strong>Data Transformation</strong> — Automatic mapping between external API formats and internal database schema</li>
+    <li><strong>File Upload Support</strong> — Multer middleware for handling team logos and user profile images</li>
+    <li><strong>JSON Processing</strong> — Efficient handling of complex nested sports data structures</li>
+  </ul>
+  
+  <h5>Monitoring & Maintenance</h5>
+  <ul>
+    <li><strong>Comprehensive Logging</strong> — Detailed request/response logging for debugging and monitoring</li>
+    <li><strong>Health Check Endpoint</strong> — GET /api/hello for system status verification</li>
+    <li><strong>Environment Configuration</strong> — Secure environment variable management for API keys and secrets</li>
+    <li><strong>Testing Coverage</strong> — Extensive Jest test suites for all major endpoints and controllers</li>
+    <li><strong>Azure Deployment</strong> — Hosted on Azure App Service with automatic scaling and monitoring</li>
+  </ul>
 </section>
 
 <section id="components" class="section" aria-labelledby="component-title">
