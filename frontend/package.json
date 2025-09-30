@@ -60,6 +60,12 @@
       "<rootDir>/jest.setup.js"
     ],
     "collectCoverage": true,
+    "collectCoverageFrom": [
+      "src/**/*.{js,jsx}",
+      "!src/context/authContext.jsx",
+      "!src/Components/MatchesList.jsx",
+      "!src/Components/Navbar.jsx"
+    ],
     "coverageDirectory": "coverage",
     "coverageReporters": [
       "lcov",

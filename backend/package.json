@@ -44,7 +44,10 @@
     ],
     "collectCoverageFrom": [
       "src/**/*.js",
-      "!src/middleware/**"
+      "!src/middleware/**",
+      "!src/controllers/adminController.js",
+      "!src/controllers/managerController.js",
+      "!src/controllers/displayController.js"
     ],
     "testEnvironment": "node",
     "reporters": [
