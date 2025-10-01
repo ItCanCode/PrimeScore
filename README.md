@@ -1,4 +1,4 @@
-[![codecov](https://codecov.io/github/ItCanCode/PrimeScore/branch/main/graph/badge.svg?token=94CH9QO4XA)](https://codecov.io/github/ItCanCode/PrimeScore)
+[![codecov](https://codecov.io/github/ItCanCode/PrimeScore/branch/frontend-testing/graph/badge.svg?token=94CH9QO4XA)](https://codecov.io/github/ItCanCode/PrimeScore)
 
 
 # PrimeScore 

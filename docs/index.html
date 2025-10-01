@@ -223,6 +223,355 @@
     <li>Maintain code quality with testing and linting tools.</li>
     <li>Deliver polished UX with icons and fast builds.</li>
   </ul>
+
+  <h3>API Implementation</h3>
+  <p>
+    <strong>All endpoints are implemented and mostly bug-free</strong>, providing comprehensive sports data management, user authentication, and real-time match functionality. The API follows RESTful principles with role-based access control and comprehensive error handling.
+  </p>
+
+  <h4>1. Authentication Endpoints</h4>
+  <p><strong>Base URL:</strong> /auth</p>
+  
+  <h5>POST /auth/google</h5>
+  <p><strong>Purpose:</strong> Google OAuth authentication for user login and signup</p>
+  <p><strong>Access:</strong> Public</p>
+  <p><strong>Request Body:</strong></p>
+  <pre><code>{
+  "idToken": "string (Google ID token)",
+  "action": "login" | "signup"
+}</code></pre>
+  <p><strong>Response (Success):</strong></p>
+  <pre><code>{
+  "message": "Login successful" | "Signup successful",
+  "user": {
+    "username": "string",
+    "email": "string", 
+    "role": "admin" | "manager" | "viewer",
+    "picture": "string (URL)",
+    "profile": {},
+    "createdAt": "timestamp"
+  }
+}</code></pre>
+  <p><strong>Features:</strong></p>
+  <ul>
+    <li>Creates new users with default "viewer" role on signup</li>
+    <li>Validates Google ID tokens using Firebase Admin SDK</li>
+    <li>Prevents duplicate user registration</li>
+    <li>Returns user data with role-based permissions</li>
+  </ul>
+
+  <h4>2. User Management Endpoints</h4>
+  <p><strong>Base URL:</strong> /api/users</p>
+  
+  <h5>GET /api/users/me</h5>
+  <p><strong>Purpose:</strong> Get current authenticated user profile</p>
+  <p><strong>Access:</strong> Requires Bearer token authentication</p>
+  <p><strong>Headers:</strong> <code>Authorization: Bearer {token}</code></p>
+  <p><strong>Response:</strong> Current user profile data with role and preferences</p>
+  
+  <h5>PUT /api/users/me</h5>
+  <p><strong>Purpose:</strong> Update current user profile information</p>
+  <p><strong>Access:</strong> Requires Bearer token authentication</p>
+  <p><strong>Request Body:</strong> Updated user profile fields</p>
+  
+  <h5>POST /api/users/upload</h5>
+  <p><strong>Purpose:</strong> Upload profile image to Cloudinary storage</p>
+  <p><strong>Access:</strong> Public</p>
+  <p><strong>Content-Type:</strong> multipart/form-data</p>
+  <p><strong>Body:</strong> Form data with 'picture' file field</p>
+  <p><strong>Response:</strong> Cloudinary URL of uploaded image</p>
+  
+  <h5>GET /api/users/viewMatches</h5>
+  <p><strong>Purpose:</strong> Get all matches available for viewing</p>
+  <p><strong>Access:</strong> Public endpoint</p>
+  <p><strong>Response:</strong> Array of all matches with basic information</p>
+
+  <h4>3. Admin Management Endpoints</h4>
+  <p><strong>Base URL:</strong> /api/admin</p>
+  <p><strong>Access Level:</strong> Admin role required for all endpoints</p>
+  
+  <h5>POST /api/admin/createMatch</h5>
+  <p><strong>Purpose:</strong> Create new match with teams, timing, and competition details</p>
+  <p><strong>Request Body:</strong></p>
+  <pre><code>{
+  "homeTeam": "string",
+  "awayTeam": "string", 
+  "competition": "string",
+  "date": "ISO date string",
+  "venue": "string",
+  "sport": "soccer" | "rugby"
+}</code></pre>
+  
+  <h5>PATCH /api/admin/updateMatchStatus/:id</h5>
+  <p><strong>Purpose:</strong> Update match status (upcoming, live, finished, postponed)</p>
+  <p><strong>Parameters:</strong> id - Match document ID</p>
+  <p><strong>Request Body:</strong> <code>{ "status": "live" | "finished" | "postponed" }</code></p>
+  
+  <h5>PATCH /api/admin/updateScore/:id</h5>
+  <p><strong>Purpose:</strong> Update live match scores</p>
+  <p><strong>Parameters:</strong> id - Match document ID</p>
+  <p><strong>Request Body:</strong></p>
+  <pre><code>{
+  "homeScore": number,
+  "awayScore": number
+}</code></pre>
+  
+  <h5>POST /api/admin/addMatchEvent/:id</h5>
+  <p><strong>Purpose:</strong> Add match events (goals, cards, substitutions, tries)</p>
+  <p><strong>Parameters:</strong> id - Match document ID</p>
+  <p><strong>Request Body:</strong></p>
+  <pre><code>{
+  "type": "goal" | "card" | "substitution" | "try" | "conversion",
+  "team": "home" | "away",
+  "player": "string",
+  "minute": number,
+  "details": "additional info"
+}</code></pre>
+  
+  <h5>GET /api/admin/allTeams</h5>
+  <p><strong>Purpose:</strong> Get all registered teams in the system</p>
+  <p><strong>Response:</strong> Array of team objects with names, logos, and details</p>
+  
+  <h5>GET /api/admin/teams/:teamName/players</h5>
+  <p><strong>Purpose:</strong> Get all players for a specific team</p>
+  <p><strong>Parameters:</strong> teamName - Name of the team</p>
+  <p><strong>Response:</strong> Array of player objects with positions and details</p>
+  
+  <h5>DELETE /api/admin/deleteMatch/:id</h5>
+  <p><strong>Purpose:</strong> Permanently delete a match and all associated data</p>
+  <p><strong>Parameters:</strong> id - Match document ID</p>
+  <p><strong>Response:</strong> Confirmation of deletion</p>
+
+  <h4>4. Team Manager Endpoints</h4>
+  <p><strong>Base URL:</strong> /api/manager</p>
+  <p><strong>Access Level:</strong> Authentication required for all endpoints</p>
+  
+  <h5>POST /api/manager/createTeam</h5>
+  <p><strong>Purpose:</strong> Create a new team with manager ownership</p>
+  <p><strong>Request Body:</strong></p>
+  <pre><code>{
+  "name": "string",
+  "sport": "soccer" | "rugby",
+  "logo": "string (URL)",
+  "description": "string"
+}</code></pre>
+  
+  <h5>POST /api/manager/addPlayers</h5>
+  <p><strong>Purpose:</strong> Add players to manager's team</p>
+  <p><strong>Request Body:</strong></p>
+  <pre><code>{
+  "teamId": "string",
+  "players": [{
+    "name": "string",
+    "position": "string", 
+    "number": number,
+    "age": number
+  }]
+}</code></pre>
+  
+  <h5>GET /api/manager/myTeam</h5>
+  <p><strong>Purpose:</strong> Get teams owned by the authenticated manager</p>
+  <p><strong>Response:</strong> Manager's team data with player roster</p>
+  
+  <h5>GET /api/manager/players/:teamId</h5>
+  <p><strong>Purpose:</strong> Get all players for a specific team</p>
+  <p><strong>Parameters:</strong> teamId - Team document ID</p>
+  
+  <h5>DELETE /api/manager/player/:playerId</h5>
+  <p><strong>Purpose:</strong> Remove a player from team roster</p>
+  <p><strong>Parameters:</strong> playerId - Player document ID</p>
+
+  <h4>5. Display & Match Data Endpoints</h4>
+  <p><strong>Base URL:</strong> /api/display</p>
+  <p><strong>Access Level:</strong> Public endpoints for match viewing</p>
+  
+  <h5>GET /api/display/display-matches</h5>
+  <p><strong>Purpose:</strong> Get all match events formatted for display components</p>
+  <p><strong>Access:</strong> Public</p>
+  <p><strong>Response:</strong> Array of matches with live events, scores, and timing</p>
+  <p><strong>Used By:</strong> Live match displays, scoreboards, match cards</p>
+  
+  <h5>GET /api/display/past-matches</h5>
+  <p><strong>Purpose:</strong> Get completed matches with final results</p>
+  <p><strong>Access:</strong> Public</p>
+  <p><strong>Response:</strong> Historical match data with final scores and statistics</p>
+  <p><strong>Used By:</strong> Past matches page, results displays</p>
+  
+  <h5>GET /api/display/match-events/:id</h5>
+  <p><strong>Purpose:</strong> Get detailed events for a specific match</p>
+  <p><strong>Parameters:</strong> id - Match document ID</p>
+  <p><strong>Access:</strong> Public</p>
+  <p><strong>Response:</strong></p>
+  <pre><code>{
+  "matchId": "string",
+  "events": [{
+    "type": "goal" | "card" | "substitution",
+    "minute": number,
+    "team": "home" | "away", 
+    "player": "string",
+    "timestamp": "ISO date"
+  }],
+  "score": {
+    "home": number,
+    "away": number
+  }
+}</code></pre>
+  <p><strong>Used By:</strong> Match detail pages, event timelines</p>
+  
+  <h5>POST /api/storeMatch</h5>
+  <p><strong>Purpose:</strong> Store match data retrieved from external sports APIs</p>
+  <p><strong>Access:</strong> Internal use</p>
+  <p><strong>Request Body:</strong> Match data from SoccerDataAPI or Rugby API</p>
+  <p><strong>Features:</strong></p>
+  <ul>
+    <li>Processes data from SoccerDataAPI and ScoreDataAPI</li>
+    <li>Maps external API format to internal database schema</li>
+    <li>Handles league ID mapping and date/time parsing</li>
+    <li>Updates existing matches or creates new ones</li>
+  </ul>
+
+  <h4>6. Live Feed Endpoints</h4>
+  <p><strong>Base URL:</strong> /api/feed</p>
+  
+  <h5>POST /api/feed/:matchId/start</h5>
+  <p><strong>Purpose:</strong> Initialize live match feed and start real-time updates</p>
+  <p><strong>Parameters:</strong> matchId - Match document ID</p>
+  <p><strong>Request Body:</strong> Match start configuration</p>
+  
+  <h5>POST /api/feed/:matchId/event</h5>
+  <p><strong>Purpose:</strong> Add real-time events to live match feed</p>
+  <p><strong>Parameters:</strong> matchId - Match document ID</p>
+  <p><strong>Request Body:</strong> Event data (goals, cards, etc.)</p>
+  <p><strong>Features:</strong></p>
+  <ul>
+    <li>Real-time Firebase updates to connected clients</li>
+    <li>Event validation and formatting</li>
+    <li>Automatic score calculation</li>
+  </ul>
+
+  <h4>7. Rugby Live Data Endpoints</h4>
+  <p><strong>Base URL:</strong> /api/rugby/live</p>
+  
+  <h5>POST /api/rugby/live</h5>
+  <p><strong>Purpose:</strong> Get live rugby match data from ScoreDataAPI</p>
+  <p><strong>Request Body:</strong> Competition and date filters</p>
+  <p><strong>Response:</strong> Live rugby matches with scores and events</p>
+  
+  <h5>GET /api/rugby/live/:date</h5>
+  <p><strong>Purpose:</strong> Get rugby fixtures for a specific date</p>
+  <p><strong>Parameters:</strong> date - Date in YYYY-MM-DD format</p>
+  <p><strong>Response:</strong> Scheduled rugby matches for the date</p>
+  <p><strong>Coverage:</strong></p>
+  <ul>
+    <li>Rugby World Cup matches</li>
+    <li>Rugby Championship fixtures</li>
+    <li>URC (United Rugby Championship)</li>
+    <li>Currie Cup competitions</li>
+  </ul>
+
+  <h4>8. Match Clock Endpoints (Restricted Access)</h4>
+  <p><strong>Base URL:</strong> /api/match-clock</p>
+  <p><strong>Access Level:</strong> Admin/Official roles only with strict authentication</p>
+  
+  <p>
+    <strong>Match clock endpoints are intentionally NOT made publicly available</strong> for the following critical security and operational reasons:
+  </p>
+  
+  <h5>Why Match Clocks Are Not Publicly Available:</h5>
+  <ul>
+    <li><strong>Match Integrity Protection</strong> — Only authorized match officials should control timing to prevent score manipulation and match-fixing attempts</li>
+    <li><strong>Role-Based Security</strong> — Clock control requires verified admin/official roles with proper authentication tokens to ensure only qualified personnel manage matches</li>
+    <li><strong>Abuse Prevention</strong> — Public access could allow unauthorized users to disrupt live matches, pause games inappropriately, or cause confusion among spectators</li>
+    <li><strong>Official Supervision</strong> — Match timing must remain under strict official supervision per international sports regulations and governing body requirements</li>
+    <li><strong>Data Consistency</strong> — Centralized control ensures accurate, synchronized match timing across all platforms, mobile apps, and broadcast systems</li>
+    <li><strong>Competition Integrity</strong> — Prevents external interference in official match timing that could affect player performance, betting odds, or tournament outcomes</li>
+    <li><strong>Audit Trail</strong> — Restricted access allows proper logging of all timing changes for post-match reviews and dispute resolution</li>
+  </ul>
+  
+  <h5>Available Endpoints (Admin/Official Access Only):</h5>
+  
+  <h6>POST /api/match-clock/:matchId/start</h6>
+  <p><strong>Purpose:</strong> Start or resume the match clock</p>
+  <p><strong>Parameters:</strong> matchId - Match document ID</p>
+  <p><strong>Request Body:</strong></p>
+  <pre><code>{
+  "startTime": "ISO timestamp",
+  "period": "first_half" | "second_half" | "extra_time",
+  "reason": "match_start" | "resume_play"
+}</code></pre>
+  
+  <h6>POST /api/match-clock/:matchId/pause</h6>
+  <p><strong>Purpose:</strong> Pause the match clock for official stoppages</p>
+  <p><strong>Request Body:</strong></p>
+  <pre><code>{
+  "reason": "injury" | "substitution" | "var_check" | "weather",
+  "pausedAt": "ISO timestamp"
+}</code></pre>
+  
+  <h6>POST /api/match-clock/:matchId/stop</h6>
+  <p><strong>Purpose:</strong> Stop the match clock (end of period/match)</p>
+  <p><strong>Request Body:</strong></p>
+  <pre><code>{
+  "finalTime": "ISO timestamp",
+  "period": "half_time" | "full_time" | "extra_time_end",
+  "reason": "period_end" | "match_end"
+}</code></pre>
+  
+  <h6>GET /api/match-clock/:matchId</h6>
+  <p><strong>Purpose:</strong> Get current clock state and timing information</p>
+  <p><strong>Response:</strong></p>
+  <pre><code>{
+  "matchId": "string",
+  "startTime": "ISO timestamp",
+  "elapsed": number, 
+  "running": boolean,
+  "period": "string",
+  "pausedReason": "string | null",
+  "lastUpdated": "ISO timestamp"
+}</code></pre>
+  
+  <h6>DELETE /api/match-clock/:matchId</h6>
+  <p><strong>Purpose:</strong> Reset or delete match clock (emergency use)</p>
+  <p><strong>Access:</strong> Super admin only</p>
+  <p><strong>Response:</strong> Confirmation of clock reset</p>
+
+  <h4>9. General API Features & Security</h4>
+  
+  <h5>Security & Access Control</h5>
+  <ul>
+    <li><strong>CORS Protection</strong> — Configured specifically for Vercel frontend (prime-score.vercel.app) and localhost development (port 5173)</li>
+    <li><strong>Role-Based Access Control</strong> — Three-tier system: admin (full access), manager (team management), viewer (read-only)</li>
+    <li><strong>JWT Token Verification</strong> — Bearer token authentication using Firebase Admin SDK for all protected endpoints</li>
+    <li><strong>Admin Middleware</strong> — Dedicated middleware for admin-only operations with role verification</li>
+    <li><strong>Authentication Middleware</strong> — General auth middleware for user-specific operations</li>
+  </ul>
+  
+  <h5>Technical Implementation</h5>
+  <ul>
+    <li><strong>Firebase Integration</strong> — Real-time database updates, authentication, and Firestore document management</li>
+    <li><strong>Cloudinary Integration</strong> — Secure image upload and storage with API key authentication</li>
+    <li><strong>Error Handling</strong> — Comprehensive error responses with proper HTTP status codes (400, 401, 403, 404, 500)</li>
+    <li><strong>Request Validation</strong> — Input validation and sanitization for all endpoints</li>
+    <li><strong>Rate Limiting</strong> — Built-in protection against API abuse and excessive requests</li>
+  </ul>
+  
+  <h5>Data Processing</h5>
+  <ul>
+    <li><strong>External API Integration</strong> — Seamless data import from SoccerDataAPI and ScoreDataAPI</li>
+    <li><strong>Real-time Synchronization</strong> — Firebase listeners ensure instant updates across all connected clients</li>
+    <li><strong>Data Transformation</strong> — Automatic mapping between external API formats and internal database schema</li>
+    <li><strong>File Upload Support</strong> — Multer middleware for handling team logos and user profile images</li>
+    <li><strong>JSON Processing</strong> — Efficient handling of complex nested sports data structures</li>
+  </ul>
+  
+  <h5>Monitoring & Maintenance</h5>
+  <ul>
+    <li><strong>Comprehensive Logging</strong> — Detailed request/response logging for debugging and monitoring</li>
+    <li><strong>Health Check Endpoint</strong> — GET /api/hello for system status verification</li>
+    <li><strong>Environment Configuration</strong> — Secure environment variable management for API keys and secrets</li>
+    <li><strong>Testing Coverage</strong> — Extensive Jest test suites for all major endpoints and controllers</li>
+    <li><strong>Azure Deployment</strong> — Hosted on Azure App Service with automatic scaling and monitoring</li>
+  </ul>
 </section>
 
 <section id="components" class="section" aria-labelledby="component-title">
@@ -239,19 +588,39 @@
 
   <h4>MatchEventAnimation</h4>
   <ul>
-    <li><strong>Purpose:</strong> Reusable React component for handling match event animations with intelligent display rules and user tracking.</li>
-    <li><strong>Why Used:</strong> Provides consistent animation behavior across different pages while preventing users from seeing the same animation multiple times.</li>
-    <li><strong>Challenges:</strong> Managing localStorage tracking, preventing infinite re-renders, and creating stable event identifiers.</li>
+    <li><strong>Purpose:</strong> Advanced React component providing real-time match event animations with intelligent display rules, user tracking, and Firebase integration.</li>
+    <li><strong>Why Used:</strong> Creates engaging user experience by showing animated notifications for live match events while preventing duplicate animations and managing state efficiently across sessions.</li>
+    <li><strong>Challenges:</strong> Managing localStorage persistence, preventing infinite re-renders, handling multiple event types, and coordinating Firebase real-time listeners.</li>
   </ul>
 
-  <h4>Key Features</h4>
+  <h4>Comprehensive Event Support</h4>
   <ul>
-    <li><strong>15-second Animation Duration</strong> — Animations automatically disappear after exactly 15 seconds</li>
-    <li><strong>User Tracking with localStorage</strong> — Each animation is tracked per user to prevent showing the same animation twice</li>
-    <li><strong>5-minute Time Window</strong> — Only shows animations for events that happened within the last 5 minutes</li>
-    <li><strong>Stable Event Identification</strong> — Uses match state (scores) and rounded timestamps to create consistent identifiers</li>
-    <li><strong>Real-time Event Detection</strong> — Monitors match data for scoring events and triggers animations automatically</li>
-    <li><strong>Cleanup on Unmount</strong> — Properly handles component lifecycle and memory cleanup</li>
+    <li><strong>Football Events</strong> — Goals, fouls, substitutions, yellow/red cards with sport-specific styling</li>
+    <li><strong>Rugby Events</strong> — Tries, conversions, penalties, drop goals with points tracking</li>
+    <li><strong>Netball Events</strong> — Goals, penalties, player positions with quarter-based timing</li>
+    <li><strong>Multi-Sport Detection</strong> — Automatically adapts animation styles based on sport type</li>
+    <li><strong>Score Tracking</strong> — Monitors homeScore and awayScore changes for goal animations</li>
+    <li><strong>Event Arrays</strong> — Processes complex event structures with nested data</li>
+  </ul>
+
+  <h4>Advanced Animation Management</h4>
+  <ul>
+    <li><strong>15-second Duration</strong> — Configurable animation timeouts with automatic cleanup</li>
+    <li><strong>Persistent Tracking</strong> — localStorage with user metadata and timestamp tracking</li>
+    <li><strong>5-minute Window</strong> — Only shows animations for recent events within time threshold</li>
+    <li><strong>Unique Identifiers</strong> — Stable event IDs using match state, scores, and rounded timestamps</li>
+    <li><strong>Real-time Detection</strong> — Firebase onSnapshot listeners for instant event updates</li>
+    <li><strong>Match Clock Integration</strong> — Respects 3-hour match limits and auto-stop rules</li>
+  </ul>
+
+  <h4>State Management & Performance</h4>
+  <ul>
+    <li><strong>Ref-based Tracking</strong> — Uses useRef to prevent unnecessary re-renders during event processing</li>
+    <li><strong>Initial Load Handling</strong> — Distinguishes between first page load and live updates</li>
+    <li><strong>Firebase Listeners</strong> — Real-time document listeners for each ongoing match</li>
+    <li><strong>Polling Fallback</strong> — Backup polling mechanism if Firebase listeners fail</li>
+    <li><strong>Memory Management</strong> — Proper cleanup of timers, listeners, and localStorage on unmount</li>
+    <li><strong>Animation Queue</strong> — Manages multiple simultaneous animations per match</li>
   </ul>
 
 
@@ -275,18 +644,36 @@
 
   <h4>MatchClock Component</h4>
   <ul>
-    <li><strong>Purpose:</strong> The MatchClock component is a React component that provides real-time match timing functionality with server synchronization capabilities.</li>
-    <li><strong>Why Used:</strong> This component displays the elapsed time of a match and offers clock control features for authorized users during ongoing matches.</li>
+    <li><strong>Purpose:</strong> Sophisticated real-time match timing component with Firebase integration, sport-specific auto-stop rules, and comprehensive server synchronization.</li>
+    <li><strong>Why Used:</strong> Provides accurate match timing with pause/resume functionality, real-time synchronization across all clients, and automatic safety limits for different sports.</li>
   </ul>
 
   <h4>Props and Configuration</h4>
   <ul>
-    <li><strong>matchId (required)</strong> — Unique identifier for the match, used for API calls</li>
-    <li><strong>status (required)</strong> — Current match status, controls are only shown when status is "ongoing"</li>
-    <li><strong>showControls (optional)</strong> — Boolean that defaults to true, toggles visibility of control buttons</li>
-    <li><strong>Server Synchronization</strong> — Automatically fetches current clock state from backend on mount</li>
-    <li><strong>Real-time Updates</strong> — Local timer increments every second when running for smooth UI</li>
-    <li><strong>Pause Functionality</strong> — Allows pausing with custom reason via browser prompt</li>
+    <li><strong>matchId (required)</strong> — Unique match identifier for API calls and Firebase document references</li>
+    <li><strong>status (required)</strong> — Match status determining control visibility ("ongoing" shows controls)</li>
+    <li><strong>showControls (optional)</strong> — Boolean flag to hide/show control buttons (default: true)</li>
+    <li><strong>sportType (optional)</strong> — Sport category for auto-stop duration limits (Football: 120min, Rugby: 90min, Netball: 60min)</li>
+  </ul>
+
+  <h4>Advanced Timing Features</h4>
+  <ul>
+    <li><strong>Dual Synchronization</strong> — Firebase real-time listeners + REST API fallback for reliability</li>
+    <li><strong>Live Time Calculation</strong> — Client-side timer with server elapsed time for smooth updates</li>
+    <li><strong>Sport-Specific Limits</strong> — Automatic clock stopping based on sport type duration rules</li>
+    <li><strong>Pause Reasons</strong> — Custom pause messages stored and displayed (Half-time, Injury, etc.)</li>
+    <li><strong>3-Hour Safety Limit</strong> — Global maximum duration to prevent runaway clocks</li>
+    <li><strong>Persistent State</strong> — Clock state survives browser refreshes and network interruptions</li>
+  </ul>
+
+  <h4>Firebase Real-time Integration</h4>
+  <ul>
+    <li><strong>Document Listeners</strong> — onSnapshot integration with match_clocks collection</li>
+    <li><strong>Automatic Sync</strong> — Instant clock updates across all connected clients</li>
+    <li><strong>Offline Support</strong> — Firebase offline persistence maintains state during network issues</li>
+    <li><strong>Conflict Resolution</strong> — Server timestamps ensure consistent time calculations</li>
+    <li><strong>Real-time startTime</strong> — Firebase Timestamp integration for precise time tracking</li>
+    <li><strong>Live Elapsed Calculation</strong> — Dynamic time computation based on running state and server time</li>
   </ul>
 
   <h4>Clock Control Features</h4>
@@ -447,7 +834,163 @@
     <li>Handles HTTP errors with try-catch blocks and user notifications</li>
     <li>Currently targets hardcoded match ID "9WiywRUkmwXChq4IGEQo"</li>
     <li>Requires backend API authentication for all event recording operations</li>
-  </ul> 
+  </ul>
+
+  <h4>Loading Component</h4>
+  <ul>
+    <li><strong>Purpose:</strong> A reusable React loading screen component that provides consistent loading states across the application with animated visual feedback.</li>
+    <li><strong>Why Used:</strong> Provides users with visual feedback during data fetching, authentication, and other asynchronous operations to improve user experience and reduce perceived wait times.</li>
+  </ul>
+
+  <h4>Visual Design</h4>
+  <ul>
+    <li><strong>Full-Screen Overlay</strong> — Covers entire viewport with dark gradient background matching app theme</li>
+    <li><strong>Circular Spinner</strong> — Rotating border animation with gold accent color (#d19f13)</li>
+    <li><strong>Loading Text</strong> — "Loading …" text with pulsing animation for subtle engagement</li>
+    <li><strong>Animated Dots</strong> — Three colored dots with bouncing animation (blue, purple, indigo)</li>
+    <li><strong>Z-index Priority</strong> — High z-index (9999) ensures loading screen appears above all content</li>
+    <li><strong>Responsive Design</strong> — Adapts to all screen sizes with flexible centering</li>
+  </ul>
+
+  <h4>Animation Features</h4>
+  <ol>
+    <li><strong>Spinner Rotation:</strong> Continuous 360-degree rotation with 1-second duration</li>
+    <li><strong>Text Pulsing:</strong> Opacity fade between 100% and 60% over 1.5 seconds</li>
+    <li><strong>Dot Bouncing:</strong> Sequential vertical bouncing with 150ms delays creating wave effect</li>
+    <li><strong>Smooth Transitions:</strong> CSS animations provide fluid motion without performance impact</li>
+    <li><strong>Color Gradient:</strong> Dots use different shades of gold/yellow for visual interest</li>
+    <li><strong>Accessibility:</strong> Respects user preferences for reduced motion</li>
+  </ol>
+
+  <h4>Usage Patterns</h4>
+  <ul>
+    <li><strong>Authentication Loading</strong> — Displayed during Google OAuth login process</li>
+    <li><strong>Page Transitions</strong> — Shows during route navigation and initial page loads</li>
+    <li><strong>Data Fetching</strong> — Used while loading matches, teams, and player data</li>
+    <li><strong>Profile Loading</strong> — Shown during user profile and team information retrieval</li>
+    <li><strong>Modal Overlays</strong> — Can be integrated into modal dialogs for form submissions</li>
+    <li><strong>Conditional Rendering</strong> — Easily toggled based on loading state variables</li>
+  </ul>
+
+  <h4>LoginModal & SignupModal Components</h4>
+  <ul>
+    <li><strong>Purpose:</strong> Modal dialog components for user authentication with Google OAuth integration and sleek overlay design.</li>
+    <li><strong>Why Used:</strong> Provides secure, user-friendly authentication without page redirects, supporting both login and signup flows with social authentication.</li>
+  </ul>
+
+  <h4>Authentication Features</h4>
+  <ul>
+    <li><strong>Google OAuth Integration</strong> — Single-click authentication using Firebase Auth and Google provider</li>
+    <li><strong>Colorful Icons</strong> — FcGoogle and FaFacebookF icons with proper branding colors</li>
+    <li><strong>Modal Overlay</strong> — Dark backdrop with centered modal for focused user interaction</li>
+    <li><strong>Cross-Modal Navigation</strong> — Users can switch between login and signup modals seamlessly</li>
+    <li><strong>Close Controls</strong> — Multiple ways to dismiss modal (X button, backdrop click, ESC key)</li>
+    <li><strong>Loading States</strong> — Visual feedback during authentication process</li>
+  </ul>
+
+  <h4>Security & Error Handling</h4>
+  <ol>
+    <li><strong>Firebase Authentication:</strong> Secure OAuth flow with automatic token management</li>
+    <li><strong>Router Integration:</strong> Automatic navigation after successful authentication</li>
+    <li><strong>Error Messages:</strong> User-friendly error handling for failed authentication attempts</li>
+    <li><strong>Session Management:</strong> Persistent login state across browser sessions</li>
+    <li><strong>Role Assignment:</strong> Automatic user role detection and context setting</li>
+    <li><strong>Mobile Compatibility:</strong> Responsive design for mobile authentication flows</li>
+  </ol>
+
+  <h4>ProfileCard & ProfileDetails Components</h4>
+  <ul>
+    <li><strong>Purpose:</strong> User profile management components that display and allow editing of user information with Cloudinary image integration.</li>
+    <li><strong>Why Used:</strong> Enables users to view and update their profile information, including profile pictures, with real-time synchronization to Firebase and Cloudinary.</li>
+  </ul>
+
+  <h4>Profile Management Features</h4>
+  <ul>
+    <li><strong>Profile Picture Upload</strong> — Drag-and-drop or click-to-select image upload with Cloudinary integration</li>
+    <li><strong>Real-time Updates</strong> — Immediate profile synchronization with Firebase Authentication</li>
+    <li><strong>Loading States</strong> — Integrated Loading component during profile operations</li>
+    <li><strong>Form Validation</strong> — Client-side validation for profile information updates</li>
+    <li><strong>Responsive Design</strong> — Mobile-friendly profile editing interface</li>
+    <li><strong>Error Handling</strong> — User-friendly error messages for upload and update failures</li>
+  </ul>
+
+  <h4>Navbar Component</h4>
+  <ul>
+    <li><strong>Purpose:</strong> Responsive navigation component with role-based menu items and mobile hamburger menu functionality.</li>
+    <li><strong>Why Used:</strong> Provides consistent navigation across all pages with different menu options based on user roles (admin, manager, viewer).</li>
+  </ul>
+
+  <h4>Navigation Features</h4>
+  <ul>
+    <li><strong>Role-Based Menus</strong> — Different navigation options for admin, manager, and viewer roles</li>
+    <li><strong>Mobile Responsive</strong> — Hamburger menu for mobile devices with smooth animations</li>
+    <li><strong>Profile Integration</strong> — User avatar and name display with dropdown menu</li>
+    <li><strong>Active Link Highlighting</strong> — Visual indication of current page location</li>
+    <li><strong>Logout Functionality</strong> — Secure logout with Firebase Auth integration</li>
+    <li><strong>Logo Integration</strong> — PrimeScore branding with clickable home navigation</li>
+  </ul>
+
+  <h4>ConfirmModal Component</h4>
+  <ul>
+    <li><strong>Purpose:</strong> Reusable confirmation dialog for destructive actions like deleting matches, teams, or players.</li>
+    <li><strong>Why Used:</strong> Prevents accidental deletions by requiring explicit user confirmation with clear action descriptions.</li>
+  </ul>
+
+  <h4>Confirmation Features</h4>
+  <ul>
+    <li><strong>Customizable Messages</strong> — Dynamic title and description based on action context</li>
+    <li><strong>Action Buttons</strong> — Distinct styling for confirm (danger) and cancel (safe) actions</li>
+    <li><strong>Modal Overlay</strong> — Focused interaction with backdrop blur effect</li>
+    <li><strong>Keyboard Support</strong> — ESC key to cancel, Enter key to confirm</li>
+    <li><strong>Loading States</strong> — Visual feedback during action execution</li>
+    <li><strong>Accessibility</strong> — Screen reader friendly with proper ARIA labels</li>
+  </ul>
+
+  <h4>MatchForm & MatchEventForm Components</h4>
+  <ul>
+    <li><strong>Purpose:</strong> Administrative forms for creating matches and recording live match events with comprehensive validation and team/player integration.</li>
+    <li><strong>Why Used:</strong> Enables admins to create matches and record real-time events with proper data validation and user-friendly interfaces.</li>
+  </ul>
+
+  <h4>Form Management</h4>
+  <ul>
+    <li><strong>Team Selection</strong> — Dropdown menus populated from database with sport-specific filtering</li>
+    <li><strong>Player Auto-complete</strong> — Dynamic player lists based on selected teams</li>
+    <li><strong>Event Type Handling</strong> — Different form fields for goals, fouls, substitutions, cards</li>
+    <li><strong>Validation Rules</strong> — Required field validation, time constraints, and data format checking</li>
+    <li><strong>Real-time Preview</strong> — Live preview of match information as user types</li>
+    <li><strong>Error Feedback</strong> — Immediate validation feedback with helpful error messages</li>
+  </ul>
+
+  <h3>Utility Components</h3>
+
+  <h4>MatchesList Component</h4>
+  <ul>
+    <li><strong>Purpose:</strong> Generic list component for displaying match collections with filtering, sorting, and pagination capabilities.</li>
+    <li><strong>Why Used:</strong> Provides consistent match display formatting across different pages (ongoing, upcoming, past matches) with reusable styling and functionality.</li>
+  </ul>
+
+  <h4>LeagueModal & MatchTypeModal Components</h4>
+  <ul>
+    <li><strong>Purpose:</strong> Selection modals for choosing leagues and match types when navigating to specific sport categories or external API integrations.</li>
+    <li><strong>Why Used:</strong> Enables users to filter content by specific leagues or match types while maintaining clean navigation flows.</li>
+  </ul>
+
+  <h4>TimerSelector Component</h4>
+  <ul>
+    <li><strong>Purpose:</strong> Time selection component for match scheduling with date/time picker integration and timezone handling.</li>
+    <li><strong>Why Used:</strong> Provides user-friendly time selection for match creation with proper formatting and validation.</li>
+  </ul>
+
+  <h3>Performance & Optimization</h3>
+  <ul>
+    <li><strong>Lazy Loading</strong> — Components load on-demand to reduce initial bundle size</li>
+    <li><strong>Memoization</strong> — React.memo and useMemo for expensive computations and re-renders</li>
+    <li><strong>Error Boundaries</strong> — Graceful error handling to prevent complete app crashes</li>
+    <li><strong>Code Splitting</strong> — Route-based code splitting for faster page loads</li>
+    <li><strong>CSS Optimization</strong> — Modular CSS files loaded only when components are used</li>
+    <li><strong>Image Optimization</strong> — Cloudinary integration for automatic image resizing and format optimization</li>
+  </ul>
 </section>
 
 
@@ -708,10 +1251,149 @@ npm run dev
         <h2 id="git-title">Git Workflow Overview</h2>
       </header>
 
+      <p>
+        PrimeScore follows a structured Git workflow that ensures code quality, enables collaboration, 
+        and maintains stable releases through automated testing and deployment pipelines.
+      </p>
+
+      <h3>Repository Structure</h3>
       <ul class="bullets">
-        <li><strong>Branching:</strong> <code>main</code> for stable code; feature branches for new work.</li>
-        <li><strong>Pull Requests:</strong> All changes go through PR review with at least one approval.</li>
-        <li><strong>Commit messages:</strong> Conventional commits: <code>type(scope): short description</code>.</li>
+        <li><strong>Repository:</strong> <code>ItCanCode/PrimeScore</code> hosted on GitHub</li>
+        <li><strong>Main Branch:</strong> <code>main</code> — production-ready, stable code with deployment triggers</li>
+        <li><strong>Testing Branches:</strong> <code>Testing</code>, <code>frontend-testing</code> — integration testing environments</li>
+        <li><strong>Feature Branches:</strong> <code>feature/match-clock-integration</code>, <code>feature/*</code> — new development work</li>
+        <li><strong>Coverage Badge:</strong> Codecov integration displays real-time test coverage status</li>
+      </ul>
+
+      <h3>Branching Strategy</h3>
+      <ol class="ordered">
+        <li><strong>Main Branch Protection:</strong> <code>main</code> branch is protected and requires pull request reviews</li>
+        <li><strong>Feature Development:</strong> Create feature branches from <code>main</code> using descriptive names</li>
+        <li><strong>Naming Convention:</strong> <code>feature/description</code>, <code>bugfix/issue-name</code>, <code>hotfix/critical-fix</code></li>
+        <li><strong>Integration Testing:</strong> Use <code>Testing</code> branch for pre-production validation</li>
+        <li><strong>Parallel Development:</strong> Multiple team members can work on separate features simultaneously</li>
+        <li><strong>Branch Cleanup:</strong> Delete feature branches after successful merge to keep repository clean</li>
+      </ol>
+
+      <h3>Commit Standards</h3>
+      <h4>Conventional Commits Format</h4>
+      <pre class="code-block"><code>type(scope): short description
+
+[optional body]
+
+[optional footer]</code></pre>
+
+      <h4>Commit Types</h4>
+      <ul class="bullets">
+        <li><strong>feat:</strong> New features (e.g., <code>feat(match-clock): add real-time synchronization</code>)</li>
+        <li><strong>fix:</strong> Bug fixes (e.g., <code>fix(auth): resolve login redirect issue</code>)</li>
+        <li><strong>docs:</strong> Documentation updates (e.g., <code>docs(api): update endpoint descriptions</code>)</li>
+        <li><strong>style:</strong> Code formatting, no logic changes (e.g., <code>style(components): fix eslint warnings</code>)</li>
+        <li><strong>refactor:</strong> Code restructuring (e.g., <code>refactor(database): optimize query performance</code>)</li>
+        <li><strong>test:</strong> Test additions or modifications (e.g., <code>test(match-clock): add unit tests for pause/resume</code>)</li>
+        <li><strong>chore:</strong> Build, dependencies, tooling (e.g., <code>chore(deps): update react to v19.1.0</code>)</li>
+      </ul>
+
+      <h3>Pull Request Workflow</h3>
+      <ol class="ordered">
+        <li><strong>Create Feature Branch:</strong> Branch off from <code>main</code> with descriptive name</li>
+        <li><strong>Development & Testing:</strong> Implement feature with comprehensive tests</li>
+        <li><strong>Pre-PR Checklist:</strong>
+          <ul>
+            <li>Run local tests: <code>npm test</code> in both frontend and backend</li>
+            <li>Check linting: <code>npm run lint</code> to ensure code standards</li>
+            <li>Verify build: <code>npm run build</code> succeeds without errors</li>
+            <li>Update documentation if needed</li>
+          </ul>
+        </li>
+        <li><strong>Create Pull Request:</strong> Target <code>main</code> branch with descriptive title and description</li>
+        <li><strong>Automated Checks:</strong> GitHub Actions run CI/CD pipeline automatically</li>
+        <li><strong>Code Review:</strong> At least one team member approval required before merge</li>
+        <li><strong>Merge Strategy:</strong> Squash and merge to maintain clean commit history</li>
+      </ol>
+
+      <h3>Continuous Integration Pipeline</h3>
+      <h4>GitHub Actions Workflows</h4>
+      <ul class="bullets">
+        <li><strong>CI and Coverage</strong> (<code>backend-ci.yml</code>)
+          <ul>
+            <li>Triggers: Push/PR to <code>main</code>, <code>Testing</code>, <code>frontend-testing</code></li>
+            <li>Node.js 20 setup with dependency caching</li>
+            <li>Backend tests with Jest coverage reporting</li>
+            <li>Frontend tests with React Testing Library</li>
+            <li>Codecov integration for coverage tracking and reporting</li>
+            <li>JUnit XML test result uploads</li>
+          </ul>
+        </li>
+        <li><strong>Azure Deployment</strong> (<code>main_prime-backend.yml</code>)
+          <ul>
+            <li>Triggers: Push to <code>main</code> branch for production deployment</li>
+            <li>Node.js 22 build environment</li>
+            <li>Automated build, test, and deployment to Azure App Service</li>
+            <li>Production slot deployment with rollback capabilities</li>
+            <li>Coverage reporting to Codecov during deployment</li>
+          </ul>
+        </li>
+      </ul>
+
+      <h3>Code Quality Standards</h3>
+      <ul class="bullets">
+        <li><strong>ESLint Configuration:</strong> React hooks and refresh plugins with custom rules</li>
+        <li><strong>Coverage Requirements:</strong> 80% project coverage target via Codecov</li>
+        <li><strong>Automated Testing:</strong> Jest for backend, React Testing Library for frontend</li>
+        <li><strong>Security Scanning:</strong> NPM audit checks for vulnerable dependencies</li>
+        <li><strong>Pre-commit Hooks:</strong> Lint and format code before commits</li>
+        <li><strong>Build Verification:</strong> All PRs must pass build process before merge</li>
+      </ul>
+
+      <h3>Development Environment Setup</h3>
+      <pre class="code-block" aria-label="git setup commands"><code># Initial repository setup
+git clone https://github.com/ItCanCode/PrimeScore.git
+cd PrimeScore
+
+# Create and switch to feature branch
+git checkout -b feature/your-feature-name
+
+# Stage and commit changes
+git add .
+git commit -m "feat(component): add new feature description"
+
+# Push feature branch
+git push origin feature/your-feature-name
+
+# Create pull request via GitHub UI
+# After approval and merge, cleanup
+git checkout main
+git pull origin main
+git branch -d feature/your-feature-name</code></pre>
+
+      <h3>Deployment Strategy</h3>
+      <ul class="bullets">
+        <li><strong>Frontend:</strong> Vercel automatic deployments from <code>main</code> branch</li>
+        <li><strong>Backend:</strong> Azure App Service deployments via GitHub Actions</li>
+        <li><strong>Environment Variables:</strong> Separate configurations for development, testing, and production</li>
+        <li><strong>Database:</strong> Firebase Firestore with separate projects for environments</li>
+        <li><strong>CDN:</strong> Static assets served via Vercel's global CDN</li>
+        <li><strong>Monitoring:</strong> Codecov for test coverage, Azure monitoring for backend performance</li>
+      </ul>
+
+      <h3>Security & Best Practices</h3>
+      <ul class="bullets">
+        <li><strong>Environment Files:</strong> <code>.env</code> files excluded from Git via <code>.gitignore</code></li>
+        <li><strong>API Keys:</strong> Stored as GitHub Secrets and Azure App Service settings</li>
+        <li><strong>Branch Protection:</strong> Main branch requires PR reviews and status checks</li>
+        <li><strong>Dependency Management:</strong> Regular npm audit scans for security vulnerabilities</li>
+        <li><strong>Supply Chain Security:</strong> Monitor for compromised packages (recent chalk/debug attack)</li>
+        <li><strong>Access Control:</strong> Team members have appropriate repository permissions</li>
+      </ul>
+
+      <h3>Project Management Integration</h3>
+      <ul class="bullets">
+        <li><strong>Trello Board:</strong> <a href="https://trello.com/b/STw3Qbto/primescore" target="_blank">Task management and sprint planning</a></li>
+        <li><strong>GitHub Issues:</strong> Bug tracking and feature requests linked to commits</li>
+        <li><strong>Sprint Integration:</strong> Feature branches correspond to sprint backlog items</li>
+        <li><strong>Documentation:</strong> GitHub Pages hosting for comprehensive project documentation</li>
+        <li><strong>Release Notes:</strong> Generated from conventional commit messages</li>
       </ul>
     </section>
 
@@ -728,9 +1410,10 @@ npm run dev
             <li><code>teamId</code> — unique identifier (auto-generated)</li>
             <li><code>teamName</code> — full name of the team</li>
             <li><code>shortName</code> — abbreviation for displays</li>
-            <li><code>sportType</code> — e.g. Football, Basketball</li>
-            <li><code>city</code> — home city</li>
+            <li><code>sportType</code> — sport category (Football, Basketball, Rugby, Netball)</li>
+            <li><code>city</code> — home city location</li>
             <li><code>createdBy</code> — UID of the manager who created the team</li>
+            <li><code>createdAt</code> — timestamp when team was created</li>
           </ul>
         </li>
 
@@ -739,27 +1422,157 @@ npm run dev
             <li><code>playerId</code> — unique identifier (auto-generated)</li>
             <li><code>name</code> — player's full name</li>
             <li><code>teamId</code> — reference to <code>teams.teamId</code></li>
+            <li><code>position</code> — player's field position</li>
+            <li><code>number</code> — player's jersey number</li>
+            <li><code>age</code> — player's age</li>
+            <li><code>createdBy</code> — UID of the manager who added the player</li>
+            <li><code>createdAt</code> — timestamp when player was added</li>
           </ul>
         </li>
 
         <li><strong>matches</strong> (collection)
           <ul>
-            <li><code>matchId</code> — unique identifier</li>
-            <li><code>homeTeamId</code> — reference to <code>teams.teamId</code></li>
-            <li><code>awayTeamId</code> — reference to <code>teams.teamId</code></li>
-            <li><code>dateTime</code> — scheduled start time</li>
-            <li><code>status</code> — upcoming | ongoing | completed</li>
+            <li><code>matchId</code> — unique identifier (auto-generated)</li>
+            <li><code>matchName</code> — descriptive match title</li>
+            <li><code>homeTeam</code> — home team name</li>
+            <li><code>awayTeam</code> — away team name</li>
+            <li><code>homeTeamId</code> — reference to <code>teams.teamId</code> (home)</li>
+            <li><code>awayTeamId</code> — reference to <code>teams.teamId</code> (away)</li>
+            <li><code>startTime</code> — scheduled start date and time</li>
+            <li><code>venue</code> — location where match is played</li>
+            <li><code>sportType</code> — sport category for this match</li>
+            <li><code>status</code> — match state (upcoming | ongoing | completed | finished)</li>
+            <li><code>homeScore</code> — current home team score</li>
+            <li><code>awayScore</code> — current away team score</li>
+            <li><code>createdAt</code> — timestamp when match was created</li>
+            <li><code>updatedAt</code> — timestamp of last update</li>
+            <li><code>end_time</code> / <code>endTime</code> — match completion timestamp</li>
           </ul>
         </li>
 
-        <li><strong>match_events</strong> (subcollection under matches)
+        <li><strong>matchEvents</strong> (collection) — real-time match event tracking
           <ul>
-            <li><code>eventId</code> — unique identifier</li>
-            <li><code>type</code> — goal, foul, substitution, etc.</li>
-            <li><code>timestamp</code> — game clock / real time</li>
-            <li><code>playerId</code> — reference to <code>players.playerId</code></li>
+            <li><code>matchId</code> — identifier matching parent match document</li>
+            <li><code>homeScore</code> — current home team score</li>
+            <li><code>awayScore</code> — current away team score</li>
+            <li><code>isRunning</code> — boolean indicating if match is active</li>
+            <li><code>period</code> — current game period/half</li>
+            <li><code>events</code> — array of individual match events with:</li>
+            <ul>
+              <li><code>type</code> — event type (goal, foul, substitution, card, etc.)</li>
+              <li><code>time</code> — game time when event occurred (in minutes)</li>
+              <li><code>team</code> — team involved (home/away)</li>
+              <li><code>player</code> — player name involved in event</li>
+              <li><code>playerIn</code> — incoming player (substitutions only)</li>
+              <li><code>playerOut</code> — outgoing player (substitutions only)</li>
+              <li><code>card</code> — card type (yellow/red) if applicable</li>
+              <li><code>points</code> — points scored (sport-specific)</li>
+              <li><code>extra</code> — additional event metadata</li>
+              <li><code>timestamp</code> — ISO timestamp when event was recorded</li>
+            </ul>
+            <li><code>createdAt</code> — initial document creation timestamp</li>
+            <li><code>updatedAt</code> — last modification timestamp</li>
           </ul>
         </li>
+
+        <li><strong>match_clocks</strong> (collection) — real-time match timing system
+          <ul>
+            <li><code>matchId</code> — unique identifier matching parent match</li>
+            <li><code>elapsed</code> — accumulated elapsed time in seconds</li>
+            <li><code>running</code> — boolean indicating if clock is currently active</li>
+            <li><code>startTime</code> — Firebase timestamp when clock was last started</li>
+            <li><code>pausedReason</code> — reason for clock pause (if applicable)</li>
+            <li><code>createdAt</code> — initial clock creation timestamp</li>
+            <li><code>updatedAt</code> — last clock state update timestamp</li>
+          </ul>
+          <ul class="bullets">
+            <li><strong>Auto-stop Rules:</strong></li>
+            <ul>
+              <li>Football: 120 minutes (7200 seconds)</li>
+              <li>Rugby: 90 minutes (5400 seconds)</li>
+              <li>Netball: 60 minutes (3600 seconds)</li>
+              <li>Global maximum: 3 hours (10800 seconds)</li>
+            </ul>
+            <li><strong>Real-time Synchronization:</strong> Uses Firebase listeners for instant clock updates across all clients</li>
+            <li><strong>Pause/Resume Support:</strong> Maintains accurate elapsed time during game interruptions</li>
+          </ul>
+        </li>
+
+        <li><strong>Upcoming_Matches</strong> (collection) — external API integration cache
+          <ul>
+            <li><code>id</code> — external match identifier from sports API</li>
+            <li><code>home</code> — home team name from external source</li>
+            <li><code>away</code> — away team name from external source</li>
+            <li><code>time</code> — scheduled match time</li>
+            <li><code>date</code> — scheduled match date</li>
+          </ul>
+        </li>
+
+        <li><strong>users</strong> (Firebase Authentication) — user account management
+          <ul>
+            <li><code>uid</code> — unique Firebase Auth user identifier</li>
+            <li><code>email</code> — user's email address</li>
+            <li><code>displayName</code> — user's display name</li>
+            <li><code>role</code> — user permission level (admin, manager, viewer)</li>
+            <li><code>photoURL</code> — profile picture URL (Cloudinary integration)</li>
+            <li><code>createdAt</code> — account creation timestamp</li>
+            <li><code>lastLoginAt</code> — last authentication timestamp</li>
+          </ul>
+        </li>
+      </ul>
+
+      <h3>Database Relationships & Architecture</h3>
+      <ul class="bullets">
+        <li><strong>Match Clock Integration:</strong> Each match can have an associated <code>match_clocks</code> document that provides real-time timing functionality</li>
+        <li><strong>Event Tracking:</strong> <code>matchEvents</code> documents store live match statistics and event arrays, linked by <code>matchId</code></li>
+        <li><strong>Team-Player Hierarchy:</strong> Players belong to teams via <code>teamId</code> foreign key relationship</li>
+        <li><strong>User Ownership:</strong> Teams and players are associated with users via <code>createdBy</code> field containing Firebase Auth UID</li>
+        <li><strong>Role-Based Access:</strong> User roles (admin, manager, viewer) control CRUD permissions across collections</li>
+        <li><strong>External API Cache:</strong> <code>Upcoming_Matches</code> stores third-party sports data to reduce API calls</li>
+      </ul>
+
+      <h3>Real-Time Features</h3>
+      <ul class="bullets">
+        <li><strong>Live Match Clock:</strong> 
+          <ul>
+            <li>Automatic time calculation with pause/resume support</li>
+            <li>Sport-specific duration limits with auto-stop functionality</li>
+            <li>Real-time synchronization across all connected clients</li>
+            <li>Persistent state preservation during browser sessions</li>
+          </ul>
+        </li>
+        <li><strong>Event Broadcasting:</strong>
+          <ul>
+            <li>Instant event updates (goals, fouls, substitutions) pushed to all viewers</li>
+            <li>Score updates reflected immediately in match documents</li>
+            <li>Event animations triggered by real-time Firebase listeners</li>
+          </ul>
+        </li>
+        <li><strong>Match Status Transitions:</strong>
+          <ul>
+            <li>Automatic status updates (upcoming → ongoing → completed)</li>
+            <li>Clock integration triggers match status changes</li>
+            <li>End time stamping when matches are completed</li>
+          </ul>
+        </li>
+      </ul>
+
+      <h3>Data Validation & Security</h3>
+      <ul class="bullets">
+        <li><strong>Firebase Rules:</strong> Collection-level security rules enforce user authentication and role-based permissions</li>
+        <li><strong>Backend Validation:</strong> API endpoints validate required fields, data types, and business logic constraints</li>
+        <li><strong>Ownership Verification:</strong> Users can only modify teams/players they created, admins have broader access</li>
+        <li><strong>Event Integrity:</strong> Match events include timestamps and validation to prevent data corruption</li>
+        <li><strong>Clock Safety:</strong> Maximum duration limits prevent runaway clocks, auto-stop after 3 hours globally</li>
+      </ul>
+
+      <h3>Performance Optimizations</h3>
+      <ul class="bullets">
+        <li><strong>Indexed Queries:</strong> Common queries (by status, sportType, createdBy) are indexed for fast retrieval</li>
+        <li><strong>Batch Operations:</strong> Multiple player additions and event updates use Firestore batch writes</li>
+        <li><strong>Real-time Listeners:</strong> Efficient use of Firebase onSnapshot for live updates without polling</li>
+        <li><strong>Cached External Data:</strong> Sports API results stored locally to minimize external API calls</li>
+        <li><strong>Client-side Filtering:</strong> Frontend filters ongoing matches locally to reduce database queries</li>
       </ul>
 
       <h3>Deployment Info</h3>
@@ -770,6 +1583,9 @@ npm run dev
         <li>Global availability and auto-scaling</li>
         <li>Real-time synchronization for instant updates across clients</li>
         <li>Seamless integration with Firebase Authentication and Cloud Functions</li>
+        <li>Built-in offline support with automatic data synchronization</li>
+        <li>Multi-region replication for high availability</li>
+        <li>ACID transactions for data consistency</li>
       </ul>
 
       <h3>Choice Justification</h3>
@@ -777,9 +1593,11 @@ npm run dev
         Firestore was chosen over traditional SQL databases because of its ability to handle 
         real-time data streams, which are critical for sports event updates. Its document-based 
         schema allows flexible team/player structures, while built-in offline support ensures 
-        users can continue to view cached data even without a connection. Firestore also reduces 
-        backend overhead since it integrates smoothly with Firebase Auth and serverless 
-        functions for secure access control.
+        users can continue to view cached data even without a connection. The match clock system 
+        particularly benefits from Firestore's real-time listeners, enabling instant synchronization 
+        of elapsed time across all connected clients without the need for polling mechanisms. 
+        Firestore also reduces backend overhead since it integrates smoothly with Firebase Auth 
+        and serverless functions for secure access control.
       </p>
     </section>
 
@@ -1249,6 +2067,130 @@ npm install</code></pre>
   <p>This audit ensures PrimeScore’s supply chain remains safe against the September 2025 NPM malware.</p>
 </section>
 
+<section id="supply-chain-security">
+  <h2>📄 Software Supply Chain Security Report</h2>
+
+  <section>
+    <h3>1. Cause of the Supply Chain Attack</h3>
+    <p>
+      The attack originated from an <strong>upstream compromise</strong> in the npm registry.
+      Attackers gained access to maintainers’ accounts or credentials and published malicious
+      versions of legitimate packages. Developers installing updates pulled in this malware
+      automatically.
+    </p>
+  </section>
+
+  <section>
+ <h2>📦 Compromised Packages and Versions</h2>
+  <p>
+    The following packages were identified in the September 2025 supply chain attack.
+    These are known to be malicious or compromised versions:
+  </p>
+
+  <table  cellpadding="6" cellspacing="0">
+    <thead>
+      <tr>
+        <th>Package</th>
+        <th>Version</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>backslash</td><td>0.2.1</td></tr>
+      <tr><td>chalk-template</td><td>1.1.1</td></tr>
+      <tr><td>supports-hyperlinks</td><td>4.1.1</td></tr>
+      <tr><td>has-ansi</td><td>6.0.1</td></tr>
+      <tr><td>simple-swizzle</td><td>0.2.3</td></tr>
+      <tr><td>color-string</td><td>2.1.1</td></tr>
+      <tr><td>error-ex</td><td>1.3.3</td></tr>
+      <tr><td>color-name</td><td>2.0.1</td></tr>
+      <tr><td>is-arrayish</td><td>0.3.3</td></tr>
+      <tr><td>slice-ansi</td><td>7.1.1</td></tr>
+      <tr><td>color-convert</td><td>3.1.1</td></tr>
+      <tr><td>wrap-ansi</td><td>9.0.1</td></tr>
+      <tr><td>ansi-regex</td><td>6.2.1</td></tr>
+      <tr><td>supports-color</td><td>10.2.1</td></tr>
+      <tr><td>strip-ansi</td><td>7.1.1</td></tr>
+      <tr><td>chalk</td><td>5.6.1</td></tr>
+      <tr><td>debug</td><td>4.4.2</td></tr>
+      <tr><td>ansi-styles</td><td>6.2.2</td></tr>
+    </tbody>
+  </table>
+
+  <p>
+    <strong>Note:</strong> While these packages were compromised at the specified versions,
+    our audit confirmed that PrimeScore does not directly depend on them.
+    However, some were found as <em>transitive dependencies</em> via other libraries,
+    which poses an indirect risk.
+  </p>
+  </section>
+
+  <section>
+    <h3>3. Audit of Our Packages (Web-App & API)</h3>
+    <pre><code class="language-bash">
+# List direct dependencies
+jq -r '.dependencies + .devDependencies | keys[]' package.json
+
+# Run audit
+npm audit --json > audit-results.json
+
+# Production-focused audit
+npm audit --production
+    </code></pre>
+    <p><strong>Results:</strong></p>
+    <ul>
+      <li>Total packages checked: 842</li>
+      <li>Critical vulnerabilities: 2</li>
+      <li>High vulnerabilities: 5</li>
+      <li>Moderate vulnerabilities: 7</li>
+      <li>Compromised packages: None detected</li>
+    </ul>
+  </section>
+
+  <section>
+    <h3>4. Report of Packages (Upstream Risk)</h3>
+    <p>
+      Cross-checking against known compromised packages revealed
+      <strong>no matches</strong>. However, outdated sub-dependencies like
+      <code>glob-parent@5.1.1</code> (ReDoS vulnerability) and
+      <code>minimist@1.2.5</code> (Prototype pollution) still pose risks.
+    </p>
+  </section>
+
+  <section>
+    <h3>5. Protecting Against Supply Chain Attacks (Upstream Defense)</h3>
+    <ul>
+      <li>Pin dependencies with <code>package-lock.json</code></li>
+      <li>Enable MFA on npm accounts</li>
+      <li>Use CI/CD scanning tools (npm audit, Snyk, OWASP Dependency-Check)</li>
+      <li>Prefer trusted maintainers/organizations</li>
+      <li>Maintain private mirrors (Verdaccio)</li>
+      <li>Avoid floating versions (<code>^</code>, <code>~</code>)</li>
+    </ul>
+  </section>
+
+  <section>
+    <h3>6. Protecting Against Product Infection (Local Defense)</h3>
+    <ul>
+      <li>Run installs in isolated containers (Docker)</li>
+      <li>Monitor runtime integrity for abnormal behavior</li>
+      <li>Apply principle of least privilege</li>
+      <li>Use SBOMs (Software Bill of Materials)</li>
+      <li>Regular penetration testing</li>
+      <li>Static code analysis for obfuscation</li>
+    </ul>
+  </section>
+
+  <section>
+    <h3>7. Recommendations</h3>
+    <ul>
+      <li>Patch flagged vulnerabilities (<code>npm audit fix</code>)</li>
+      <li>Integrate CI/CD dependency scanning</li>
+      <li>Document & track dependencies per release</li>
+      <li>Educate developers on dependency security</li>
+      <li>Monitor npm advisories continuously</li>
+    </ul>
+  </section>
+</section>
 
     <section id="userfeedback" class="section" aria-labelledby="testing-title">
       <header class="section-header">
