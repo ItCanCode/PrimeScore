@@ -32,6 +32,8 @@ export default function MatchClock({ matchId, status, showControls = true, sport
   // Refs for cleanup and preventing memory leaks
   const intervalRef = useRef();     // Local timer for UI updates
   const pollIntervalRef = useRef(); // Backup polling (if needed)
+  const lastSyncTime = useRef(0);   // When we last synced with server
+  const lastSyncSeconds = useRef(0); // Server seconds at last sync
 
   /**
    * Get sport-specific maximum duration in seconds
@@ -59,9 +61,14 @@ export default function MatchClock({ matchId, status, showControls = true, sport
       const data = await response.json();
       
       // Update local state with server data
-      setSeconds(Math.floor(data.elapsed));
+      const flooredElapsed = Math.floor(data.elapsed);
+      setSeconds(flooredElapsed);
       setRunning(data.running);
       setPausedReason(data.pausedReason || "");
+      
+      // Update sync references for accurate local timing
+      lastSyncTime.current = Date.now();
+      lastSyncSeconds.current = flooredElapsed;
     } catch (error) {
       console.error('Error fetching clock data:', error);
     }
@@ -92,8 +99,13 @@ export default function MatchClock({ matchId, status, showControls = true, sport
         if (clockData.running && clockData.startTime) {
           // Add time since last start to accumulated elapsed time
           const startTimeMs = clockData.startTime.toDate().getTime();
-          currentElapsed += (Date.now() - startTimeMs) / 1000;
+          const timeDifference = (Date.now() - startTimeMs) / 1000;
+          // Ensure we don't add negative time and use consistent flooring
+          currentElapsed += Math.max(0, timeDifference);
         }
+        
+        // Ensure elapsed time is never negative
+        currentElapsed = Math.max(0, currentElapsed);
         
         // Sport-specific time limit validation
         const maxDuration = getMaxDuration(sportType);
@@ -103,10 +115,15 @@ export default function MatchClock({ matchId, status, showControls = true, sport
           return;
         }
         
-        // Update local state with calculated values
-        setSeconds(Math.floor(currentElapsed));
+        // Update local state with calculated values and sync references
+        const flooredElapsed = Math.floor(currentElapsed);
+        setSeconds(flooredElapsed);
         setRunning(clockData.running || false);
         setPausedReason(clockData.pausedReason || "");
+        
+        // Update sync references for accurate local timing
+        lastSyncTime.current = Date.now();
+        lastSyncSeconds.current = flooredElapsed;
       }
     }, (error) => {
       console.error('Error listening to clock updates:', error);
@@ -128,12 +145,18 @@ export default function MatchClock({ matchId, status, showControls = true, sport
    * This creates the smooth second-by-second counting that users see
    * Only runs when clock is supposed to be running
    * Provides immediate visual feedback without waiting for server updates
+   * Uses server sync references for more accurate timing
    */
   useEffect(() => {
     if (running) {
       intervalRef.current = setInterval(() => {
-        setSeconds((s) => {
-          const newSeconds = s + 1;
+        // Calculate elapsed time based on last server sync
+        const timeSinceSync = (Date.now() - lastSyncTime.current) / 1000;
+        const calculatedSeconds = Math.floor(lastSyncSeconds.current + timeSinceSync);
+        
+        setSeconds((currentSeconds) => {
+          // Use the calculated time, but ensure it doesn't go backwards
+          const newSeconds = Math.max(calculatedSeconds, currentSeconds);
           
           // Check if max duration is reached for this sport
           const maxDuration = getMaxDuration(sportType);
