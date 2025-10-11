@@ -3,7 +3,6 @@ import "@testing-library/jest-dom";
 import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import ProfileCard from "../src/Components/ProfileCard";
 
-// Mock Loading component
 jest.mock("../src/Components/Loading", () => () => <div>Loading...</div>);
 
 describe("ProfileCard", () => {
@@ -15,12 +14,11 @@ describe("ProfileCard", () => {
   };
 
   beforeEach(() => {
-    // Mock localStorage token
+    
     jest.spyOn(Storage.prototype, "getItem").mockReturnValue("fake-token");
 
-    // Mock fetch
     global.fetch = jest.fn((url, options) => {
-      // GET user
+
       if (url.endsWith("/api/users/me") && !options?.method) {
         return Promise.resolve({
           ok: true,
@@ -28,7 +26,6 @@ describe("ProfileCard", () => {
         });
       }
 
-      // PUT user
       if (url.endsWith("/api/users/me") && options?.method === "PUT") {
         const body = JSON.parse(options.body);
         const updatedUser = {
@@ -43,7 +40,6 @@ describe("ProfileCard", () => {
         });
       }
 
-      // Upload image
       if (url.endsWith("/api/users/upload")) {
         return Promise.resolve({
           ok: true,
@@ -54,7 +50,6 @@ describe("ProfileCard", () => {
       return Promise.reject(new Error("Unknown endpoint"));
     });
 
-    // Mock URL.createObjectURL and URL.revokeObjectURL
     global.URL.createObjectURL = jest.fn(() => "blob:image");
     global.URL.revokeObjectURL = jest.fn();
   });
