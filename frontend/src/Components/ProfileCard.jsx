@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from "react";
 import "../Styles/Profile.css";
 import Loading from "./Loading";
+
+let baseURL = "https://prime-backend.azurewebsites.net";
+//let baseURL = "http://localhost:3000";
+
 function ProfileCard() {
   const [user, setUser] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
@@ -11,6 +15,12 @@ function ProfileCard() {
   const [location, setLocation] = useState("");
   const [memberSince, setMemberSince] = useState("");
 
+    useEffect(() => {
+      if (!pictureFile) return;
+      const preview = URL.createObjectURL(pictureFile);
+      setPicture(preview);
+      return () => URL.revokeObjectURL(preview);
+    }, [pictureFile]);
 
   function handlePictureChange(e) {
     const file = e.target.files[0];
@@ -25,7 +35,7 @@ function ProfileCard() {
     const token = localStorage.getItem("token");
     const formData = new FormData();
     formData.append("picture", pictureFile);
-    const res = await fetch("https://prime-backend.azurewebsites.net/api/users/upload", {
+    const res = await fetch(baseURL + "/api/users/upload", {
       method: "POST",
       headers: { Authorization: `Bearer ${token}` },
       body: formData,
@@ -39,7 +49,7 @@ function ProfileCard() {
     const token = localStorage.getItem("token");
     try {
       const uploadedUrl = await uploadImage();
-      const res = await fetch("https://prime-backend.azurewebsites.net/api/users/me", {
+      const res = await fetch(baseURL + "/api/users/me", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -47,7 +57,7 @@ function ProfileCard() {
         },
         body: JSON.stringify({
           username,
-          picture: uploadedUrl,
+          picture: uploadedUrl || picture,
           profile: {
             bio,
             location,
@@ -55,6 +65,7 @@ function ProfileCard() {
         }),
       });
       const data = await res.json();
+      console.log("data from frontend :" ,data);
       if (res.ok) {
         setUser(data.user);
         setIsEditing(false);
@@ -71,7 +82,7 @@ function ProfileCard() {
     const fetchUser = async () => {
       const token = localStorage.getItem("token");
       if (!token) return;
-      const res = await fetch("https://prime-backend.azurewebsites.net/api/users/me", {
+      const res = await fetch(baseURL + "/api/users/me", {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
