@@ -18,7 +18,7 @@ const db = admin.firestore();
 
 
     
-        const fixRef = db.collection("rugby_Live");
+        const fixRef = db.collection("rugbyLive");
         for (const fixture of fixtures){
             const docRef = fixRef.doc();
             batch.set(docRef, fixture);
@@ -43,7 +43,7 @@ export const getRugbyFix = async (req, res) => {
    
     const normalizedDate = date.slice(0, 10);
 
-    const snapshot = await db.collection("rugby_Live").get();
+    const snapshot = await db.collection("rugbyLive").get();
 
     const fixtures = snapshot.docs
       .map(doc => {
