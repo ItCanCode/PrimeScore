@@ -65,7 +65,7 @@ function ProfileCard() {
         }),
       });
       const data = await res.json();
-      console.log("data from frontend :" ,data);
+
       if (res.ok) {
         setUser(data.user);
         setIsEditing(false);
