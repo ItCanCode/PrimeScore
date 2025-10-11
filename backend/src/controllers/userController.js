@@ -52,7 +52,6 @@ export const updateUser = async (req, res) => {
   try {
     const userId = req.user.uid;
     const userRef = db.collection("users").doc(userId);
-
     const {
       username,
       picture,
