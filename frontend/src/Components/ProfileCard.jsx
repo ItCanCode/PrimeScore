@@ -47,9 +47,11 @@ function ProfileCard() {
         },
         body: JSON.stringify({
           username,
-          bio,
           picture: uploadedUrl,
-          location,
+          profile: {
+            bio,
+            location,
+          }
         }),
       });
       const data = await res.json();
