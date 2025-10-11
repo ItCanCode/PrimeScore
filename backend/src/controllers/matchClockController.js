@@ -72,8 +72,13 @@ export const pauseMatchClock = async (req, res) => {
     let newElapsed = clockData.elapsed || 0;
     if (clockData.running && clockData.startTime) {
       const startTimeMs = clockData.startTime.toDate().getTime();
-      newElapsed += (Date.now() - startTimeMs) / 1000;
+      const timeDifference = (Date.now() - startTimeMs) / 1000;
+      // Ensure we don't add negative time
+      newElapsed += Math.max(0, timeDifference);
     }
+    
+    // Ensure elapsed time is never negative
+    newElapsed = Math.max(0, newElapsed);
     
     // Update clock to paused state
     await clockRef.update({
@@ -110,8 +115,13 @@ export const finishMatchClock = async (req, res) => {
     let finalElapsed = clockData.elapsed || 0;
     if (clockData.running && clockData.startTime) {
       const startTimeMs = clockData.startTime.toDate().getTime();
-      finalElapsed += (Date.now() - startTimeMs) / 1000;
+      const timeDifference = (Date.now() - startTimeMs) / 1000;
+      // Ensure we don't add negative time
+      finalElapsed += Math.max(0, timeDifference);
     }
+    
+    // Ensure elapsed time is never negative
+    finalElapsed = Math.max(0, finalElapsed);
     
     // Stop the clock with custom reason or default
     await clockRef.update({
@@ -147,8 +157,13 @@ export const getMatchClock = async (req, res) => {
     let currentElapsed = clockData.elapsed || 0;
     if (clockData.running && clockData.startTime) {
       const startTimeMs = clockData.startTime.toDate().getTime();
-      currentElapsed += (Date.now() - startTimeMs) / 1000;
+      const timeDifference = (Date.now() - startTimeMs) / 1000;
+      // Ensure we don't add negative time (prevents negative clock values)
+      currentElapsed += Math.max(0, timeDifference);
     }
+    
+    // Ensure elapsed time is never negative
+    currentElapsed = Math.max(0, currentElapsed);
     
     // Auto-stop after 3 hours (10800 seconds)
     if (currentElapsed >= 3 * 3600 && clockData.running) {
@@ -164,7 +179,7 @@ export const getMatchClock = async (req, res) => {
     
     res.json({ 
       ...clockData, 
-      elapsed: Math.round(currentElapsed),
+      elapsed: Math.floor(currentElapsed), // Use Math.floor instead of Math.round for consistency
       matchId,
       success: true 
     });
