@@ -12,6 +12,7 @@ import managerRoutes from "./src/routes/managerRoutes.js";
 import feedRoutes from "./src/routes/feedRoutes.js";
 import matchClockRoutes from "./src/routes/matchClockRoutes.js";
 import rugbyLiveRoutes from "./src/routes/rugbyLiveRoutes.js";
+import newsRoutes from "./src/routes/newsRoutes.js";
 import dotenv from "dotenv";
 dotenv.config();
 const app = express();
@@ -39,6 +40,7 @@ app.use('/api/rugby/live',rugbyLiveRoutes);
 app.use('/api/manager',managerRoutes);
 app.use('/api/feed', feedRoutes);
 app.use("/api/match-clock", matchClockRoutes);
+app.use("/api/news", newsRoutes);
 app.use('/api/display', displayRoutes);
 app.get('/api/hello', (req, res) => {
   res.json({ message: 'Hello from backend!' });

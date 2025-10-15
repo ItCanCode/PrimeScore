@@ -11,6 +11,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "axios": "^1.12.2",
     "firebase": "^12.1.0",
     "lucide-react": "^0.541.0",
     "react": "^19.1.0",
@@ -67,7 +68,13 @@
     ],
     "reporters": [
       "default",
-      ["jest-junit", { "outputDirectory": "./", "outputName": "junit.xml" }]
+      [
+        "jest-junit",
+        {
+          "outputDirectory": "./",
+          "outputName": "junit.xml"
+        }
+      ]
     ]
   }
 }
