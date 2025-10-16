@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useMemo } from "react";
 import axios from "axios";
 
 // Clean version without refresh UI
@@ -35,8 +35,8 @@ const News = () => {
     { id: "volleyball", name: "Volleyball" }
   ];
 
-  // Fallback news data for when API is exhausted
-  const fallbackNews = [
+  // Fallback news data for when API is exhausted - memoized to prevent recreation
+  const fallbackNews = useMemo(() => [
     {
       title: "Major League Soccer Championship Finals Set for This Weekend",
       description: "The most anticipated soccer match of the year is approaching as two top teams prepare to face off in the championship finals.",
@@ -79,12 +79,12 @@ const News = () => {
       image_url: null,
       pubDate: new Date().toISOString()
     }
-  ];
+  ], []);
 
   // Helper functions for caching and time management
-  const getCacheKey = (country, sport) => `news_${country}_${sport}`;
+  const getCacheKey = useCallback((country, sport) => `news_${country}_${sport}`, []);
   
-  const saveToCache = (country, sport, data) => {
+  const saveToCache = useCallback((country, sport, data) => {
     const cacheKey = getCacheKey(country, sport);
     const cacheData = {
       articles: data,
@@ -93,9 +93,9 @@ const News = () => {
       sport
     };
     localStorage.setItem(cacheKey, JSON.stringify(cacheData));
-  };
+  }, [getCacheKey]);
 
-  const getFromCache = (country, sport) => {
+  const getFromCache = useCallback((country, sport) => {
     const cacheKey = getCacheKey(country, sport);
     const cached = localStorage.getItem(cacheKey);
     if (cached) {
@@ -112,9 +112,9 @@ const News = () => {
       }
     }
     return null;
-  };
+  }, [getCacheKey]);
 
-  const clearOldCache = () => {
+  const clearOldCache = useCallback(() => {
     const keys = Object.keys(localStorage);
     keys.forEach(key => {
       if (key.startsWith('news_')) {
@@ -128,9 +128,9 @@ const News = () => {
         }
       }
     });
-  };
+  }, []);
 
-  const fetchNews = useCallback(async (country = selectedCountry, sport = selectedSport, forceRefresh = false) => {
+  const fetchNews = useCallback(async (country, sport, forceRefresh = false) => {
     try {
       setLoading(true);
       setApiExhausted(false);
@@ -172,6 +172,7 @@ const News = () => {
       
       // Check if API returned no results (might be exhausted)
       if (newsData.length === 0) {
+        console.warn('News API: No results returned, possibly quota exhausted. Using fallback content.');
         setApiExhausted(true);
         setArticles(fallbackNews);
         setFilteredArticles(fallbackNews);
@@ -185,7 +186,21 @@ const News = () => {
         console.log('Fresh news data fetched and cached');
       }
     } catch (error) {
-      console.error("Error fetching news:", error);
+      // Check if it's an API limit error
+      const isQuotaError = error.response?.status === 429 || 
+                          error.response?.status === 403 ||
+                          error.response?.data?.message?.toLowerCase().includes('quota') ||
+                          error.response?.data?.message?.toLowerCase().includes('limit');
+      
+      if (isQuotaError) {
+        console.warn('News API: Quota/limit reached. Using fallback content. Error details:', {
+          status: error.response?.status,
+          message: error.response?.data?.message
+        });
+      } else {
+        console.error("News API: Unexpected error occurred:", error.message);
+      }
+      
       // Try to use cached data even if API fails
       const cachedData = getFromCache(country, sport);
       if (cachedData) {
@@ -195,6 +210,7 @@ const News = () => {
         setNextRefreshTime(cachedData.timestamp + (24 * 60 * 60 * 1000));
       } else {
         // Use fallback news if no cache available
+        console.log('No cached data available, using fallback content');
         setApiExhausted(true);
         setArticles(fallbackNews);
         setFilteredArticles(fallbackNews);
@@ -202,7 +218,7 @@ const News = () => {
     } finally {
       setLoading(false);
     }
-  }, [selectedCountry, selectedSport]);
+  }, [fallbackNews, getFromCache, saveToCache, clearOldCache]);
 
   useEffect(() => {
     fetchNews(selectedCountry, selectedSport);

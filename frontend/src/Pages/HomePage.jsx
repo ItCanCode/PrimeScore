@@ -6,8 +6,8 @@ import { useNavigate, useLocation } from 'react-router-dom';
 
 function HomePage() {
   const location = useLocation();
-  const role = location.state?.role;
-  console.log(role);
+  const role = location.state?.role || 'viewer'; // Default to 'viewer' if no role
+  console.log('HomePage role:', role);
 
   const [_error, _setError] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -64,7 +64,7 @@ function HomePage() {
   };
 
   const handleNavigation = (path) => {
-    navigate(path);
+    navigate(path, { state: { role } });
     setDropdownOpen(false);
   };
 
@@ -88,9 +88,10 @@ function HomePage() {
             {(isManager || isAdmin || isViewer) && (
               <li>
                 <a
-                  href="#home"
+                  href="#"
                   onClick={(e) => {
                     e.preventDefault();
+                    e.stopPropagation();
                     handleNavigation("/sports");
                   }}
                 >
@@ -98,6 +99,19 @@ function HomePage() {
                 </a>
               </li>
             )}
+
+            <li>
+              <a
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleNavigation("/primeshots");
+                }}
+              >
+                PrimeShots
+              </a>
+            </li>
 
             <li>
               <a>Contact</a>

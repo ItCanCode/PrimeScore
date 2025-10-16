@@ -1,0 +1,400 @@
+/* PrimeShots - YouTube Shorts Integration with PrimeScore Styling */
+
+.primeshots-container {
+  font-family: 'Arial', sans-serif;
+  background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+  color: white;
+  min-height: 100vh;
+  overflow-x: hidden;
+  width: 100%;
+  padding-top: 80px; /* Account for fixed navbar */
+}
+
+/* Ensure navbar compatibility */
+.primeshots-container .navbar {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 1000;
+}
+
+.primeshots-wrapper {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
+  width: 100%;
+}
+
+/* Header Section */
+.primeshots-header {
+  text-align: center;
+  margin-bottom: 3rem;
+  animation: fadeInUp 0.8s ease-out;
+}
+
+.primeshots-title {
+  font-size: clamp(2.5rem, 6vw, 4rem);
+  font-weight: 900;
+  margin-bottom: 1rem;
+  background: linear-gradient(45deg, #ff6b35, #f7931e, #ffbd69, #ff6b35);
+  background-size: 400% 400%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradientShift 3s ease-in-out infinite;
+}
+
+.primeshots-subtitle {
+  font-size: 1.3rem;
+  opacity: 0.9;
+  margin-bottom: 2rem;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* Sport Selector */
+.sport-selector-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 3rem;
+  animation: fadeInUp 0.8s ease-out 0.2s both;
+}
+
+.sport-selector {
+  padding: 1rem 2rem;
+  font-size: 1.1rem;
+  border: 2px solid rgba(255, 107, 53, 0.5);
+  border-radius: 25px;
+  background: rgba(26, 26, 46, 0.8);
+  color: white;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  outline: none;
+  min-width: 200px;
+}
+
+.sport-selector:hover,
+.sport-selector:focus {
+  border-color: #ff6b35;
+  background: rgba(255, 107, 53, 0.1);
+  box-shadow: 0 5px 15px rgba(255, 107, 53, 0.2);
+  transform: translateY(-2px);
+}
+
+.sport-selector option {
+  background: #1a1a2e;
+  color: white;
+  padding: 0.5rem;
+}
+
+/* Loading State */
+.primeshots-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 50vh;
+}
+
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid rgba(255, 107, 53, 0.2);
+  border-top: 4px solid #ff6b35;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1.5rem;
+}
+
+.loading-text {
+  font-size: 1.3rem;
+  font-weight: 600;
+  background: linear-gradient(45deg, #ff6b35, #f7931e);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Error State */
+.primeshots-error {
+  text-align: center;
+  background: rgba(220, 38, 127, 0.1);
+  border: 2px solid rgba(220, 38, 127, 0.3);
+  border-radius: 15px;
+  padding: 2rem;
+  margin: 2rem 0;
+}
+
+.error-icon {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.error-message {
+  color: #ff6b8a;
+  font-size: 1.1rem;
+  margin-bottom: 1.5rem;
+}
+
+.error-retry-btn {
+  padding: 0.8rem 2rem;
+  background: linear-gradient(45deg, #dc267f, #ff6b8a);
+  color: white;
+  border: none;
+  border-radius: 25px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1rem;
+}
+
+.error-retry-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(220, 38, 127, 0.3);
+}
+
+/* Empty State */
+.primeshots-empty {
+  text-align: center;
+  padding: 3rem 2rem;
+  opacity: 0.8;
+}
+
+.empty-message {
+  font-size: 1.3rem;
+  margin-bottom: 0.5rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.empty-suggestion {
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* Videos Grid */
+.videos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 2rem;
+  animation: fadeInUp 0.8s ease-out 0.4s both;
+}
+
+/* Video Card */
+.video-card {
+  background: rgba(26, 26, 46, 0.8);
+  border-radius: 20px;
+  padding: 1.5rem;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 107, 53, 0.1);
+  transition: all 0.3s ease;
+  overflow: hidden;
+  position: relative;
+}
+
+.video-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  border-color: rgba(255, 107, 53, 0.3);
+}
+
+.video-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(45deg, #ff6b35, #f7931e);
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+}
+
+.video-card:hover::before {
+  transform: scaleX(1);
+}
+
+/* Video iframe */
+.video-iframe {
+  width: 100%;
+  height: 280px;
+  border: none;
+  border-radius: 12px;
+  margin-bottom: 1rem;
+  background-color: #000;
+  transition: all 0.3s ease;
+}
+
+.video-iframe:focus {
+  outline: 3px solid #ff6b35;
+  outline-offset: 2px;
+  border-radius: 15px;
+}
+
+.video-iframe:focus-visible {
+  outline: 3px solid #ff6b35;
+  outline-offset: 2px;
+}
+
+/* Ensure iframe container doesn't have conflicting accessibility attributes */
+.video-card {
+  position: relative;
+}
+
+.video-card:focus-within {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 35px rgba(255, 107, 53, 0.3);
+}
+
+/* Video Error Placeholder */
+.video-error-placeholder {
+  width: 100%;
+  height: 280px;
+  background: rgba(255, 107, 53, 0.1);
+  border: 2px dashed rgba(255, 107, 53, 0.3);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.video-error-placeholder .error-icon {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.watch-on-youtube-btn {
+  padding: 0.5rem 1rem;
+  background: linear-gradient(45deg, #ff0000, #cc0000);
+  color: white;
+  text-decoration: none;
+  border-radius: 20px;
+  font-weight: 600;
+  margin-top: 1rem;
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
+}
+
+.watch-on-youtube-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(255, 0, 0, 0.3);
+}
+
+/* Video Info */
+.video-info {
+  padding-top: 1rem;
+}
+
+.video-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: white;
+  margin-bottom: 0.8rem;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.video-channel {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.6);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.video-channel::before {
+  content: '📺';
+  font-size: 0.8rem;
+}
+
+/* Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes gradientShift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .primeshots-wrapper {
+    padding: 1rem;
+  }
+  
+  .primeshots-title {
+    font-size: 2.5rem;
+  }
+  
+  .primeshots-subtitle {
+    font-size: 1.1rem;
+  }
+  
+  .videos-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  
+  .sport-selector {
+    min-width: 180px;
+    font-size: 1rem;
+  }
+  
+  .video-iframe {
+    height: 250px;
+  }
+}
+
+@media (max-width: 480px) {
+  .primeshots-wrapper {
+    padding: 0.5rem;
+  }
+  
+  .video-card {
+    padding: 1rem;
+  }
+  
+  .video-iframe {
+    height: 220px;
+  }
+}
+
+/* Tablet specific adjustments */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .videos-grid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  }
+}
+
+/* Large screens */
+@media (min-width: 1400px) {
+  .videos-grid {
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  }
+}
