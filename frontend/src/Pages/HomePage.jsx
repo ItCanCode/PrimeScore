@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import '../Styles/Home.css';
 import Loading from '../Components/Loading.jsx';
+import News from '../Components/News.jsx';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 function HomePage() {
@@ -158,7 +159,7 @@ function HomePage() {
                   }}
                   role="menuitem"
                 >
-                  🔔 Notifications
+                   Notifications
                 </button>
 
                 <button
@@ -167,7 +168,7 @@ function HomePage() {
                   onClick={() => handleNavigation("/profile")}
                   role="menuitem"
                 >
-                  👤 Profile
+                   Profile
                 </button>
 
                 <button 
@@ -176,7 +177,7 @@ function HomePage() {
                   onClick={() => handleNavigation("/settings")}
                   role="menuitem"
                 >
-                  ⚙️ Settings
+                   Settings
                 </button>
 
                 <button 
@@ -185,7 +186,7 @@ function HomePage() {
                   onClick={handleLogout}
                   role="menuitem"
                 >
-                  🚪 Logout
+                   Logout
                 </button>
               </div>
             )}
@@ -194,7 +195,13 @@ function HomePage() {
       </nav>
 
       <section className="hero" id="home">
-        <div className="hero-content"></div>
+        <div className="hero-content">
+          {/* News Section moved up in the main content area */}
+          <div className="news-dashboard">
+            <h2 className="news-dashboard-title">Latest Sports News</h2>
+            <News />
+          </div>
+        </div>
 
         {/* Floating Sports Icons */}
         <div className="floating-icon icon-1">⚽</div>

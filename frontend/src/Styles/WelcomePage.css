@@ -844,3 +844,63 @@ footer {
         flex-direction: row;
     }
 }
+
+/* Rate Us Button - Fixed Bottom Right */
+.rate-us-btn {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    background: linear-gradient(45deg, #ff6b35, #f7931e);
+    color: white;
+    padding: 1rem 1.5rem;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1rem;
+    box-shadow: 0 8px 32px rgba(255, 107, 53, 0.3);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+    z-index: 999;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    animation: pulse-glow 2s infinite;
+}
+
+.rate-us-btn:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 12px 40px rgba(255, 107, 53, 0.5);
+    background: linear-gradient(45deg, #f7931e, #ff6b35);
+}
+
+.rate-us-btn:active {
+    transform: translateY(-1px) scale(1.02);
+}
+
+/* Pulse glow animation */
+@keyframes pulse-glow {
+    0%, 100% {
+        box-shadow: 0 8px 32px rgba(255, 107, 53, 0.3);
+    }
+    50% {
+        box-shadow: 0 8px 32px rgba(255, 107, 53, 0.6);
+    }
+}
+
+/* Mobile responsiveness for Rate Us button */
+@media screen and (max-width: 576px) {
+    .rate-us-btn {
+        bottom: 1rem;
+        right: 1rem;
+        padding: 0.8rem 1.2rem;
+        font-size: 0.9rem;
+    }
+}
+
+@media screen and (max-width: 400px) {
+    .rate-us-btn {
+        padding: 0.7rem 1rem;
+        font-size: 0.8rem;
+    }
+}

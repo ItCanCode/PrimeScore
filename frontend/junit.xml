@@ -59,7 +59,7 @@
     </testcase>
     <testcase classname="matchService saves a match successfully" name="matchService saves a match successfully" time="0.009">
     </testcase>
-    <testcase classname="matchService starts match after scheduled time" name="matchService starts match after scheduled time" time="0.004">
+    <testcase classname="handleDeleteMatch sets error message if deleteMatchService fails" name="handleDeleteMatch sets error message if deleteMatchService fails" time="0.002">
     </testcase>
     <testcase classname="matchService fetches matches" name="matchService fetches matches" time="0.001">
     </testcase>
@@ -69,7 +69,7 @@
     </testcase>
     <testcase classname="matchService deletes a match" name="matchService deletes a match" time="0.003">
     </testcase>
-    <testcase classname="matchService fetches teams" name="matchService fetches teams" time="0.003">
+    <testcase classname="LeagueModal calls onClose when close button is clicked" name="LeagueModal calls onClose when close button is clicked" time="0.318">
     </testcase>
     <testcase classname="matchService fetches live stats" name="matchService fetches live stats" time="0.001">
     </testcase>
