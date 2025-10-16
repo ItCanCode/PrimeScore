@@ -172,6 +172,7 @@ const News = () => {
       
       // Check if API returned no results (might be exhausted)
       if (newsData.length === 0) {
+        console.warn('News API: No results returned, possibly quota exhausted. Using fallback content.');
         setApiExhausted(true);
         setArticles(fallbackNews);
         setFilteredArticles(fallbackNews);
@@ -185,7 +186,21 @@ const News = () => {
         console.log('Fresh news data fetched and cached');
       }
     } catch (error) {
-      console.error("Error fetching news:", error);
+      // Check if it's an API limit error
+      const isQuotaError = error.response?.status === 429 || 
+                          error.response?.status === 403 ||
+                          error.response?.data?.message?.toLowerCase().includes('quota') ||
+                          error.response?.data?.message?.toLowerCase().includes('limit');
+      
+      if (isQuotaError) {
+        console.warn('News API: Quota/limit reached. Using fallback content. Error details:', {
+          status: error.response?.status,
+          message: error.response?.data?.message
+        });
+      } else {
+        console.error("News API: Unexpected error occurred:", error.message);
+      }
+      
       // Try to use cached data even if API fails
       const cachedData = getFromCache(country, sport);
       if (cachedData) {
@@ -195,6 +210,7 @@ const News = () => {
         setNextRefreshTime(cachedData.timestamp + (24 * 60 * 60 * 1000));
       } else {
         // Use fallback news if no cache available
+        console.log('No cached data available, using fallback content');
         setApiExhausted(true);
         setArticles(fallbackNews);
         setFilteredArticles(fallbackNews);

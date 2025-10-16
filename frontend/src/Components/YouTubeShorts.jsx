@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import "../Styles/PrimeShots.css";
 import "../Styles/Home.css"; // For navbar styles
@@ -9,7 +9,6 @@ const YouTubeShorts = () => {
   const navigate = useNavigate();
   const [videos, setVideos] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [selectedSport, setSelectedSport] = useState("football");
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
@@ -20,6 +19,38 @@ const YouTubeShorts = () => {
   const isManager = userRole === 'manager';
   const isAdmin = userRole === 'admin';
   const isViewer = userRole === 'viewer';
+
+  // Cache management functions
+  const getCacheKey = useCallback((sport) => `youtube_shorts_${sport}`, []);
+  
+  const saveToCache = useCallback((sport, data) => {
+    const cacheKey = getCacheKey(sport);
+    const cacheData = {
+      videos: data,
+      timestamp: Date.now(),
+      sport
+    };
+    localStorage.setItem(cacheKey, JSON.stringify(cacheData));
+  }, [getCacheKey]);
+
+  const getFromCache = useCallback((sport) => {
+    const cacheKey = getCacheKey(sport);
+    const cached = localStorage.getItem(cacheKey);
+    if (cached) {
+      const cacheData = JSON.parse(cached);
+      const hoursSinceCache = (Date.now() - cacheData.timestamp) / (1000 * 60 * 60);
+      
+      // Return cached data if it's less than 1 hour old (YouTube quota is more restrictive)
+      if (hoursSinceCache < 1) {
+        return {
+          videos: cacheData.videos,
+          timestamp: cacheData.timestamp,
+          hoursRemaining: 1 - hoursSinceCache
+        };
+      }
+    }
+    return null;
+  }, [getCacheKey]);
 
   const handleNavigation = (path) => {
     console.log('YouTubeShorts navigating to:', path, 'with role:', userRole);
@@ -90,20 +121,63 @@ const YouTubeShorts = () => {
   useEffect(() => {
     const fetchShorts = async () => {
       setLoading(true);
-      setError(null);
+      
       try {
+        // Check cache first
+        const cachedData = getFromCache(selectedSport);
+        if (cachedData) {
+          console.log(`YouTube API: Using cached data for ${selectedSport}, ${cachedData.hoursRemaining.toFixed(1)} hours until refresh`);
+          setVideos(cachedData.videos);
+          setLoading(false);
+          return;
+        }
+        
         const res = await axios.get(`/api/youtube/shorts?sport=${selectedSport}`);
-        setVideos(res.data.videos || []);
+        const videosData = res.data.videos || [];
+        
+        if (videosData.length === 0) {
+          console.warn('YouTube API: No videos returned, possibly quota exhausted.');
+          // Set empty videos array but don't show error to user
+          setVideos([]);
+        } else {
+          // Save to cache
+          saveToCache(selectedSport, videosData);
+          setVideos(videosData);
+          console.log(`YouTube API: Successfully fetched ${videosData.length} videos for ${selectedSport}`);
+        }
       } catch (error) {
-        console.error("Error fetching YouTube shorts:", error);
-        setError(error.response?.data?.message || "Failed to load PrimeShots. Please try again later.");
+        // Check if it's an API limit error
+        const isQuotaError = error.response?.status === 429 || 
+                            error.response?.status === 403 ||
+                            error.response?.data?.message?.toLowerCase().includes('quota') ||
+                            error.response?.data?.message?.toLowerCase().includes('limit');
+        
+        if (isQuotaError) {
+          console.warn('YouTube API: Quota/limit reached. Error details:', {
+            status: error.response?.status,
+            message: error.response?.data?.message
+          });
+          
+          // Try to use cached data even if expired
+          const cachedData = getFromCache(selectedSport);
+          if (cachedData) {
+            console.log('YouTube API: Using expired cached data due to quota limit');
+            setVideos(cachedData.videos);
+          } else {
+            setVideos([]);
+          }
+        } else {
+          console.error("YouTube API: Unexpected error occurred:", error.message);
+          // For other errors, still don't show to user
+          setVideos([]);
+        }
       } finally {
         setLoading(false);
       }
     };
 
     fetchShorts();
-  }, [selectedSport]);
+  }, [selectedSport, getFromCache, saveToCache]);
 
   // Suppress known YouTube ad-related CORS errors
   useEffect(() => {
@@ -425,18 +499,7 @@ const YouTubeShorts = () => {
           </select>
         </div>
 
-        {error ? (
-          <div className="primeshots-error">
-            <p className="error-icon">⚠️ Oops!</p>
-            <p className="error-message">{error}</p>
-            <button 
-              onClick={() => window.location.reload()} 
-              className="error-retry-btn"
-            >
-              Try Again
-            </button>
-          </div>
-        ) : videos.length === 0 ? (
+        {videos.length === 0 ? (
           <div className="primeshots-empty">
             <p className="empty-message">No shorts available for this sport.</p>
             <p className="empty-suggestion">Try selecting a different sport from the dropdown above.</p>
