@@ -334,11 +334,6 @@ const News = () => {
 
       {/* Results Info */}
       <div className="results-info">
-        {apiExhausted && (
-          <div className="api-exhausted-notice">
-            <p> API limit reached. Showing sample sports news.</p>
-          </div>
-        )}
         <p>
           {searchTerm ? 
             `Found ${filteredArticles.length} articles for "${searchTerm}" in ${sports.find(s => s.id === selectedSport)?.name}${selectedSport === 'all' ? ` from ${countries.find(c => c.code === selectedCountry)?.name}` : ' worldwide'}` : 
