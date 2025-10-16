@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useMemo } from "react";
 import axios from "axios";
 
 // Clean version without refresh UI
@@ -35,8 +35,8 @@ const News = () => {
     { id: "volleyball", name: "Volleyball" }
   ];
 
-  // Fallback news data for when API is exhausted
-  const fallbackNews = [
+  // Fallback news data for when API is exhausted - memoized to prevent recreation
+  const fallbackNews = useMemo(() => [
     {
       title: "Major League Soccer Championship Finals Set for This Weekend",
       description: "The most anticipated soccer match of the year is approaching as two top teams prepare to face off in the championship finals.",
@@ -79,12 +79,12 @@ const News = () => {
       image_url: null,
       pubDate: new Date().toISOString()
     }
-  ];
+  ], []);
 
   // Helper functions for caching and time management
-  const getCacheKey = (country, sport) => `news_${country}_${sport}`;
+  const getCacheKey = useCallback((country, sport) => `news_${country}_${sport}`, []);
   
-  const saveToCache = (country, sport, data) => {
+  const saveToCache = useCallback((country, sport, data) => {
     const cacheKey = getCacheKey(country, sport);
     const cacheData = {
       articles: data,
@@ -93,9 +93,9 @@ const News = () => {
       sport
     };
     localStorage.setItem(cacheKey, JSON.stringify(cacheData));
-  };
+  }, [getCacheKey]);
 
-  const getFromCache = (country, sport) => {
+  const getFromCache = useCallback((country, sport) => {
     const cacheKey = getCacheKey(country, sport);
     const cached = localStorage.getItem(cacheKey);
     if (cached) {
@@ -112,9 +112,9 @@ const News = () => {
       }
     }
     return null;
-  };
+  }, [getCacheKey]);
 
-  const clearOldCache = () => {
+  const clearOldCache = useCallback(() => {
     const keys = Object.keys(localStorage);
     keys.forEach(key => {
       if (key.startsWith('news_')) {
@@ -128,9 +128,9 @@ const News = () => {
         }
       }
     });
-  };
+  }, []);
 
-  const fetchNews = useCallback(async (country = selectedCountry, sport = selectedSport, forceRefresh = false) => {
+  const fetchNews = useCallback(async (country, sport, forceRefresh = false) => {
     try {
       setLoading(true);
       setApiExhausted(false);
@@ -202,7 +202,7 @@ const News = () => {
     } finally {
       setLoading(false);
     }
-  }, [selectedCountry, selectedSport]);
+  }, [fallbackNews, getFromCache, saveToCache, clearOldCache]);
 
   useEffect(() => {
     fetchNews(selectedCountry, selectedSport);
