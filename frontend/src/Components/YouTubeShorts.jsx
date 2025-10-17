@@ -248,7 +248,7 @@ const YouTubeShorts = () => {
       setCurrentVideoIndex(0); // Reset to first video
       
       try {
-        const response = await axios.get(`/api/youtube/shorts?sport=${selectedSport}`);
+        const response = await axios.get(`https://prime-backend.azurewebsites.net/api/youtube/shorts?sport=${selectedSport}`);
         
         if (response.data && response.data.videos) {
           setVideos(response.data.videos);

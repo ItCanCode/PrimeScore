@@ -132,7 +132,7 @@ const News = () => {
       
       try {
         const searchQuery = selectedSport === "all" ? "sports" : selectedSport;
-        const response = await axios.get(`/api/news?q=${searchQuery}&country=${selectedCountry}`);
+        const response = await axios.get(`https://prime-backend.azurewebsites.net/api/news?q=${searchQuery}&country=${selectedCountry}`);
         
         if (response.data && response.data.results) {
           setArticles(response.data.results);
