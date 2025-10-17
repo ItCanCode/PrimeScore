@@ -8,16 +8,19 @@ export default function Navbar({
   showForm,
   setShowForm
 }) {
-      const handleNavigation = (path) => { navigate(path); setDropdownOpen(false);};
-      const handleLogout = () => {
+  const navigate = useNavigate();
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  
+  const handleNavigation = (path) => { 
+    navigate(path); 
+    setDropdownOpen(false);
+  };
+  
+  const handleLogout = () => {
     localStorage.removeItem("authToken");
     navigate("/");
     setDropdownOpen(false);
   };
-
-  const navigate = useNavigate();
-
-  const [dropdownOpen, setDropdownOpen] = useState(false);
   // Role-based booleans
   const [isManager, setIsManager] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
@@ -58,6 +61,18 @@ export default function Navbar({
           )}
 
           <li>
+            <a
+              href="#primeshots"
+              onClick={(e) => {
+                e.preventDefault();
+                handleNavigation("/primeshots");
+              }}
+            >
+              PrimeShots
+            </a>
+          </li>
+
+          <li>
             <a href="#contact">Contact</a>
           </li>
 
@@ -91,14 +106,16 @@ export default function Navbar({
         </ul>
 
         <div className="auth-buttons">
-          <div className="mai-nav-buttons">
-            <button
-              className="mai-create-btn"
-              onClick={() => setShowForm(!showForm)}
-            >
-              <Plus size={18} /> Create Match
-            </button>
-          </div>
+          {(isAdmin || isManager) && (
+            <div className="mai-nav-buttons">
+              <button
+                className="mai-create-btn"
+                onClick={() => setShowForm(!showForm)}
+              >
+                <Plus size={18} /> Create Match
+              </button>
+            </div>
+          )}
 
           <button
             className="auth-btn login-btn"
@@ -118,7 +135,7 @@ export default function Navbar({
                 onClick={() => setDropdownOpen(false)}
                 role="menuitem"
               >
-                🔔 Notifications
+                 Notifications
               </button>
 
               <button
@@ -127,7 +144,7 @@ export default function Navbar({
                 onClick={() => handleNavigation("/profile")}
                 role="menuitem"
               >
-                👤 Profile
+                 Profile
               </button>
 
               <button
@@ -136,7 +153,7 @@ export default function Navbar({
                 onClick={() => handleNavigation("/settings")}
                 role="menuitem"
               >
-                ⚙️ Settings
+                 Settings
               </button>
 
               <button
@@ -145,7 +162,7 @@ export default function Navbar({
                 onClick={handleLogout}
                 role="menuitem"
               >
-                🚪 Logout
+                 Logout
               </button>
             </div>
           )}

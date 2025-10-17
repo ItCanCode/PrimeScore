@@ -3,7 +3,6 @@ import "@testing-library/jest-dom";
 import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import ProfileCard from "../src/Components/ProfileCard";
 
-
 jest.mock("../src/Components/Loading", () => () => <div>Loading...</div>);
 
 describe("ProfileCard", () => {
@@ -11,32 +10,40 @@ describe("ProfileCard", () => {
     username: "JohnDoe",
     picture: "avatar.png",
     profile: { bio: "Hello world", location: "NYC" },
-    createdAt: { _seconds: 1609459200 } 
+    createdAt: { _seconds: 1609459200 },
   };
 
   beforeEach(() => {
+    
     jest.spyOn(Storage.prototype, "getItem").mockReturnValue("fake-token");
 
     global.fetch = jest.fn((url, options) => {
+
       if (url.endsWith("/api/users/me") && !options?.method) {
         return Promise.resolve({
           ok: true,
-          json: () => Promise.resolve({ user: fakeUser })
+          json: () => Promise.resolve({ user: fakeUser }),
         });
       }
 
       if (url.endsWith("/api/users/me") && options?.method === "PUT") {
         const body = JSON.parse(options.body);
+        const updatedUser = {
+          ...fakeUser,
+          username: body.username || fakeUser.username,
+          picture: body.picture || fakeUser.picture,
+          profile: { ...fakeUser.profile, ...body.profile },
+        };
         return Promise.resolve({
           ok: true,
-          json: () => Promise.resolve({ user: { ...fakeUser, ...body } })
+          json: () => Promise.resolve({ user: updatedUser }),
         });
       }
 
       if (url.endsWith("/api/users/upload")) {
         return Promise.resolve({
           ok: true,
-          json: () => Promise.resolve({ url: "uploaded.png" })
+          json: () => Promise.resolve({ url: "uploaded.png" }),
         });
       }
 
@@ -44,6 +51,7 @@ describe("ProfileCard", () => {
     });
 
     global.URL.createObjectURL = jest.fn(() => "blob:image");
+    global.URL.revokeObjectURL = jest.fn();
   });
 
   afterEach(() => {
@@ -88,7 +96,7 @@ describe("ProfileCard", () => {
     });
   });
 
-  it("handles image upload", async () => {
+  it("handles image upload and sets preview URL", async () => {
     render(<ProfileCard />);
     await waitFor(() => screen.getByText("JohnDoe"));
 
@@ -100,6 +108,10 @@ describe("ProfileCard", () => {
     fireEvent.change(inputFile, { target: { files: [file] } });
 
     expect(global.URL.createObjectURL).toHaveBeenCalledWith(file);
+
+    await waitFor(() => {
+      const img = screen.getByRole("img");
+      expect(img.src).toBe("blob:image");
+    });
   });
 });
-

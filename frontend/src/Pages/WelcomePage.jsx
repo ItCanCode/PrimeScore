@@ -174,6 +174,17 @@ function WelcomePage() {
         <p>&copy; PrimeScore. All rights reserved. Where passion meets performance.</p>
       </footer>
 
+      {/* Rate Us Button - Fixed Bottom Right */}
+      <a 
+        href="https://docs.google.com/forms/d/1irHNT1aGeJmUG346bLl7Sw_kvbqYQcthBtSF2knDaLM/viewform?edit_requested=true#responses"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="rate-us-btn"
+        title="Rate Our App"
+      >
+        ⭐ Rate Us
+      </a>
+
       {/* Conditionally render modals */}
       {modalType === 'login' && (
         <LoginModal

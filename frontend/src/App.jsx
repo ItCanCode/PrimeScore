@@ -18,6 +18,7 @@ import UpcomingMatches from "./Components/upcomingMatches.jsx";
 import FixRug from "./Pages/RugbyFixture.jsx";
 import PastMatches from "./Pages/PastMatches.jsx";
 import { RugbyLocal } from "./Pages/RugbyLocal.jsx";
+import YouTubeShorts from "./Components/YouTubeShorts.jsx";
 function App() {
   return (
     <>
@@ -41,6 +42,7 @@ function App() {
         <Route path="/past" element={<PastMatches/>}/>
         <Route path="/rugby/super-rugby" element={<FixRug/>}/>
         <Route path="/rugby/local-leagues" element={<RugbyLocal/>}/>
+        <Route path="/primeshots" element={<YouTubeShorts/>}/>
       </Routes>
       </AuthProvider>
     </>

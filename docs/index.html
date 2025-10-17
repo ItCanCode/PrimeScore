@@ -572,6 +572,154 @@
     <li><strong>Testing Coverage</strong> — Extensive Jest test suites for all major endpoints and controllers</li>
     <li><strong>Azure Deployment</strong> — Hosted on Azure App Service with automatic scaling and monitoring</li>
   </ul>
+
+  <h3>Public API Access Guide</h3>
+  <p>
+    <strong>This section provides comprehensive information on how to access PrimeScore APIs publicly</strong>, including base URLs, authentication methods, and integration examples for external developers and applications.
+  </p>
+
+  <h4>Base URLs</h4>
+  <ul>
+    <li><strong>Production:</strong> <code>https://prime-backend.azurewebsites.net</code></li>
+    <li><strong>Development:</strong> <code>http://localhost:3000</code></li>
+  </ul>
+
+  <h4>Public Endpoints (No Authentication Required)</h4>
+  
+  <h5>Authentication</h5>
+  <pre><code>POST https://prime-backend.azurewebsites.net/auth/google
+Content-Type: application/json
+
+{
+  "idToken": "your-google-id-token",
+  "action": "login" | "signup"
+}</code></pre>
+  
+  <h5>Public Match Data</h5>
+  <pre><code>GET https://prime-backend.azurewebsites.net/api/users/viewMatches</code></pre>
+  <p><strong>Returns:</strong> All matches available for public viewing</p>
+  
+  <h5>Display & Match Information</h5>
+  <pre><code>GET https://prime-backend.azurewebsites.net/api/display/display-matches
+GET https://prime-backend.azurewebsites.net/api/display/past-matches
+GET https://prime-backend.azurewebsites.net/api/display/match-events/{matchId}</code></pre>
+  
+  <h5>Rugby Live Data</h5>
+  <pre><code>GET https://prime-backend.azurewebsites.net/api/rugby/live/{date}
+POST https://prime-backend.azurewebsites.net/api/rugby/live</code></pre>
+  
+  <h5>System Health</h5>
+  <pre><code>GET https://prime-backend.azurewebsites.net/api/hello
+GET https://prime-backend.azurewebsites.net/</code></pre>
+
+  <h4>Protected Endpoints (Authentication Required)</h4>
+  <p>For protected endpoints, include a Bearer token in the Authorization header:</p>
+  <pre><code>Authorization: Bearer your-firebase-id-token</code></pre>
+  
+  <h5>JavaScript Example</h5>
+  <pre><code>fetch('https://prime-backend.azurewebsites.net/api/users/me', {
+  method: 'GET',
+  headers: {
+    'Authorization': 'Bearer your-firebase-token',
+    'Content-Type': 'application/json'
+  }
+})</code></pre>
+
+  <h4>CORS Configuration</h4>
+  <p>The API accepts requests from:</p>
+  <ul>
+    <li><code>https://prime-score.vercel.app</code> (production frontend)</li>
+    <li><code>http://localhost:5173</code> (development frontend)</li>
+  </ul>
+  <p><em>Note: For access from other domains, CORS configuration needs to be updated in backend/src/middleware/cors.js</em></p>
+
+  <h4>API Testing Examples</h4>
+  
+  <h5>Using cURL</h5>
+  <pre><code># Public endpoint
+curl https://prime-backend.azurewebsites.net/api/users/viewMatches
+
+# Protected endpoint
+curl -H "Authorization: Bearer your-token" \
+     https://prime-backend.azurewebsites.net/api/users/me</code></pre>
+  
+  <h5>Using JavaScript/Fetch</h5>
+  <pre><code>// Public API call
+const matches = await fetch('https://prime-backend.azurewebsites.net/api/users/viewMatches')
+  .then(res => res.json());
+
+// Protected API call with authentication
+const userData = await fetch('https://prime-backend.azurewebsites.net/api/users/me', {
+  headers: {
+    'Authorization': `Bearer ${firebaseToken}`
+  }
+}).then(res => res.json());</code></pre>
+  
+  <h5>Using Postman</h5>
+  <ol>
+    <li>Set base URL: <code>https://prime-backend.azurewebsites.net</code></li>
+    <li>Add endpoint path (e.g., <code>/api/users/viewMatches</code>)</li>
+    <li>For protected routes, add header: <code>Authorization: Bearer {token}</code></li>
+    <li>Set Content-Type: <code>application/json</code></li>
+  </ol>
+
+  <h4>Integration Examples</h4>
+  
+  <h5>Mobile App Integration</h5>
+  <pre><code>const API_BASE = 'https://prime-backend.azurewebsites.net';
+
+// Get live matches
+const liveMatches = await fetch(`${API_BASE}/api/display/display-matches`)
+  .then(res => res.json());
+
+// Get specific match events
+const matchEvents = await fetch(`${API_BASE}/api/display/match-events/matchId123`)
+  .then(res => res.json());</code></pre>
+  
+  <h5>Website Widget Integration</h5>
+  <pre><code>// Embed live scores on external website
+fetch('https://prime-backend.azurewebsites.net/api/display/display-matches')
+  .then(response => response.json())
+  .then(matches => {
+    // Display matches in your widget
+    matches.forEach(match => {
+      console.log(`${match.homeTeam} vs ${match.awayTeam}: ${match.score}`);
+    });
+  })
+  .catch(error => console.error('API Error:', error));</code></pre>
+
+  <h4>Restricted Access APIs</h4>
+  <p><strong>These endpoints are NOT publicly accessible</strong> and require specific roles:</p>
+  <ul>
+    <li><strong>Admin APIs:</strong> <code>/api/admin/*</code> — Admin role required</li>
+    <li><strong>Manager APIs:</strong> <code>/api/manager/*</code> — Authentication required</li>
+    <li><strong>Match Clock APIs:</strong> <code>/api/match-clock/*</code> — Admin/Official only</li>
+  </ul>
+
+  <h4>Error Handling</h4>
+  <p>The API returns standard HTTP status codes:</p>
+  <ul>
+    <li><strong>200:</strong> Success</li>
+    <li><strong>400:</strong> Bad Request (invalid parameters)</li>
+    <li><strong>401:</strong> Unauthorized (missing or invalid token)</li>
+    <li><strong>403:</strong> Forbidden (insufficient permissions)</li>
+    <li><strong>404:</strong> Not Found</li>
+    <li><strong>500:</strong> Internal Server Error</li>
+  </ul>
+  
+  <h5>Example Error Response</h5>
+  <pre><code>{
+  "error": "Unauthorized",
+  "message": "Invalid or expired token"
+}</code></pre>
+
+  <h4>Rate Limiting & Usage Guidelines</h4>
+  <ul>
+    <li><strong>Rate Limits:</strong> Managed by Azure App Service</li>
+    <li><strong>Token Expiry:</strong> Firebase tokens typically expire after 1 hour</li>
+    <li><strong>Best Practices:</strong> Cache responses when possible, handle errors gracefully</li>
+    <li><strong>Support:</strong> Contact the development team for additional access or higher rate limits</li>
+  </ul>
 </section>
 
 <section id="components" class="section" aria-labelledby="component-title">
@@ -668,7 +816,7 @@
 
   <h4>Firebase Real-time Integration</h4>
   <ul>
-    <li><strong>Document Listeners</strong> — onSnapshot integration with match_clocks collection</li>
+    <li><strong>Document Listeners</strong> — onSnapshot integration with matchClocks collection</li>
     <li><strong>Automatic Sync</strong> — Instant clock updates across all connected clients</li>
     <li><strong>Offline Support</strong> — Firebase offline persistence maintains state during network issues</li>
     <li><strong>Conflict Resolution</strong> — Server timestamps ensure consistent time calculations</li>
@@ -1475,7 +1623,7 @@ git branch -d feature/your-feature-name</code></pre>
           </ul>
         </li>
 
-        <li><strong>match_clocks</strong> (collection) — real-time match timing system
+        <li><strong>matchClocks</strong> (collection) — real-time match timing system</li>
           <ul>
             <li><code>matchId</code> — unique identifier matching parent match</li>
             <li><code>elapsed</code> — accumulated elapsed time in seconds</li>
@@ -1523,7 +1671,7 @@ git branch -d feature/your-feature-name</code></pre>
 
       <h3>Database Relationships & Architecture</h3>
       <ul class="bullets">
-        <li><strong>Match Clock Integration:</strong> Each match can have an associated <code>match_clocks</code> document that provides real-time timing functionality</li>
+        <li><strong>Match Clock Integration:</strong> Each match can have an associated <code>matchClocks</code> document that provides real-time timing functionality</li>
         <li><strong>Event Tracking:</strong> <code>matchEvents</code> documents store live match statistics and event arrays, linked by <code>matchId</code></li>
         <li><strong>Team-Player Hierarchy:</strong> Players belong to teams via <code>teamId</code> foreign key relationship</li>
         <li><strong>User Ownership:</strong> Teams and players are associated with users via <code>createdBy</code> field containing Firebase Auth UID</li>

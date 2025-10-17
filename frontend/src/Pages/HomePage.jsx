@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import '../Styles/Home.css';
 import Loading from '../Components/Loading.jsx';
+import News from '../Components/News.jsx';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 function HomePage() {
   const location = useLocation();
-  const role = location.state?.role;
-  console.log(role);
+  const role = location.state?.role || 'viewer'; // Default to 'viewer' if no role
+  console.log('HomePage role:', role);
 
   const [_error, _setError] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -63,7 +64,7 @@ function HomePage() {
   };
 
   const handleNavigation = (path) => {
-    navigate(path);
+    navigate(path, { state: { role } });
     setDropdownOpen(false);
   };
 
@@ -87,9 +88,10 @@ function HomePage() {
             {(isManager || isAdmin || isViewer) && (
               <li>
                 <a
-                  href="#home"
+                  href="#"
                   onClick={(e) => {
                     e.preventDefault();
+                    e.stopPropagation();
                     handleNavigation("/sports");
                   }}
                 >
@@ -97,6 +99,19 @@ function HomePage() {
                 </a>
               </li>
             )}
+
+            <li>
+              <a
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleNavigation("/primeshots");
+                }}
+              >
+                PrimeShots
+              </a>
+            </li>
 
             <li>
               <a>Contact</a>
@@ -158,7 +173,7 @@ function HomePage() {
                   }}
                   role="menuitem"
                 >
-                  🔔 Notifications
+                   Notifications
                 </button>
 
                 <button
@@ -167,7 +182,7 @@ function HomePage() {
                   onClick={() => handleNavigation("/profile")}
                   role="menuitem"
                 >
-                  👤 Profile
+                   Profile
                 </button>
 
                 <button 
@@ -176,7 +191,7 @@ function HomePage() {
                   onClick={() => handleNavigation("/settings")}
                   role="menuitem"
                 >
-                  ⚙️ Settings
+                   Settings
                 </button>
 
                 <button 
@@ -185,7 +200,7 @@ function HomePage() {
                   onClick={handleLogout}
                   role="menuitem"
                 >
-                  🚪 Logout
+                   Logout
                 </button>
               </div>
             )}
@@ -194,7 +209,13 @@ function HomePage() {
       </nav>
 
       <section className="hero" id="home">
-        <div className="hero-content"></div>
+        <div className="hero-content">
+          {/* News Section moved up in the main content area */}
+          <div className="news-dashboard">
+            <h2 className="news-dashboard-title">Latest Sports News</h2>
+            <News />
+          </div>
+        </div>
 
         {/* Floating Sports Icons */}
         <div className="floating-icon icon-1">⚽</div>
