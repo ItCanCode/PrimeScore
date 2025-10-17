@@ -1,10 +1,9 @@
 import axios from "axios";
-import { config } from "../config/apiConfig.js";
 
 export const getSportsShorts = async (req, res) => {
   try {
     const { sport = "football" } = req.query;
-    const apiKey = config.youtube.apiKey;
+    const apiKey = process.env.YOUTUBE_API_KEY;
 
     if (!apiKey) {
       return res.status(500).json({ 
