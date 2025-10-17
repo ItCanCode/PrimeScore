@@ -2,8 +2,15 @@ import axios from "axios";
 
 export const getSportsShorts = async (req, res) => {
   try {
-    const { sport = "football" } = req.query; // default sport
+    const { sport = "football" } = req.query;
     const apiKey = process.env.YOUTUBE_API_KEY;
+
+    if (!apiKey) {
+      return res.status(500).json({ 
+        status: "error", 
+        message: "YouTube API key not configured" 
+      });
+    }
 
     const response = await axios.get(
       "https://www.googleapis.com/youtube/v3/search",
@@ -11,10 +18,11 @@ export const getSportsShorts = async (req, res) => {
         params: {
           key: apiKey,
           part: "snippet",
-          q: `${sport} highlights`, // fetch sports-related shorts
+          q: `${sport} highlights`,
           type: "video",
-          videoDuration: "short",     // only shorts < 60 sec
-          maxResults: 10
+          videoDuration: "short",
+          maxResults: 10,
+          order: "relevance"
         }
       }
     );
@@ -22,13 +30,16 @@ export const getSportsShorts = async (req, res) => {
     const videos = response.data.items.map(item => ({
       videoId: item.id.videoId,
       title: item.snippet.title,
-      thumbnail: item.snippet.thumbnails.high.url,
+      thumbnail: item.snippet.thumbnails.high?.url || item.snippet.thumbnails.default?.url,
       channel: item.snippet.channelTitle
     }));
 
-    res.json({ status: "success", videos });
+    res.json({ videos });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ status: "error", message: "Failed to fetch YouTube shorts" });
+    console.error("YouTube API Error:", error.response?.data || error.message);
+    res.status(500).json({ 
+      status: "error", 
+      message: "Failed to fetch YouTube videos" 
+    });
   }
 };

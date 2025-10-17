@@ -1,7 +1,7 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import "../Styles/PrimeShots.css";
-import "../Styles/Home.css"; // For navbar styles
+import "../Styles/Home.css";
 import { useLocation, useNavigate } from "react-router-dom";
 
 const YouTubeShorts = () => {
@@ -11,52 +11,31 @@ const YouTubeShorts = () => {
   const [loading, setLoading] = useState(true);
   const [selectedSport, setSelectedSport] = useState("football");
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [error, setError] = useState(null);
+  const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
+  const [blockedVideos, setBlockedVideos] = useState(new Set());
+  const containerRef = useRef(null);
+  const videoRefs = useRef([]);
 
   // Get role from location state or default to viewer
   const userRole = location.state?.role || "viewer";
 
-  // Role-based booleans
-  const isManager = userRole === 'manager';
-  const isAdmin = userRole === 'admin';
-  const isViewer = userRole === 'viewer';
+  // Handle blocked videos
+  const handleVideoBlocked = (videoId) => {
+    setBlockedVideos(prev => {
+      const newBlocked = new Set(prev);
+      newBlocked.add(videoId);
+      return newBlocked;
+    });
+  };
 
-  // Cache management functions
-  const getCacheKey = useCallback((sport) => `youtube_shorts_${sport}`, []);
-  
-  const saveToCache = useCallback((sport, data) => {
-    const cacheKey = getCacheKey(sport);
-    const cacheData = {
-      videos: data,
-      timestamp: Date.now(),
-      sport
-    };
-    localStorage.setItem(cacheKey, JSON.stringify(cacheData));
-  }, [getCacheKey]);
-
-  const getFromCache = useCallback((sport) => {
-    const cacheKey = getCacheKey(sport);
-    const cached = localStorage.getItem(cacheKey);
-    if (cached) {
-      const cacheData = JSON.parse(cached);
-      const hoursSinceCache = (Date.now() - cacheData.timestamp) / (1000 * 60 * 60);
-      
-      // Return cached data if it's less than 1 hour old (YouTube quota is more restrictive)
-      if (hoursSinceCache < 1) {
-        return {
-          videos: cacheData.videos,
-          timestamp: cacheData.timestamp,
-          hoursRemaining: 1 - hoursSinceCache
-        };
-      }
-    }
-    return null;
-  }, [getCacheKey]);
+  // Filter out blocked videos
+  const availableVideos = videos.filter(video => !blockedVideos.has(video.videoId));
 
   const handleNavigation = (path) => {
     console.log('YouTubeShorts navigating to:', path, 'with role:', userRole);
     setDropdownOpen(false);
     
-    // Force immediate navigation
     try {
       navigate(path, { 
         state: { role: userRole },
@@ -64,7 +43,6 @@ const YouTubeShorts = () => {
       });
     } catch (error) {
       console.error('Navigation error:', error);
-      // Fallback navigation without state
       navigate(path);
     }
   };
@@ -74,446 +52,365 @@ const YouTubeShorts = () => {
     navigate("/");
     setDropdownOpen(false);
   };
-  
-  // Use the variables to avoid eslint errors
-  console.log("PrimeShots loaded for role:", userRole);
 
-  const VideoFrame = ({ video, index }) => {
+  const VideoFrame = ({ video, index, isActive, onVideoBlocked }) => {
     const [hasError, setHasError] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
+    const iframeRef = useRef(null);
+    
+    const handleIframeError = () => {
+      setHasError(true);
+      setIsLoading(false);
+      // Notify parent component that this video is blocked
+      if (onVideoBlocked) {
+        onVideoBlocked(video.videoId);
+      }
+    };
+
+    // Check if video is blocked after a timeout
+    useEffect(() => {
+      const timer = setTimeout(() => {
+        if (isLoading && !hasError) {
+          // If still loading after 5 seconds, consider it potentially blocked
+          // But don't automatically mark as error - let user decide
+          setIsLoading(false);
+        }
+      }, 5000);
+
+      return () => clearTimeout(timer);
+    }, [isLoading, hasError]);
     
     return (
-      <div key={index} className="video-card">
-        {!hasError ? (
-          <iframe
-            className="video-iframe"
-            src={`https://www.youtube-nocookie.com/embed/${video.videoId}?modestbranding=1&rel=0&showinfo=0&iv_load_policy=3&disablekb=0&fs=1&cc_load_policy=0&origin=${encodeURIComponent(window.location.origin)}&enablejsapi=0`}
-            title={`${video.title} - Sports highlight video`}
-            allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; web-share"
-            allowFullScreen
-            referrerPolicy="strict-origin-when-cross-origin"
-            sandbox="allow-scripts allow-same-origin allow-presentation"
-            loading="lazy"
-            onError={() => setHasError(true)}
-            aria-label={`Video: ${video.title} by ${video.channel}`}
-          />
-        ) : (
-          <div className="video-error-placeholder">
-            <div className="error-icon">⚠️</div>
-            <p>Video unavailable</p>
-            <a 
-              href={`https://youtube.com/watch?v=${video.videoId}`} 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="watch-on-youtube-btn"
-            >
-              Watch on YouTube
-            </a>
+      <div 
+        ref={el => videoRefs.current[index] = el}
+        className={`video-slide ${isActive ? 'active' : ''}`}
+        data-index={index}
+      >
+        <div className="video-container">
+          {!hasError ? (
+            <>
+              <iframe
+                ref={iframeRef}
+                className="video-iframe"
+                src={`https://www.youtube-nocookie.com/embed/${video.videoId}?modestbranding=1&rel=0&autoplay=${isActive ? 1 : 0}&enablejsapi=1`}
+                title={video.title}
+                allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                loading="lazy"
+                onError={handleIframeError}
+                onLoad={() => {
+                  setIsLoading(false);
+                  // Check for blocked content by attempting to communicate with iframe
+                  setTimeout(() => {
+                    try {
+                      if (iframeRef.current && iframeRef.current.contentWindow) {
+                        // Try to post a message to check if iframe is responsive
+                        iframeRef.current.contentWindow.postMessage('ping', '*');
+                      }
+                    } catch (error) {
+                      // If we can't communicate with iframe, it might be blocked
+                      console.warn('Possible video blocking detected:', error);
+                    }
+                  }, 2000);
+                }}
+              />
+              {isLoading && (
+                <div className="video-loading-overlay">
+                  <div className="loading-spinner-small"></div>
+                  <p>Loading video...</p>
+                </div>
+              )}
+            </>
+          ) : (
+            <div className="video-error-placeholder">
+              <div className="error-icon">⚠️</div>
+              <p>Video unavailable for embedding</p>
+              <p className="error-subtitle">This video cannot be displayed in the app</p>
+              <a 
+                href={`https://youtube.com/watch?v=${video.videoId}`} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="watch-on-youtube-btn"
+              >
+                Watch on YouTube
+              </a>
+            </div>
+          )}
+        </div>
+        
+        <div className="video-overlay">
+          <div className="video-info">
+            <h3 className="video-title">{video.title}</h3>
+            <p className="video-channel">By {video.channel}</p>
           </div>
-        )}
-        <div className="video-info">
-          <h3 className="video-title">{video.title}</h3>
-          <p className="video-channel">By {video.channel}</p>
+          
+          <div className="video-actions">
+            <button 
+              className="action-btn external-btn" 
+              title="Watch on YouTube"
+              onClick={() => window.open(`https://youtube.com/watch?v=${video.videoId}`, '_blank')}
+            >
+              🔗
+            </button>
+            {!hasError && (
+              <button 
+                className="action-btn report-btn" 
+                title="Report if video won't play"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (confirm('Is this video not playing or showing an error? This will remove it from the list.')) {
+                    handleIframeError();
+                  }
+                }}
+              >
+                ⚠️
+              </button>
+            )}
+          </div>
         </div>
       </div>
     );
   };
 
+  // Scroll handling for vertical navigation
+  const handleScroll = () => {
+    if (!containerRef.current) return;
+    
+    const container = containerRef.current;
+    const scrollTop = container.scrollTop;
+    const videoHeight = container.clientHeight;
+    const newIndex = Math.round(scrollTop / videoHeight);
+    
+    if (newIndex !== currentVideoIndex && newIndex >= 0 && newIndex < availableVideos.length) {
+      setCurrentVideoIndex(newIndex);
+    }
+  };
+
+  const scrollToVideo = (index) => {
+    if (videoRefs.current[index] && containerRef.current) {
+      videoRefs.current[index].scrollIntoView({ 
+        behavior: 'smooth', 
+        block: 'start' 
+      });
+      setCurrentVideoIndex(index);
+    }
+  };
+
+  // Touch/Swipe handling
+  const [touchStart, setTouchStart] = useState(null);
+  const [touchEnd, setTouchEnd] = useState(null);
+
+  const handleTouchStart = (e) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientY);
+  };
+
+  const handleTouchMove = (e) => {
+    setTouchEnd(e.targetTouches[0].clientY);
+  };
+
+  const handleTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    
+    const distance = touchStart - touchEnd;
+    const isUpSwipe = distance > 50;
+    const isDownSwipe = distance < -50;
+
+    if (isUpSwipe && currentVideoIndex < availableVideos.length - 1) {
+      scrollToVideo(currentVideoIndex + 1);
+    }
+    if (isDownSwipe && currentVideoIndex > 0) {
+      scrollToVideo(currentVideoIndex - 1);
+    }
+  };
+
+  // Keyboard navigation
   useEffect(() => {
-    const fetchShorts = async () => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'ArrowDown' && currentVideoIndex < availableVideos.length - 1) {
+        e.preventDefault();
+        scrollToVideo(currentVideoIndex + 1);
+      } else if (e.key === 'ArrowUp' && currentVideoIndex > 0) {
+        e.preventDefault();
+        scrollToVideo(currentVideoIndex - 1);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [currentVideoIndex, availableVideos.length]);
+
+  useEffect(() => {
+    const fetchVideos = async () => {
       setLoading(true);
+      setError(null);
+      setBlockedVideos(new Set()); // Reset blocked videos when sport changes
+      setCurrentVideoIndex(0); // Reset to first video
       
       try {
-        // Check cache first
-        const cachedData = getFromCache(selectedSport);
-        if (cachedData) {
-          console.log(`YouTube API: Using cached data for ${selectedSport}, ${cachedData.hoursRemaining.toFixed(1)} hours until refresh`);
-          setVideos(cachedData.videos);
-          setLoading(false);
-          return;
-        }
+        const response = await axios.get(`/api/youtube/shorts?sport=${selectedSport}`);
         
-        const res = await axios.get(`/api/youtube/shorts?sport=${selectedSport}`);
-        const videosData = res.data.videos || [];
-        
-        if (videosData.length === 0) {
-          console.warn('YouTube API: No videos returned, possibly quota exhausted.');
-          // Set empty videos array but don't show error to user
-          setVideos([]);
+        if (response.data && response.data.videos) {
+          setVideos(response.data.videos);
         } else {
-          // Save to cache
-          saveToCache(selectedSport, videosData);
-          setVideos(videosData);
-          console.log(`YouTube API: Successfully fetched ${videosData.length} videos for ${selectedSport}`);
+          setVideos([]);
         }
       } catch (error) {
-        // Check if it's an API limit error
-        const isQuotaError = error.response?.status === 429 || 
-                            error.response?.status === 403 ||
-                            error.response?.data?.message?.toLowerCase().includes('quota') ||
-                            error.response?.data?.message?.toLowerCase().includes('limit');
-        
-        if (isQuotaError) {
-          console.warn('YouTube API: Quota/limit reached. Error details:', {
-            status: error.response?.status,
-            message: error.response?.data?.message
-          });
-          
-          // Try to use cached data even if expired
-          const cachedData = getFromCache(selectedSport);
-          if (cachedData) {
-            console.log('YouTube API: Using expired cached data due to quota limit');
-            setVideos(cachedData.videos);
-          } else {
-            setVideos([]);
-          }
-        } else {
-          console.error("YouTube API: Unexpected error occurred:", error.message);
-          // For other errors, still don't show to user
-          setVideos([]);
-        }
+        console.error('Error fetching YouTube videos:', error);
+        setError('Failed to load videos. Please try again later.');
+        setVideos([]);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchShorts();
-  }, [selectedSport, getFromCache, saveToCache]);
+    fetchVideos();
+  }, [selectedSport]);
 
-  // Suppress known YouTube ad-related CORS errors
+  // Adjust current video index when videos are blocked
   useEffect(() => {
-    const originalError = console.error;
-    console.error = (...args) => {
-      const message = args[0];
-      if (
-        typeof message === 'string' && 
-        (
-          message.includes('googleads.g.doubleclick.net') ||
-          message.includes('CORS policy') ||
-          message.includes('aria-hidden on an element because its descendant retained focus')
-        )
-      ) {
-        // Suppress these specific YouTube embed errors
-        return;
-      }
-      originalError.apply(console, args);
-    };
-
-    return () => {
-      console.error = originalError;
-    };
-  }, []);
-
-  if (loading) return (
-    <div className="home">
-      <nav className="navbar">
-        <div className="nav-container">
-          <div className="logo">PrimeScore</div>
-
-          <ul className="nav-links">
-            <li>
-              <a onClick={() => {
-                navigate("/home", {
-                  state: { role: userRole }
-                });
-              }}>News</a>
-            </li>
-            {(isManager || isAdmin || isViewer) && (
-              <li>
-                <a
-                  href="#home"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    handleNavigation("/sports");
-                  }}
-                >
-                  Sports
-                </a>
-              </li>
-            )}
-
-            <li>
-              <a
-                href="#primeshots"
-                onClick={(e) => {
-                  e.preventDefault();
-                  handleNavigation("/primeshots");
-                }}
-              >
-                PrimeShots
-              </a>
-            </li>
-
-            <li>
-              <a>Contact</a>
-            </li>
-            {isManager && (
-              <li>
-                <a
-                  href="#management"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    handleNavigation("/management");
-                  }}
-                >
-                  Manage Team
-                </a>
-              </li>
-            )}
-
-            {isAdmin && (
-              <li>
-                <a
-                  href="#match-admin"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    handleNavigation("/match-admin");
-                  }}
-                >
-                  Manage Matches
-                </a>
-              </li>
-            )}
-          </ul>
-
-          <div className="auth-buttons">
-            <button
-              className="auth-btn login-btn"
-              onClick={() => setDropdownOpen(prev => !prev)}
-              aria-expanded={dropdownOpen}
-              aria-haspopup="true"
-              aria-label="Open menu"
-            >
-              Menu ▼
-            </button>
-
-            {dropdownOpen && (
-              <div 
-                className="dropdown-content"
-                role="menu"
-                aria-label="User menu"
-              >
-                <button 
-                  className="dropdown-item" 
-                  title="Notifications"
-                  onClick={() => {
-                    console.log("Notifications clicked");
-                    setDropdownOpen(false);
-                  }}
-                  role="menuitem"
-                >
-                   Notifications
-                </button>
-
-                <button
-                  className="dropdown-item"
-                  title="Profile"
-                  onClick={() => handleNavigation("/profile")}
-                  role="menuitem"
-                >
-                   Profile
-                </button>
-
-                <button 
-                  className="dropdown-item" 
-                  title="Settings"
-                  onClick={() => handleNavigation("/settings")}
-                  role="menuitem"
-                >
-                   Settings
-                </button>
-
-                <button 
-                  className="dropdown-item" 
-                  title="Logout" 
-                  onClick={handleLogout}
-                  role="menuitem"
-                >
-                   Logout
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
-      </nav>
-
-      <div className="primeshots-loading">
-        <div className="loading-spinner"></div>
-        <p className="loading-text">Loading PrimeShots...</p>
-      </div>
-    </div>
-  );
+    if (currentVideoIndex >= availableVideos.length && availableVideos.length > 0) {
+      setCurrentVideoIndex(availableVideos.length - 1);
+    }
+  }, [availableVideos.length, currentVideoIndex]);
 
   return (
-    <div className="home">
-      <nav className="navbar">
-        <div className="nav-container">
-          <div className="logo">PrimeScore</div>
-
-          <ul className="nav-links">
-            <li>
-              <a onClick={() => {
-                navigate("/home", {
-                  state: { role: userRole }
-                });
-              }}>News</a>
-            </li>
-            {(isManager || isAdmin || isViewer) && (
-              <li>
-                <a
-                  href="#home"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    handleNavigation("/sports");
-                  }}
-                >
-                  Sports
-                </a>
-              </li>
-            )}
-
-            <li>
-              <a
-                href="#primeshots"
-                onClick={(e) => {
-                  e.preventDefault();
-                  handleNavigation("/primeshots");
-                }}
-              >
-                PrimeShots
-              </a>
-            </li>
-
-            <li>
-              <a>Contact</a>
-            </li>
-            {isManager && (
-              <li>
-                <a
-                  href="#management"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    handleNavigation("/management");
-                  }}
-                >
-                  Manage Team
-                </a>
-              </li>
-            )}
-
-            {isAdmin && (
-              <li>
-                <a
-                  href="#match-admin"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    handleNavigation("/match-admin");
-                  }}
-                >
-                  Manage Matches
-                </a>
-              </li>
-            )}
-          </ul>
-
-          <div className="auth-buttons">
-            <button
-              className="auth-btn login-btn"
-              onClick={() => setDropdownOpen(prev => !prev)}
-              aria-expanded={dropdownOpen}
-              aria-haspopup="true"
-              aria-label="Open menu"
+    <div className="primeshots-app">
+      {/* Top Navigation Bar */}
+      <div className="top-nav">
+        <div className="nav-left">
+          <button 
+            onClick={() => handleNavigation('/home')} 
+            className="back-btn"
+            title="Back to Home"
+          >
+            ← Back
+          </button>
+        </div>
+        
+        <div className="nav-center">
+          <h1 className="app-title">PrimeShots</h1>
+        </div>
+        
+        <div className="nav-right">
+          <div className="sport-selector">
+            <select 
+              value={selectedSport} 
+              onChange={(e) => setSelectedSport(e.target.value)}
+              className="sport-dropdown"
+              title="Select Sport"
             >
-              Menu ▼
+              <option value="football">⚽ Football</option>
+              <option value="basketball">🏀 Basketball</option>
+              <option value="cricket">🏏 Cricket</option>
+              <option value="rugby">🏉 Rugby</option>
+              <option value="tennis">🎾 Tennis</option>
+              <option value="baseball">⚾ Baseball</option>
+              <option value="golf">⛳ Golf</option>
+              <option value="hockey">🏒 Hockey</option>
+            </select>
+          </div>
+          
+          <div className="profile-menu">
+            <button 
+              className="profile-btn" 
+              onClick={() => setDropdownOpen(!dropdownOpen)}
+              title="Profile Menu"
+            >
+              👤
             </button>
-
             {dropdownOpen && (
-              <div 
-                className="dropdown-content"
-                role="menu"
-                aria-label="User menu"
-              >
-                <button 
-                  className="dropdown-item" 
-                  title="Notifications"
-                  onClick={() => {
-                    console.log("Notifications clicked");
-                    setDropdownOpen(false);
-                  }}
-                  role="menuitem"
-                >
-                   Notifications
+              <div className="dropdown-menu">
+                <button onClick={() => handleNavigation('/profile')} className="dropdown-item">
+                  👤 Profile
                 </button>
-
-                <button
-                  className="dropdown-item"
-                  title="Profile"
-                  onClick={() => handleNavigation("/profile")}
-                  role="menuitem"
-                >
-                   Profile
+                <button onClick={() => handleNavigation('/home')} className="dropdown-item">
+                  🏠 Home
                 </button>
-
-                <button 
-                  className="dropdown-item" 
-                  title="Settings"
-                  onClick={() => handleNavigation("/settings")}
-                  role="menuitem"
-                >
-                   Settings
-                </button>
-
-                <button 
-                  className="dropdown-item" 
-                  title="Logout" 
-                  onClick={handleLogout}
-                  role="menuitem"
-                >
-                   Logout
+                <button onClick={handleLogout} className="dropdown-item">
+                  🚪 Logout
                 </button>
               </div>
             )}
           </div>
         </div>
-      </nav>
-
-      <section className="hero" id="home">
-        <div className="hero-content">
-      <div className="primeshots-wrapper">
-        <div className="primeshots-header">
-          <h1 className="primeshots-title">PrimeShots</h1>
-          <p className="primeshots-subtitle">Your ultimate sports highlights destination</p>
-        </div>
-
-        <div className="sport-selector-container">
-          <select
-            value={selectedSport}
-            onChange={(e) => setSelectedSport(e.target.value)}
-            className="sport-selector"
-          >
-            <option value="football">Football</option>
-            <option value="basketball">Basketball</option>
-            <option value="tennis">Tennis</option>
-            <option value="cricket">Cricket</option>
-            <option value="rugby">Rugby</option>
-            <option value="volleyball">Volleyball</option>
-          </select>
-        </div>
-
-        {videos.length === 0 ? (
-          <div className="primeshots-empty">
-            <p className="empty-message">No shorts available for this sport.</p>
-            <p className="empty-suggestion">Try selecting a different sport from the dropdown above.</p>
-          </div>
-        ) : (
-          <div className="videos-grid">
-            {videos.map((video, index) => (
-              <VideoFrame key={video.videoId || index} video={video} index={index} />
-            ))}
-          </div>
-        )}
       </div>
+
+      {/* Loading States */}
+      {loading && (
+        <div className="loading-screen">
+          <div className="loading-content">
+            <div className="loading-spinner"></div>
+            <p>Loading awesome videos...</p>
+          </div>
         </div>
-      </section>
+      )}
+
+      {error && (
+        <div className="error-screen">
+          <div className="error-content">
+            <div className="error-icon">⚠️</div>
+            <p>{error}</p>
+            <button 
+              onClick={() => window.location.reload()} 
+              className="retry-btn"
+            >
+              Try Again
+            </button>
+          </div>
+        </div>
+      )}
+
+      {!loading && !error && availableVideos.length === 0 && (
+        <div className="no-videos-screen">
+          <div className="no-videos-content">
+            <div className="no-videos-icon">📺</div>
+            <h3>No videos available</h3>
+            <p>{videos.length > 0 ? 'All videos are blocked from embedding. Try a different sport!' : 'Try selecting a different sport or check back later!'}</p>
+          </div>
+        </div>
+      )}
+
+      {/* Main Video Container */}
+      {!loading && !error && availableVideos.length > 0 && (
+        <div 
+          className="videos-container" 
+          ref={containerRef}
+          onScroll={handleScroll}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+        >
+          {availableVideos.map((video, index) => (
+            <VideoFrame 
+              key={video.videoId || index} 
+              video={video} 
+              index={index}
+              isActive={index === currentVideoIndex}
+              onVideoBlocked={handleVideoBlocked}
+            />
+          ))}
+        </div>
+      )}
+
+      {/* Video Navigation Dots */}
+      {!loading && !error && availableVideos.length > 1 && (
+        <div className="video-dots">
+          {availableVideos.map((_, index) => (
+            <button
+              key={index}
+              className={`dot ${index === currentVideoIndex ? 'active' : ''}`}
+              onClick={() => scrollToVideo(index)}
+              title={`Video ${index + 1}`}
+            />
+          ))}
+        </div>
+      )}
+
+      {/* Navigation Instructions */}
+      <div className="nav-instructions">
+        <p>Use ↑↓ keys or scroll to navigate • Tap video to play/pause</p>
+      </div>
     </div>
   );
 };
