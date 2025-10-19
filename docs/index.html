@@ -420,12 +420,16 @@
   <h4>5. Display & Match Data Endpoints</h4>
   <p><strong>Base URL:</strong> /api/display</p>
   <p><strong>Access Level:</strong> Public endpoints for match viewing</p>
-  
   <h5>GET /api/display/display-matches</h5>
   <p><strong>Purpose:</strong> Get all match events formatted for display components</p>
   <p><strong>Access:</strong> Public</p>
   <p><strong>Response:</strong> Array of matches with live events, scores, and timing</p>
   <p><strong>Used By:</strong> Live match displays, scoreboards, match cards</p>
+  <p><strong>How to Access:</strong> You can freely access our display API directly via this link:<br>
+    <a href="https://prime-backend.azurewebsites.net/api/display/display-matches" target="_blank">https://prime-backend.azurewebsites.net/api/display/display-matches</a>
+  </p>
+  <p><strong>Justification:</strong> The display API is the only public endpoint provided for external access. This decision ensures that users and third-party applications can easily retrieve live match data and events for display purposes, without exposing sensitive or administrative functionality. By keeping other endpoints private, we maintain data integrity, security, and compliance with user privacy standards, while still supporting open access to real-time match information for viewers and integrators.</p>
+  <p><strong>Implementation Details:</strong> The display API is optimized for performance and relevance. It aggregates match data from our backend, filters for live and display-ready events, and returns results in a format suitable for dashboards, widgets, and external integrations. No authentication is required, making it ideal for public-facing applications and sports data platforms.</p>
   
   <h5>GET /api/display/past-matches</h5>
   <p><strong>Purpose:</strong> Get completed matches with final results</p>
