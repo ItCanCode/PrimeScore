@@ -2,7 +2,6 @@ import React, { useEffect, useState, useRef, useCallback } from "react";
 import { useNavigate, useLocation } from 'react-router-dom';
 import '../Styles/LiveAPI.css';
 const LiveApi = () => {
-  const API_KEY = "4399a3821d4ce5eb1a989436dc4e5303cf5e7176";
   
   // const selected_league = "Epl"; 
    const location = useLocation();
@@ -18,6 +17,9 @@ const LiveApi = () => {
   const hasFetched = useRef(false);
   const abortController = useRef(null);
 
+  const BACKEND_URL = "https://prime-backend.azurewebsites.net";
+  // const BACKEND_URL = "http://localhost:3000";
+
   const fetchMatches = useCallback(async () => {
     const LEAGUE_IDS = {
       PSL: "296",
@@ -27,68 +29,20 @@ const LiveApi = () => {
       La_liga: "297"
     };
 
-    if (abortController.current) abortController.current.abort();
-    abortController.current = new AbortController();
-    hasFetched.current = true;
-    setLoading(true);
-    setError(null);
+    const league_id = LEAGUE_IDS[selected_league_2] || LEAGUE_IDS.Epl;
+    const apiUrl = `${BACKEND_URL}/api/soccer/matches?league_id=${league_id}&season=2025-2026`;
 
     try {
-      
-      // console.log(selected_league2);
-      
-      const league_id = LEAGUE_IDS[selected_league_2] || LEAGUE_IDS.Epl;
-      const apiUrl = `https://api.soccerdataapi.com/matches/?league_id=${league_id}&season=2025-2026&auth_token=${API_KEY}`;
-      const response = await fetch(apiUrl, {
-        method: "GET",
-        headers: { "Content-Type": "application/json", "Accept-Encoding": "gzip" },
-        signal: abortController.current.signal
-      });
-
-      if (!response.ok) {
-        if (response.status === 429) throw new Error("Rate limit exceeded. Please wait a moment and try again.");
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
+      const response = await fetch(apiUrl);
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
       const data = await response.json();
-      if (!data || !Array.isArray(data) || data.length === 0) {
-        setMatches([]);
-        return;
-      }
-
-      const allMatches = data[0]?.stage?.flatMap(stage => stage.matches) || [];
-      if (allMatches.length === 0) {
-        setMatches([]);
-        return;
-      }
-
-      const today = new Date();
-      const sevenDaysAgo = new Date();
-      sevenDaysAgo.setDate(today.getDate() - 7);
-
-      const filtered = allMatches.filter(match => {
-        if (!match.date) return false;
-        try {
-          const [day, month, year] = match.date.split("/");
-          const isoDate = `${year}-${month.padStart(2,"0")}-${day.padStart(2,"0")}`;
-          const matchDate = new Date(isoDate);
-          const homeTeamName=match.teams.home.name;
-          const status=match.status;
-          return matchDate >= sevenDaysAgo && matchDate <= today && homeTeamName!="None" && status=="finished";
-        } catch {
-          return false;
-        }
-      });
-
-      setMatches(filtered);
-
-    } catch (error) {
-      if (error.name === 'AbortError') return;
-      setError(error.message);
+      setMatches(data[0]?.stage?.flatMap(stage => stage.matches) || []);
+    } catch (err) {
+      setError(err.message);
     } finally {
       setLoading(false);
     }
-  }, [selected_league_2, API_KEY]);
+  }, [selected_league_2]);
 
   useEffect(() => {
     if (hasFetched.current) return;
