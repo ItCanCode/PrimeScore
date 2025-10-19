@@ -15,6 +15,7 @@ const FixturesByDate = () => {
       const dateStr = `${year}-${month}-${day}`;
       console.log("Fetching for date:", dateStr);
 
+      // Fetch from backend first
       const response = await fetch(`https://prime-backend.azurewebsites.net/api/rugby/live/${dateStr}`);
       if (!response.ok) throw new Error('Failed to fetch from backend');
 
@@ -28,12 +29,12 @@ const FixturesByDate = () => {
       }
 
       if (backendFixtures.length > 0) {
-        console.log("Fetched from backend database");
+        console.log("✅ Fetched from backend database");
         setFixtures(backendFixtures);
-        return; 
+        return;
       }
 
-      console.log("Using external API...");
+      console.log("🌐 Using external API...");
       const rapidResponse = await fetch(
         `https://rugby-live-data-complete.p.rapidapi.com/fixture-by-league?year=${year}&month=${month}&day=${day}&leagueId=${leagueId}`,
         {
@@ -46,26 +47,34 @@ const FixturesByDate = () => {
       );
 
       if (!rapidResponse.ok) throw new Error('Failed to fetch from external API');
-      const rapidData = await rapidResponse.json();
 
+      const rapidData = await rapidResponse.json();
+      console.log("Rapid API response structure:", rapidData);
+
+      // 🛠 Safely handle missing or malformed data
       const externalFixtures = rapidData.fixture
         ? Object.values(rapidData.fixture).flatMap(l =>
-            l.games.map(g => ({
-              leagueName: l.leagueName,
-              name: g.name,
-              date: g.date,
-              status: g.status?.type?.description || "Unknown",
-              score: g.competitions?.[0]?.competitors?.map(c => ({
-                team: c.team.displayName,
-                score: c.score
-              })) || []
-            }))
+            Array.isArray(l.games)
+              ? l.games.map(g => ({
+                  leagueName: l.leagueName || "Unknown League",
+                  name: g.name || "Unknown Match",
+                  date: g.date || new Date().toISOString(),
+                  status: g.status?.type?.description || "Unknown",
+                  score:
+                    g.competitions?.[0]?.competitors?.map(c => ({
+                      team: c.team?.displayName || "Unknown Team",
+                      score: c.score ?? "N/A"
+                    })) || []
+                }))
+              : [] // Skip if l.games is not an array
           )
         : [];
 
       setFixtures(externalFixtures);
 
+      // Save fetched fixtures to backend if available
       if (externalFixtures.length > 0) {
+        console.log("💾 Saving external fixtures to backend...");
         const saveResponse = await fetch(`https://prime-backend.azurewebsites.net/api/rugby/live`, {
           method: "POST",
           headers: {
@@ -80,8 +89,8 @@ const FixturesByDate = () => {
 
     } catch (err) {
       setError(err.message);
-      console.error('Error fetching fixtures:', err);
-      setFixtures([]); 
+      console.error('❌ Error fetching fixtures:', err);
+      setFixtures([]);
     } finally {
       setLoading(false);
     }
@@ -159,8 +168,7 @@ const FixturesByDate = () => {
                   
                   <div className="rugby-game-info">
                     <div className="rugby-game-detail">
-                      <strong>Date:</strong>
-                      {new Date(game.date).toLocaleString()}
+                      <strong>Date:</strong> {new Date(game.date).toLocaleString()}
                     </div>
                     <div className="rugby-game-detail">
                       <strong>Status:</strong>
