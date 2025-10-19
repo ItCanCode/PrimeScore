@@ -1264,21 +1264,85 @@ fetch('https://prime-backend.azurewebsites.net/api/display/display-matches')
     <!-- Agile -->
     <section id="agile" class="section" aria-labelledby="testing-title">
       <header class="section-header">
-        <h2 id="user-feedback-title">Agile Methodology</h2>
+        <h2 id="agile-title">Agile Methodology</h2>
       </header>
+      <p>
+        PrimeScore was developed using the <strong>Agile Scrum methodology</strong>, which emphasized iterative development, continuous feedback, and adaptability. The development process was divided into several sprints, each focused on delivering specific functional modules and improvements.<br>
+        The team collaborated using Trello for sprint management, GitHub for CI/CD and version control, and Microsoft Teams and WhatsApp for communication.
+      </p>
+      <ul>
+        <li>A sprint backlog listing prioritized features or bugs.</li>
+        <li>Regular stand-ups for progress updates.</li>
+        <li>Reviews and retrospectives to assess progress and plan upcoming goals.</li>
+      </ul>
+      <p>
+        Through Agile, the PrimeScore team maintained flexibility, accountability, and continuous delivery of value.
+      </p>
     </section>
 
     
     <section id="agile" class="section" aria-labelledby="testing-title">
       <header class="section-header">
-        <h2 id="user-feedback-title">Sprint 01 - agile</h2>
+        <h2 id="sprint01-title">Sprint 01 – Agile</h2>
       </header>
+      <p><strong>Goal:</strong> Establish the project foundation and core system components.<br>
+      This sprint focused on setup, initial deployment, and the implementation of authentication and UI structure.</p>
+      <ul>
+        <li><strong>Project Setup:</strong><br>
+          Initialized the React frontend and Node.js + Express backend projects.<br>
+          Installed dependencies and configured Firebase Firestore and Auth (Admin SDK).<br>
+          Set up .env configuration and environment variables.
+        </li>
+        <li><strong>Deployment and CI/CD:</strong><br>
+          Deployed the backend to Azure and frontend to Vercel.<br>
+          Integrated both deployments with GitHub for automated CI/CD pipelines.
+        </li>
+        <li><strong>Authentication and Authorization:</strong><br>
+          Developed login functionality for both Admin and Viewer roles.<br>
+          Implemented secure authentication through Firebase.
+        </li>
+        <li><strong>UI Foundation:</strong><br>
+          Created navigation bar and placeholder pages (Dashboard, Profile, Match List).<br>
+          Set up initial front-end structure and layout.
+        </li>
+        <li><strong>Documentation:</strong><br>
+          Created a documentation site on GitHub with UML diagrams and guidelines.<br>
+          Documented local setup, branching strategy, and commit conventions.
+        </li>
+      </ul>
+      <p><strong>Outcome:</strong><br>
+      Sprint 1 delivered a fully functional environment setup, integrated CI/CD, and a working authentication system, laying the groundwork for the next development cycles.</p>
     </section>
 
     <section id="agile" class="section" aria-labelledby="testing-title">
       <header class="section-header">
-        <h2 id="user-feedback-title">Sprint 02 - agile</h2>
+        <h2 id="sprint02-title">Sprint 02 – Agile</h2>
       </header>
+      <p><strong>Goal:</strong> Implement live score updates, team management, and real-time event handling.</p>
+      <ul>
+        <li><strong>Match Management:</strong><br>
+          Implemented functionality for creating, editing, and managing matches.<br>
+          Added support for match lifecycle transitions (upcoming → ongoing → completed).
+        </li>
+        <li><strong>Real-time Updates:</strong><br>
+          Built event timeline for live feeds (goals, fouls, substitutions, cards).<br>
+          Integrated APIs for Live Updates, Feed, and Display (manual + live modes).
+        </li>
+        <li><strong>Team and Player Management:</strong><br>
+          Enabled creation of teams and player assignment.<br>
+          Supported manual input of match events by admins.
+        </li>
+        <li><strong>Enhancements:</strong><br>
+          Improved authentication and role-based access for admins, managers, and viewers.<br>
+          Refactored API endpoints for better RESTful design.
+        </li>
+        <li><strong>UI/UX and Documentation:</strong><br>
+          Polished interface for the Match Viewer and Event Feed.<br>
+          Updated technical documentation with new API and setup details.
+        </li>
+      </ul>
+      <p><strong>Outcome:</strong><br>
+      By the end of Sprint 2, PrimeScore featured live match updates, dynamic team management, and real-time event feeds, achieving the first complete “game flow” between admins and viewers.</p>
     </section>
 
     <section id="agile" class="section" aria-labelledby="testing-title">
@@ -1348,6 +1412,36 @@ fetch('https://prime-backend.azurewebsites.net/api/display/display-matches')
 
     </section>
     <!-- Setup -->
+    <section id="agile" class="section" aria-labelledby="testing-title">
+      <header class="section-header">
+        <h2 id="sprint04-title">Sprint 04 – Agile</h2>
+      </header>
+      <p><strong>Goal:</strong> Testing, optimization, and documentation polish for final delivery.</p>
+      <ul>
+        <li><strong>Frontend Testing:</strong><br>
+          Tested over 10+ React components including LoginModal, MatchClock, UserProfile, MatchEventForm, LiveMatches, and AdminHomepage.<br>
+          Conducted unit and integration tests to ensure UI consistency and responsiveness.
+        </li>
+        <li><strong>Backend and API Testing:</strong><br>
+          Verified APIs for external access and secure communication.<br>
+          Ensured session management and expiry handling worked as intended.
+        </li>
+        <li><strong>Bug Fixing and Improvements:</strong><br>
+          Resolved key issues such as event refreshing, clock synchronization, and navigation inconsistencies.<br>
+          Cleaned unnecessary components and modularized match administration.
+        </li>
+        <li><strong>Documentation and Code Quality:</strong><br>
+          Enhanced documentation and linting for project maintainability.<br>
+          Finalized architectural documentation and database schema updates.
+        </li>
+        <li><strong>Finalization:</strong><br>
+          Conducted final team reviews on methodology, architecture, and testing outcomes.<br>
+          Completed general discussions and planning for deployment submission.
+        </li>
+      </ul>
+      <p><strong>Outcome:</strong><br>
+      Sprint 4 finalized PrimeScore with a polished, tested, and well-documented platform. It marked the successful conclusion of the Agile development cycle, ensuring a stable and deployable system.</p>
+    </section>
     <section id="setup" class="section" aria-labelledby="setup-title">
       <header class="section-header">
         <h2 id="setup-title">Developer Setup Guide</h2>
@@ -1391,6 +1485,36 @@ npm run dev
   </ul>
 
   <p class="note">If you encounter issues, check the README files in each folder or contact the project maintainer.</p>
+    </section>
+    <section id="agile" class="section" aria-labelledby="testing-title">
+      <header class="section-header">
+        <h2 id="sprint04-title">Sprint 04 – Agile</h2>
+      </header>
+      <p><strong>Goal:</strong> Testing, optimization, and documentation polish for final delivery.</p>
+      <ul>
+        <li><strong>Frontend Testing:</strong><br>
+          Tested over 10+ React components including LoginModal, MatchClock, UserProfile, MatchEventForm, LiveMatches, and AdminHomepage.<br>
+          Conducted unit and integration tests to ensure UI consistency and responsiveness.
+        </li>
+        <li><strong>Backend and API Testing:</strong><br>
+          Verified APIs for external access and secure communication.<br>
+          Ensured session management and expiry handling worked as intended.
+        </li>
+        <li><strong>Bug Fixing and Improvements:</strong><br>
+          Resolved key issues such as event refreshing, clock synchronization, and navigation inconsistencies.<br>
+          Cleaned unnecessary components and modularized match administration.
+        </li>
+        <li><strong>Documentation and Code Quality:</strong><br>
+          Enhanced documentation and linting for project maintainability.<br>
+          Finalized architectural documentation and database schema updates.
+        </li>
+        <li><strong>Finalization:</strong><br>
+          Conducted final team reviews on methodology, architecture, and testing outcomes.<br>
+          Completed general discussions and planning for deployment submission.
+        </li>
+      </ul>
+      <p><strong>Outcome:</strong><br>
+      Sprint 4 finalized PrimeScore with a polished, tested, and well-documented platform. It marked the successful conclusion of the Agile development cycle, ensuring a stable and deployable system.</p>
     </section>
 
     <!-- Git -->
