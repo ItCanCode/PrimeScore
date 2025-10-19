@@ -114,7 +114,14 @@ function HomePage() {
             </li>
 
             <li>
-              <a>Contact</a>
+                <a 
+              href="#matchOdds"
+                onClick={(e) => {
+                e.preventDefault();
+                handleNavigation("/matchOdds");
+              }}
+            
+            >Match odds</a>
             </li>
             {/* Manage Team for managers */}
             {isManager && (
