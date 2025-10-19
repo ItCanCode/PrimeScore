@@ -1,147 +1,336 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="jest tests" tests="63" failures="0" errors="0" time="5.152">
-  <testsuite name="verifyGoogleToken service" errors="0" failures="0" skipped="0" timestamp="2025-10-19T13:02:16" time="3.423" tests="2">
-    <testcase classname="verifyGoogleToken service should return decoded token when verification succeeds" name="verifyGoogleToken service should return decoded token when verification succeeds" time="0.014">
+<testsuites name="jest tests" tests="109" failures="11" errors="0" time="3.774">
+  <testsuite name="LiveSport controller" errors="0" failures="0" skipped="0" timestamp="2025-10-19T18:05:47" time="2.143" tests="2">
+    <testcase classname="LiveSport controller adds matches successfully" name="LiveSport controller adds matches successfully" time="0.015">
     </testcase>
-    <testcase classname="verifyGoogleToken service should throw an error when verification fails" name="verifyGoogleToken service should throw an error when verification fails" time="0.039">
-    </testcase>
-  </testsuite>
-  <testsuite name="LiveSport controller" errors="0" failures="0" skipped="0" timestamp="2025-10-19T13:02:16" time="3.428" tests="2">
-    <testcase classname="LiveSport controller adds matches successfully" name="LiveSport controller adds matches successfully" time="0.013">
-    </testcase>
-    <testcase classname="LiveSport controller returns 400 if no matches" name="LiveSport controller returns 400 if no matches" time="0.002">
+    <testcase classname="LiveSport controller returns 400 if no matches" name="LiveSport controller returns 400 if no matches" time="0.005">
     </testcase>
   </testsuite>
-  <testsuite name="feedController" errors="0" failures="0" skipped="0" timestamp="2025-10-19T13:02:16" time="3.561" tests="6">
-    <testcase classname="feedController startMatch should start a match successfully" name="feedController startMatch should start a match successfully" time="0.019">
+  <testsuite name="verifyGoogleToken service" errors="0" failures="0" skipped="0" timestamp="2025-10-19T18:05:47" time="2.15" tests="2">
+    <testcase classname="verifyGoogleToken service should return decoded token when verification succeeds" name="verifyGoogleToken service should return decoded token when verification succeeds" time="0.013">
     </testcase>
-    <testcase classname="feedController startMatch should handle Firestore errors" name="feedController startMatch should handle Firestore errors" time="0.032">
-    </testcase>
-    <testcase classname="feedController addEvent should require eventType, team, and time" name="feedController addEvent should require eventType, team, and time" time="0.003">
-    </testcase>
-    <testcase classname="feedController addEvent should return 404 if match not found" name="feedController addEvent should return 404 if match not found" time="0.005">
-    </testcase>
-    <testcase classname="feedController addEvent should add an event and update score for home team" name="feedController addEvent should add an event and update score for home team" time="0.015">
-    </testcase>
-    <testcase classname="feedController addEvent should handle Firestore errors" name="feedController addEvent should handle Firestore errors" time="0.004">
+    <testcase classname="verifyGoogleToken service should throw an error when verification fails" name="verifyGoogleToken service should throw an error when verification fails" time="0.014">
     </testcase>
   </testsuite>
-  <testsuite name="googleAuth controller" errors="0" failures="0" skipped="0" timestamp="2025-10-19T13:02:16" time="3.687" tests="7">
-    <testcase classname="googleAuth controller should return 400 if idToken or action is missing" name="googleAuth controller should return 400 if idToken or action is missing" time="0.044">
+  <testsuite name="googleAuth controller" errors="0" failures="0" skipped="0" timestamp="2025-10-19T18:05:47" time="2.173" tests="7">
+    <testcase classname="googleAuth controller should return 400 if idToken or action is missing" name="googleAuth controller should return 400 if idToken or action is missing" time="0.014">
     </testcase>
-    <testcase classname="googleAuth controller should return 400 for invalid action" name="googleAuth controller should return 400 for invalid action" time="0.002">
+    <testcase classname="googleAuth controller should return 400 for invalid action" name="googleAuth controller should return 400 for invalid action" time="0.004">
     </testcase>
-    <testcase classname="googleAuth controller signup: should return 409 if user already exists" name="googleAuth controller signup: should return 409 if user already exists" time="0.002">
+    <testcase classname="googleAuth controller signup: should return 409 if user already exists" name="googleAuth controller signup: should return 409 if user already exists" time="0.005">
     </testcase>
     <testcase classname="googleAuth controller signup: should create new user and return 201" name="googleAuth controller signup: should create new user and return 201" time="0.003">
     </testcase>
-    <testcase classname="googleAuth controller login: should return 404 if user not found" name="googleAuth controller login: should return 404 if user not found" time="0.004">
+    <testcase classname="googleAuth controller login: should return 404 if user not found" name="googleAuth controller login: should return 404 if user not found" time="0.002">
     </testcase>
-    <testcase classname="googleAuth controller login: should return 200 with user data if user exists" name="googleAuth controller login: should return 200 with user data if user exists" time="0.003">
+    <testcase classname="googleAuth controller login: should return 200 with user data if user exists" name="googleAuth controller login: should return 200 with user data if user exists" time="0.002">
     </testcase>
     <testcase classname="googleAuth controller should return 401 on token verification error" name="googleAuth controller should return 401 on token verification error" time="0.002">
     </testcase>
   </testsuite>
-  <testsuite name="Display Controller" errors="0" failures="0" skipped="0" timestamp="2025-10-19T13:02:16" time="3.686" tests="6">
-    <testcase classname="Display Controller getMatchEventsById should return match events when found" name="Display Controller getMatchEventsById should return match events when found" time="0.029">
+  <testsuite name="getMatches" errors="0" failures="0" skipped="0" timestamp="2025-10-19T18:05:47" time="2.183" tests="4">
+    <testcase classname="getMatches should return matches when league_id is provided" name="getMatches should return matches when league_id is provided" time="0.011">
     </testcase>
-    <testcase classname="Display Controller getMatchEventsById should return 404 when match events not found" name="Display Controller getMatchEventsById should return 404 when match events not found" time="0.004">
+    <testcase classname="getMatches should return 400 if league_id is missing" name="getMatches should return 400 if league_id is missing" time="0.003">
     </testcase>
-    <testcase classname="Display Controller getMatchEventsById should handle errors" name="Display Controller getMatchEventsById should handle errors" time="0.051">
+    <testcase classname="getMatches should handle API errors gracefully" name="getMatches should handle API errors gracefully" time="0.028">
     </testcase>
-    <testcase classname="Display Controller getmatchEvents should return only ongoing matches with events" name="Display Controller getmatchEvents should return only ongoing matches with events" time="0.008">
-    </testcase>
-    <testcase classname="Display Controller getmatchEvents should return empty array if no ongoing matches" name="Display Controller getmatchEvents should return empty array if no ongoing matches" time="0.003">
-    </testcase>
-    <testcase classname="Display Controller getmatchEvents should handle errors" name="Display Controller getmatchEvents should handle errors" time="0.003">
+    <testcase classname="getMatches should handle network or fetch errors" name="getMatches should handle network or fetch errors" time="0.007">
     </testcase>
   </testsuite>
-  <testsuite name="Manager Controller" errors="0" failures="0" skipped="0" timestamp="2025-10-19T13:02:16" time="3.755" tests="9">
-    <testcase classname="Manager Controller createTeam should create a team successfully" name="Manager Controller createTeam should create a team successfully" time="0.015">
+  <testsuite name="feedController" errors="0" failures="0" skipped="0" timestamp="2025-10-19T18:05:47" time="2.188" tests="6">
+    <testcase classname="feedController startMatch should start a match successfully" name="feedController startMatch should start a match successfully" time="0.013">
     </testcase>
-    <testcase classname="Manager Controller createTeam should handle errors when creating a team" name="Manager Controller createTeam should handle errors when creating a team" time="0.005">
+    <testcase classname="feedController startMatch should handle Firestore errors" name="feedController startMatch should handle Firestore errors" time="0.027">
     </testcase>
-    <testcase classname="Manager Controller addPlayers should add players successfully" name="Manager Controller addPlayers should add players successfully" time="0.002">
+    <testcase classname="feedController addEvent should require eventType, team, and time" name="feedController addEvent should require eventType, team, and time" time="0.003">
     </testcase>
-    <testcase classname="Manager Controller addPlayers should return error if team not found" name="Manager Controller addPlayers should return error if team not found" time="0.001">
+    <testcase classname="feedController addEvent should return 404 if match not found" name="feedController addEvent should return 404 if match not found" time="0.002">
     </testcase>
-    <testcase classname="Manager Controller addPlayers should return error if user is not team owner" name="Manager Controller addPlayers should return error if user is not team owner" time="0">
+    <testcase classname="feedController addEvent should add an event and update score for home team" name="feedController addEvent should add an event and update score for home team" time="0.006">
     </testcase>
-    <testcase classname="Manager Controller addPlayers should handle errors when adding players" name="Manager Controller addPlayers should handle errors when adding players" time="0.001">
-    </testcase>
-    <testcase classname="Manager Controller myTeam should return team if exists" name="Manager Controller myTeam should return team if exists" time="0.002">
-    </testcase>
-    <testcase classname="Manager Controller myTeam should return hasTeam: false if no team exists" name="Manager Controller myTeam should return hasTeam: false if no team exists" time="0.001">
-    </testcase>
-    <testcase classname="Manager Controller myTeam should handle errors when fetching team" name="Manager Controller myTeam should handle errors when fetching team" time="0.001">
+    <testcase classname="feedController addEvent should handle Firestore errors" name="feedController addEvent should handle Firestore errors" time="0.003">
     </testcase>
   </testsuite>
-  <testsuite name="adminController" errors="0" failures="0" skipped="0" timestamp="2025-10-19T13:02:16" time="3.811" tests="11">
-    <testcase classname="adminController createMatch: should create a match successfully" name="adminController createMatch: should create a match successfully" time="0.02">
+  <testsuite name="Display Controller" errors="0" failures="0" skipped="0" timestamp="2025-10-19T18:05:47" time="2.199" tests="10">
+    <testcase classname="Display Controller getMatchEventsById returns match events when found" name="Display Controller getMatchEventsById returns match events when found" time="0.011">
     </testcase>
-    <testcase classname="adminController createMatch: should return 500 on Firestore error" name="adminController createMatch: should return 500 on Firestore error" time="0.001">
+    <testcase classname="Display Controller getMatchEventsById returns 404 when events not found" name="Display Controller getMatchEventsById returns 404 when events not found" time="0.001">
     </testcase>
-    <testcase classname="adminController updateMatchStatus: should update match status if match exists" name="adminController updateMatchStatus: should update match status if match exists" time="0.004">
+    <testcase classname="Display Controller getMatchEventsById handles Firestore errors" name="Display Controller getMatchEventsById handles Firestore errors" time="0.03">
+    </testcase>
+    <testcase classname="Display Controller getmatchEvents returns ongoing matches with events" name="Display Controller getmatchEvents returns ongoing matches with events" time="0.004">
+    </testcase>
+    <testcase classname="Display Controller getmatchEvents handles when event doc does not exist" name="Display Controller getmatchEvents handles when event doc does not exist" time="0.002">
+    </testcase>
+    <testcase classname="Display Controller getmatchEvents returns empty array when no matches" name="Display Controller getmatchEvents returns empty array when no matches" time="0.001">
+    </testcase>
+    <testcase classname="Display Controller getmatchEvents handles Firestore error" name="Display Controller getmatchEvents handles Firestore error" time="0.003">
+    </testcase>
+    <testcase classname="Display Controller getPastMatches returns past matches with events" name="Display Controller getPastMatches returns past matches with events" time="0.006">
+    </testcase>
+    <testcase classname="Display Controller getPastMatches handles when event doc missing" name="Display Controller getPastMatches handles when event doc missing" time="0.003">
+    </testcase>
+    <testcase classname="Display Controller getPastMatches handles Firestore error" name="Display Controller getPastMatches handles Firestore error" time="0.003">
+    </testcase>
+  </testsuite>
+  <testsuite name="Rugby Controller" errors="0" failures="1" skipped="0" timestamp="2025-10-19T18:05:47" time="2.236" tests="5">
+    <testcase classname="Rugby Controller rugbyLive should save fixtures successfully" name="Rugby Controller rugbyLive should save fixtures successfully" time="0.026">
+    </testcase>
+    <testcase classname="Rugby Controller rugbyLive should handle empty fixture list gracefully" name="Rugby Controller rugbyLive should handle empty fixture list gracefully" time="0.005">
+      <failure>Error: expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+Expected: 200
+Received: 400
+
+Number of calls: 1
+    at Object.toHaveBeenCalledWith (C:\Users\lebop\Desktop\Coding Projects\Prime3\PrimeScore\backend\tests\rugbyLiveController.test.js:82:26)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)</failure>
+    </testcase>
+    <testcase classname="Rugby Controller rugbyLive should handle batch commit errors gracefully" name="Rugby Controller rugbyLive should handle batch commit errors gracefully" time="0.016">
+    </testcase>
+    <testcase classname="Rugby Controller getRugbyFix should return fixtures for a given date" name="Rugby Controller getRugbyFix should return fixtures for a given date" time="0.004">
+    </testcase>
+    <testcase classname="Rugby Controller getRugbyFix should handle Firestore errors gracefully" name="Rugby Controller getRugbyFix should handle Firestore errors gracefully" time="0.005">
+    </testcase>
+  </testsuite>
+  <testsuite name="UserController" errors="0" failures="0" skipped="0" timestamp="2025-10-19T18:05:47" time="2.242" tests="12">
+    <testcase classname="UserController getMatches should fetch matches successfully" name="UserController getMatches should fetch matches successfully" time="0.014">
+    </testcase>
+    <testcase classname="UserController getMatches should handle Firestore errors" name="UserController getMatches should handle Firestore errors" time="0.036">
+    </testcase>
+    <testcase classname="UserController getCurrentUser should fetch current user data when valid token" name="UserController getCurrentUser should fetch current user data when valid token" time="0.002">
+    </testcase>
+    <testcase classname="UserController getCurrentUser should return 401 if no token" name="UserController getCurrentUser should return 401 if no token" time="0.002">
+    </testcase>
+    <testcase classname="UserController getCurrentUser should return 404 if user not found" name="UserController getCurrentUser should return 404 if user not found" time="0.002">
+    </testcase>
+    <testcase classname="UserController getCurrentUser should handle internal error" name="UserController getCurrentUser should handle internal error" time="0.005">
+    </testcase>
+    <testcase classname="UserController updateUser should update full user profile" name="UserController updateUser should update full user profile" time="0.002">
+    </testcase>
+    <testcase classname="UserController updateUser should update partial data" name="UserController updateUser should update partial data" time="0.004">
+    </testcase>
+    <testcase classname="UserController updateUser should handle Firestore update error" name="UserController updateUser should handle Firestore update error" time="0.005">
+    </testcase>
+    <testcase classname="UserController uploadImage should upload an image successfully" name="UserController uploadImage should upload an image successfully" time="0.011">
+    </testcase>
+    <testcase classname="UserController uploadImage should return 400 if no file uploaded" name="UserController uploadImage should return 400 if no file uploaded" time="0.002">
+    </testcase>
+    <testcase classname="UserController uploadImage should handle Cloudinary upload failure" name="UserController uploadImage should handle Cloudinary upload failure" time="0.018">
+    </testcase>
+  </testsuite>
+  <testsuite name="adminController" errors="0" failures="3" skipped="0" timestamp="2025-10-19T18:05:47" time="2.284" tests="21">
+    <testcase classname="adminController createMatch: should create a match successfully" name="adminController createMatch: should create a match successfully" time="0.012">
+    </testcase>
+    <testcase classname="adminController createMatch: should return 500 on Firestore error" name="adminController createMatch: should return 500 on Firestore error" time="0.002">
+    </testcase>
+    <testcase classname="adminController updateMatchStatus: should update match status if match exists" name="adminController updateMatchStatus: should update match status if match exists" time="0.003">
     </testcase>
     <testcase classname="adminController updateMatchStatus: should return 404 if match does not exist" name="adminController updateMatchStatus: should return 404 if match does not exist" time="0.002">
     </testcase>
-    <testcase classname="adminController updateScore: should update score in matches and ongoingMatches" name="adminController updateScore: should update score in matches and ongoingMatches" time="0.004">
+    <testcase classname="adminController updateScore: should update score in matches and ongoingMatches" name="adminController updateScore: should update score in matches and ongoingMatches" time="0.002">
     </testcase>
     <testcase classname="adminController updateScore: should add event if eventType is Goal" name="adminController updateScore: should add event if eventType is Goal" time="0.004">
     </testcase>
     <testcase classname="adminController addMatchEvent: should add a match event successfully" name="adminController addMatchEvent: should add a match event successfully" time="0.003">
     </testcase>
-    <testcase classname="adminController adminController - allTeams should return all teams when no sportType filter is applied" name="adminController adminController - allTeams should return all teams when no sportType filter is applied" time="0.003">
+    <testcase classname="adminController adminController - allTeams should return all teams when no sportType filter is applied" name="adminController adminController - allTeams should return all teams when no sportType filter is applied" time="0.002">
     </testcase>
     <testcase classname="adminController adminController - allTeams should return filtered teams when sportType is provided" name="adminController adminController - allTeams should return filtered teams when sportType is provided" time="0.003">
     </testcase>
-    <testcase classname="adminController adminController - allTeams should return empty array if no teams exist" name="adminController adminController - allTeams should return empty array if no teams exist" time="0.001">
+    <testcase classname="adminController adminController - allTeams should return empty array if no teams exist" name="adminController adminController - allTeams should return empty array if no teams exist" time="0.002">
     </testcase>
-    <testcase classname="adminController adminController - allTeams should handle Firestore errors" name="adminController adminController - allTeams should handle Firestore errors" time="0.001">
+    <testcase classname="adminController adminController - allTeams should handle Firestore errors" name="adminController adminController - allTeams should handle Firestore errors" time="0.002">
+    </testcase>
+    <testcase classname="adminController updateMatchStatus: should set end_time when status is &apos;finished&apos;" name="adminController updateMatchStatus: should set end_time when status is &apos;finished&apos;" time="0.006">
+    </testcase>
+    <testcase classname="adminController updateMatchStatus: should handle Firestore error" name="adminController updateMatchStatus: should handle Firestore error" time="0.004">
+    </testcase>
+    <testcase classname="adminController updateScore: should handle no existing match or ongoing docs" name="adminController updateScore: should handle no existing match or ongoing docs" time="0.002">
+    </testcase>
+    <testcase classname="adminController updateScore: should handle Firestore error gracefully" name="adminController updateScore: should handle Firestore error gracefully" time="0.005">
+    </testcase>
+    <testcase classname="adminController getPlayersByTeamName should return 404 when team not found" name="adminController getPlayersByTeamName should return 404 when team not found" time="0.006">
+      <failure>Error: expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+Expected: 404
+Received: 500
+
+Number of calls: 1
+    at Object.toHaveBeenCalledWith (C:\Users\lebop\Desktop\Coding Projects\Prime3\PrimeScore\backend\tests\adminController.test.js:313:24)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)</failure>
+    </testcase>
+    <testcase classname="adminController getPlayersByTeamName should return players for existing team" name="adminController getPlayersByTeamName should return players for existing team" time="0.001">
+    </testcase>
+    <testcase classname="adminController getPlayersByTeamName should handle Firestore errors" name="adminController getPlayersByTeamName should handle Firestore errors" time="0.002">
+    </testcase>
+    <testcase classname="adminController deleteMatch should delete match and related events" name="adminController deleteMatch should delete match and related events" time="0.001">
+      <failure>Error: expect(jest.fn()).toHaveBeenCalledTimes(expected)
+
+Expected number of calls: 2
+Received number of calls: 0
+    at Object.toHaveBeenCalledTimes (C:\Users\lebop\Desktop\Coding Projects\Prime3\PrimeScore\backend\tests\adminController.test.js:381:30)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)</failure>
+    </testcase>
+    <testcase classname="adminController deleteMatch should return 404 when match not found" name="adminController deleteMatch should return 404 when match not found" time="0.001">
+    </testcase>
+    <testcase classname="adminController deleteMatch should handle Firestore errors" name="adminController deleteMatch should handle Firestore errors" time="0.001">
+      <failure>Error: expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+Expected: 500
+Received: 404
+
+Number of calls: 1
+    at Object.toHaveBeenCalledWith (C:\Users\lebop\Desktop\Coding Projects\Prime3\PrimeScore\backend\tests\adminController.test.js:404:24)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)</failure>
     </testcase>
   </testsuite>
-  <testsuite name="UserController" errors="0" failures="0" skipped="0" timestamp="2025-10-19T13:02:16" time="4.15" tests="6">
-    <testcase classname="UserController getMatches should fetch matches and return 200" name="UserController getMatches should fetch matches and return 200" time="0.009">
+  <testsuite name="Manager Controller" errors="0" failures="7" skipped="0" timestamp="2025-10-19T18:05:47" time="2.301" tests="20">
+    <testcase classname="Manager Controller createTeam should create a team successfully" name="Manager Controller createTeam should create a team successfully" time="0.013">
     </testcase>
-    <testcase classname="UserController getCurrentUser should fetch current user data" name="UserController getCurrentUser should fetch current user data" time="0.001">
+    <testcase classname="Manager Controller createTeam should handle errors when creating a team" name="Manager Controller createTeam should handle errors when creating a team" time="0.003">
     </testcase>
-    <testcase classname="UserController getCurrentUser should return 401 if no token" name="UserController getCurrentUser should return 401 if no token" time="0.001">
+    <testcase classname="Manager Controller addPlayers should add players successfully" name="Manager Controller addPlayers should add players successfully" time="0.004">
     </testcase>
-    <testcase classname="UserController updateUser should update user profile successfully" name="UserController updateUser should update user profile successfully" time="0.001">
+    <testcase classname="Manager Controller addPlayers should return error if team not found" name="Manager Controller addPlayers should return error if team not found" time="0.002">
     </testcase>
-    <testcase classname="UserController updateUser should update profile with partial data" name="UserController updateUser should update profile with partial data" time="0.001">
+    <testcase classname="Manager Controller addPlayers should return error if user is not team owner" name="Manager Controller addPlayers should return error if user is not team owner" time="0.003">
     </testcase>
-    <testcase classname="UserController updateUser should return 500 on error" name="UserController updateUser should return 500 on error" time="0.003">
+    <testcase classname="Manager Controller addPlayers should handle errors when adding players" name="Manager Controller addPlayers should handle errors when adding players" time="0.002">
+    </testcase>
+    <testcase classname="Manager Controller myTeam should return team if exists" name="Manager Controller myTeam should return team if exists" time="0.002">
+    </testcase>
+    <testcase classname="Manager Controller myTeam should return hasTeam: false if no team exists" name="Manager Controller myTeam should return hasTeam: false if no team exists" time="0.002">
+    </testcase>
+    <testcase classname="Manager Controller myTeam should handle errors when fetching team" name="Manager Controller myTeam should handle errors when fetching team" time="0.001">
+    </testcase>
+    <testcase classname="Manager Controller addPlayers - validation should return 400 if teamId or players missing" name="Manager Controller addPlayers - validation should return 400 if teamId or players missing" time="0.002">
+    </testcase>
+    <testcase classname="Manager Controller addPlayers - validation should return 400 if players is not an array" name="Manager Controller addPlayers - validation should return 400 if players is not an array" time="0.002">
+    </testcase>
+    <testcase classname="Manager Controller getPlayers should return 404 if team not found" name="Manager Controller getPlayers should return 404 if team not found" time="0.002">
+    </testcase>
+    <testcase classname="Manager Controller getPlayers should return 403 if user is not authorized" name="Manager Controller getPlayers should return 403 if user is not authorized" time="0.002">
+    </testcase>
+    <testcase classname="Manager Controller getPlayers should return players if team belongs to user" name="Manager Controller getPlayers should return players if team belongs to user" time="0.005">
+      <failure>Error: expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+Expected: 200
+Received: 500
+
+Number of calls: 1
+    at Object.toHaveBeenCalledWith (C:\Users\lebop\Desktop\Coding Projects\Prime3\PrimeScore\backend\tests\managerController.test.js:332:26)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)</failure>
+    </testcase>
+    <testcase classname="Manager Controller getPlayers should handle Firestore error in getPlayers" name="Manager Controller getPlayers should handle Firestore error in getPlayers" time="0.002">
+      <failure>Error: expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+Expected: 500
+Received: 404
+
+Number of calls: 1
+    at Object.toHaveBeenCalledWith (C:\Users\lebop\Desktop\Coding Projects\Prime3\PrimeScore\backend\tests\managerController.test.js:343:26)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)</failure>
+    </testcase>
+    <testcase classname="Manager Controller removePlayer should return 404 if player not found" name="Manager Controller removePlayer should return 404 if player not found" time="0.002">
+      <failure>Error: expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+Expected: 404
+Received: 500
+
+Number of calls: 1
+    at Object.toHaveBeenCalledWith (C:\Users\lebop\Desktop\Coding Projects\Prime3\PrimeScore\backend\tests\managerController.test.js:355:26)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)</failure>
+    </testcase>
+    <testcase classname="Manager Controller removePlayer should return 404 if team for player not found" name="Manager Controller removePlayer should return 404 if team for player not found" time="0.006">
+      <failure>Error: expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+- Expected
++ Received
+
+  Object {
+-   &quot;error&quot;: &quot;Team not found&quot;,
++   &quot;error&quot;: &quot;Player not found&quot;,
+  },
+
+Number of calls: 1
+    at Object.toHaveBeenCalledWith (C:\Users\lebop\Desktop\Coding Projects\Prime3\PrimeScore\backend\tests\managerController.test.js:367:24)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)</failure>
+    </testcase>
+    <testcase classname="Manager Controller removePlayer should return 403 if user not authorized to remove player" name="Manager Controller removePlayer should return 403 if user not authorized to remove player" time="0.001">
+      <failure>Error: expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+Expected: 403
+Received: 404
+
+Number of calls: 1
+    at Object.toHaveBeenCalledWith (C:\Users\lebop\Desktop\Coding Projects\Prime3\PrimeScore\backend\tests\managerController.test.js:380:26)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)</failure>
+    </testcase>
+    <testcase classname="Manager Controller removePlayer should remove player successfully if authorized" name="Manager Controller removePlayer should remove player successfully if authorized" time="0.002">
+      <failure>Error: expect(jest.fn()).toHaveBeenCalled()
+
+Expected number of calls: &gt;= 1
+Received number of calls:    0
+    at Object.toHaveBeenCalled (C:\Users\lebop\Desktop\Coding Projects\Prime3\PrimeScore\backend\tests\managerController.test.js:399:28)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)</failure>
+    </testcase>
+    <testcase classname="Manager Controller removePlayer should handle Firestore error in removePlayer" name="Manager Controller removePlayer should handle Firestore error in removePlayer" time="0.003">
+      <failure>Error: expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+Expected: 500
+Received: 200
+
+Number of calls: 1
+    at Object.toHaveBeenCalledWith (C:\Users\lebop\Desktop\Coding Projects\Prime3\PrimeScore\backend\tests\managerController.test.js:413:26)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)</failure>
     </testcase>
   </testsuite>
-  <testsuite name="Match Clock API Routes" errors="0" failures="0" skipped="0" timestamp="2025-10-19T13:02:16" time="4.511" tests="14">
-    <testcase classname="Match Clock API Routes POST /:matchId/start creates new clock when none exists" name="Match Clock API Routes POST /:matchId/start creates new clock when none exists" time="0.074">
+  <testsuite name="getSportsNews" errors="0" failures="0" skipped="0" timestamp="2025-10-19T18:05:47" time="2.418" tests="3">
+    <testcase classname="getSportsNews should return news data" name="getSportsNews should return news data" time="0.011">
+    </testcase>
+    <testcase classname="getSportsNews should handle missing API key" name="getSportsNews should handle missing API key" time="0.001">
+    </testcase>
+    <testcase classname="getSportsNews should handle API errors" name="getSportsNews should handle API errors" time="0.074">
+    </testcase>
+  </testsuite>
+  <testsuite name="getSportsShorts" errors="0" failures="0" skipped="0" timestamp="2025-10-19T18:05:47" time="2.421" tests="3">
+    <testcase classname="getSportsShorts should return formatted video data" name="getSportsShorts should return formatted video data" time="0.01">
+    </testcase>
+    <testcase classname="getSportsShorts should handle missing API key" name="getSportsShorts should handle missing API key" time="0.002">
+    </testcase>
+    <testcase classname="getSportsShorts should handle API errors gracefully" name="getSportsShorts should handle API errors gracefully" time="0.077">
+    </testcase>
+  </testsuite>
+  <testsuite name="Match Clock API Routes" errors="0" failures="0" skipped="0" timestamp="2025-10-19T18:05:47" time="2.846" tests="14">
+    <testcase classname="Match Clock API Routes POST /:matchId/start creates new clock when none exists" name="Match Clock API Routes POST /:matchId/start creates new clock when none exists" time="0.053">
     </testcase>
     <testcase classname="Match Clock API Routes POST /:matchId/start resumes existing paused clock" name="Match Clock API Routes POST /:matchId/start resumes existing paused clock" time="0.007">
     </testcase>
-    <testcase classname="Match Clock API Routes POST /:matchId/start handles database errors" name="Match Clock API Routes POST /:matchId/start handles database errors" time="0.013">
+    <testcase classname="Match Clock API Routes POST /:matchId/start handles database errors" name="Match Clock API Routes POST /:matchId/start handles database errors" time="0.012">
     </testcase>
-    <testcase classname="Match Clock API Routes POST /:matchId/pause pauses running clock with reason" name="Match Clock API Routes POST /:matchId/pause pauses running clock with reason" time="0.031">
+    <testcase classname="Match Clock API Routes POST /:matchId/pause pauses running clock with reason" name="Match Clock API Routes POST /:matchId/pause pauses running clock with reason" time="0.025">
     </testcase>
-    <testcase classname="Match Clock API Routes POST /:matchId/pause returns 404 for non-existent clock" name="Match Clock API Routes POST /:matchId/pause returns 404 for non-existent clock" time="0.011">
+    <testcase classname="Match Clock API Routes POST /:matchId/pause returns 404 for non-existent clock" name="Match Clock API Routes POST /:matchId/pause returns 404 for non-existent clock" time="0.008">
     </testcase>
     <testcase classname="Match Clock API Routes POST /:matchId/pause handles missing reason gracefully" name="Match Clock API Routes POST /:matchId/pause handles missing reason gracefully" time="0.006">
     </testcase>
-    <testcase classname="Match Clock API Routes POST /:matchId/finish finishes running clock" name="Match Clock API Routes POST /:matchId/finish finishes running clock" time="0.007">
+    <testcase classname="Match Clock API Routes POST /:matchId/finish finishes running clock" name="Match Clock API Routes POST /:matchId/finish finishes running clock" time="0.005">
     </testcase>
-    <testcase classname="Match Clock API Routes POST /:matchId/finish finishes already paused clock" name="Match Clock API Routes POST /:matchId/finish finishes already paused clock" time="0.007">
+    <testcase classname="Match Clock API Routes POST /:matchId/finish finishes already paused clock" name="Match Clock API Routes POST /:matchId/finish finishes already paused clock" time="0.005">
     </testcase>
-    <testcase classname="Match Clock API Routes GET /:matchId returns clock data for existing clock" name="Match Clock API Routes GET /:matchId returns clock data for existing clock" time="0.044">
+    <testcase classname="Match Clock API Routes GET /:matchId returns clock data for existing clock" name="Match Clock API Routes GET /:matchId returns clock data for existing clock" time="0.026">
     </testcase>
-    <testcase classname="Match Clock API Routes GET /:matchId returns default data for non-existent clock" name="Match Clock API Routes GET /:matchId returns default data for non-existent clock" time="0.009">
+    <testcase classname="Match Clock API Routes GET /:matchId returns default data for non-existent clock" name="Match Clock API Routes GET /:matchId returns default data for non-existent clock" time="0.007">
     </testcase>
-    <testcase classname="Match Clock API Routes GET /:matchId auto-stops clock after 3 hours" name="Match Clock API Routes GET /:matchId auto-stops clock after 3 hours" time="0.008">
+    <testcase classname="Match Clock API Routes GET /:matchId auto-stops clock after 3 hours" name="Match Clock API Routes GET /:matchId auto-stops clock after 3 hours" time="0.009">
     </testcase>
     <testcase classname="Match Clock API Routes GET /:matchId handles database errors" name="Match Clock API Routes GET /:matchId handles database errors" time="0.009">
     </testcase>
-    <testcase classname="Match Clock API Routes Time calculations correctly calculates elapsed time for running clock" name="Match Clock API Routes Time calculations correctly calculates elapsed time for running clock" time="0.007">
+    <testcase classname="Match Clock API Routes Time calculations correctly calculates elapsed time for running clock" name="Match Clock API Routes Time calculations correctly calculates elapsed time for running clock" time="0.006">
     </testcase>
-    <testcase classname="Match Clock API Routes Time calculations returns exact elapsed time for paused clock" name="Match Clock API Routes Time calculations returns exact elapsed time for paused clock" time="0.006">
+    <testcase classname="Match Clock API Routes Time calculations returns exact elapsed time for paused clock" name="Match Clock API Routes Time calculations returns exact elapsed time for paused clock" time="0.005">
     </testcase>
   </testsuite>
 </testsuites>

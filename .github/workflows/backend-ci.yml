@@ -2,9 +2,9 @@ name: CI and Coverage
 
 on:
   push:
-    branches: [main, Testing, frontend-testing]
+    branches: [main, Testing, frontend-testing, final-testing]
   pull_request:
-    branches: [main, Testing, frontend-testing]
+    branches: [main, Testing, frontend-testing, final-testing]
 
 jobs:
   test-backend:
