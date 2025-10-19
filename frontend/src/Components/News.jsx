@@ -8,7 +8,7 @@ const News = () => {
   const navigate = useNavigate();
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState("");
+  // Removed searchTerm state
   const [selectedCountry, setSelectedCountry] = useState("us");
   const [selectedSport, setSelectedSport] = useState("all");
   const [displayCount, setDisplayCount] = useState(12);
@@ -177,12 +177,8 @@ const News = () => {
     };
   }, []);
 
-  // Filter articles based on search term
-  const filteredArticles = articles.filter(article =>
-    article.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    article.description?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
+  // Show all articles (search removed)
+  const filteredArticles = articles;
   const displayedArticles = filteredArticles.slice(0, displayCount);
 
   const handleShowMore = () => {
@@ -246,17 +242,7 @@ const News = () => {
           </select>
         </div>
 
-        <div className="filter-group">
-          <label htmlFor="search-input">Search</label>
-          <input
-            id="search-input"
-            type="text"
-            placeholder="Search articles..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="search-input"
-          />
-        </div>
+        {/* Search bar removed */}
       </div>
 
       {loading && (
