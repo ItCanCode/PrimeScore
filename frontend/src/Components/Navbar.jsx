@@ -73,7 +73,14 @@ export default function Navbar({
           </li>
 
           <li>
-            <a href="#contact">Contact</a>
+            <a 
+            href="#matchOdds"
+                onClick={(e) => {
+                e.preventDefault();
+                handleNavigation("/primeshots");
+              }}
+            
+            >Match odds</a>
           </li>
 
           {isManager && (

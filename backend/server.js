@@ -14,6 +14,7 @@ import matchClockRoutes from "./src/routes/matchClockRoutes.js";
 import rugbyLiveRoutes from "./src/routes/rugbyLiveRoutes.js";
 import newsRoutes from "./src/routes/newsRoutes.js";
 import youtubeRoutes from "./src/routes/youtubeRoutes.js";
+import soccerRoutes from "./src/routes/soccerRoutes.js";
 
 import dotenv from "dotenv";
 dotenv.config();
@@ -45,6 +46,7 @@ app.use("/api/match-clock", matchClockRoutes);
 app.use("/api/news", newsRoutes);
 app.use('/api/display', displayRoutes);
 app.use("/api/youtube", youtubeRoutes);
+app.use("/api/soccer", soccerRoutes);
 app.get('/api/hello', (req, res) => {
   res.json({ message: 'Hello from backend!' });
 });

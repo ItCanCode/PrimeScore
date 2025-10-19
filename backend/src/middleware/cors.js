@@ -2,7 +2,8 @@ import cors from 'cors'
 
 const allowedOrigins = [
   'https://prime-score.vercel.app',
-  'http://localhost:5173'
+  'http://localhost:5173',
+  'https://the-invincibles-projects.vercel.app'
 ];
 
 const corsOptions = {
