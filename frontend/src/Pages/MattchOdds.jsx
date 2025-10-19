@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-
+import '../Styles/RugbyFixtures.css';
 const MatchOdds = () => {
   const [matches, setMatches] = useState([]);
   const [loading, setLoading] = useState(true);
