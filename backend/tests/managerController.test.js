@@ -11,7 +11,7 @@ jest.mock('../src/config/firebaseAdmin.js', () => {
   const mockCommit = jest.fn();
   const mockServerTimestamp = jest.fn(() => ({ type: 'serverTimestamp' }));
 
-  // Setup method chaining
+  
   mockCollection.mockReturnValue({
     doc: mockDoc,
     where: mockWhere
@@ -152,7 +152,7 @@ describe('Manager Controller', () => {
 
   describe('addPlayers', () => {
     beforeEach(() => {
-      // Mock batch methods
+     
       admin.firestore().batch().set.mockImplementation(() => admin.firestore().batch());
     });
 
@@ -269,6 +269,151 @@ describe('Manager Controller', () => {
       expect(res.json).toHaveBeenCalledWith({ error: 'Firestore error' });
     });
   });
+  
+  
+  describe('addPlayers - validation', () => {
+    it('should return 400 if teamId or players missing', async () => {
+      req.body = {}; 
+      await managerController.addPlayers(req, res);
+      expect(res.status).toHaveBeenCalledWith(400);
+      expect(res.json).toHaveBeenCalledWith({ error: 'teamId and players[] required' });
+    });
 
-  // Similar fixes for other test cases...
+    it('should return 400 if players is not an array', async () => {
+      req.body = { teamId: '123', players: 'not-an-array' };
+      await managerController.addPlayers(req, res);
+      expect(res.status).toHaveBeenCalledWith(400);
+      expect(res.json).toHaveBeenCalledWith({ error: 'teamId and players[] required' });
+    });
+  });
+
+
+  describe('getPlayers', () => {
+    it('should return 404 if team not found', async () => {
+      req.params.teamId = 'missing-team';
+      __mockGet.mockResolvedValueOnce({ exists: false });
+
+      await managerController.getPlayers(req, res);
+
+      expect(res.status).toHaveBeenCalledWith(404);
+      expect(res.json).toHaveBeenCalledWith({ error: 'Team not found' });
+    });
+
+    it('should return 403 if user is not authorized', async () => {
+      req.params.teamId = 'team1';
+      __mockGet.mockResolvedValueOnce({
+        exists: true,
+        data: () => ({ createdBy: 'different-user' }),
+      });
+
+      await managerController.getPlayers(req, res);
+      expect(res.status).toHaveBeenCalledWith(403);
+      expect(res.json).toHaveBeenCalledWith({ error: 'Not authorized to view players of this team' });
+    });
+
+    it('should return players if team belongs to user', async () => {
+      req.params.teamId = 'team1';
+      const mockPlayers = [
+        { name: 'P1' },
+        { name: 'P2' },
+      ];
+
+      __mockGet
+        .mockResolvedValueOnce({
+          exists: true,
+          data: () => ({ createdBy: 'test-user-id' }),
+        })
+        .mockResolvedValueOnce({
+          docs: mockPlayers.map(p => ({ data: () => p })),
+        });
+
+      await managerController.getPlayers(req, res);
+
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.json).toHaveBeenCalledWith({ players: mockPlayers });
+    });
+
+    it('should handle Firestore error in getPlayers', async () => {
+      req.params.teamId = 'team1';
+      const error = new Error('Firestore error');
+      __mockGet.mockRejectedValueOnce(error);
+
+      await managerController.getPlayers(req, res);
+
+      expect(res.status).toHaveBeenCalledWith(500);
+      expect(res.json).toHaveBeenCalledWith({ error: 'Firestore error' });
+    });
+  });
+
+
+  describe('removePlayer', () => {
+    it('should return 404 if player not found', async () => {
+      req.params.playerId = 'player1';
+      __mockGet.mockResolvedValueOnce({ exists: false });
+
+      await managerController.removePlayer(req, res);
+      expect(res.status).toHaveBeenCalledWith(404);
+      expect(res.json).toHaveBeenCalledWith({ error: 'Player not found' });
+    });
+
+    it('should return 404 if team for player not found', async () => {
+      req.params.playerId = 'player1';
+      __mockGet
+        .mockResolvedValueOnce({ exists: true, data: () => ({ teamId: 'team1' }) })
+        .mockResolvedValueOnce({ exists: false }); 
+
+      await managerController.removePlayer(req, res);
+      expect(res.status).toHaveBeenCalledWith(404);
+      expect(res.json).toHaveBeenCalledWith({ error: 'Team not found' });
+    });
+
+    it('should return 403 if user not authorized to remove player', async () => {
+      req.params.playerId = 'player1';
+      __mockGet
+        .mockResolvedValueOnce({ exists: true, data: () => ({ teamId: 'team1' }) }) 
+        .mockResolvedValueOnce({
+          exists: true,
+          data: () => ({ createdBy: 'other-user' }),
+        }); 
+
+      await managerController.removePlayer(req, res);
+      expect(res.status).toHaveBeenCalledWith(403);
+      expect(res.json).toHaveBeenCalledWith({
+        error: 'Not authorized to remove players from this team',
+      });
+    });
+
+    it('should remove player successfully if authorized', async () => {
+      req.params.playerId = 'player1';
+      __mockGet
+        .mockResolvedValueOnce({ exists: true, data: () => ({ teamId: 'team1' }) }) 
+        .mockResolvedValueOnce({
+          exists: true,
+          data: () => ({ createdBy: 'test-user-id' }),
+        }); 
+
+      __mockDelete.mockResolvedValueOnce();
+
+      await managerController.removePlayer(req, res);
+
+      expect(__mockDelete).toHaveBeenCalled();
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.json).toHaveBeenCalledWith({
+        message: 'Player removed successfully',
+        playerId: 'player1',
+      });
+    });
+
+    it('should handle Firestore error in removePlayer', async () => {
+      req.params.playerId = 'player1';
+      const error = new Error('Firestore error');
+      __mockGet.mockRejectedValueOnce(error);
+
+      await managerController.removePlayer(req, res);
+      expect(res.status).toHaveBeenCalledWith(500);
+      expect(res.json).toHaveBeenCalledWith({ error: 'Firestore error' });
+    });
+  });
+
+
 });
