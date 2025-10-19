@@ -2,7 +2,8 @@ import React, { useEffect, useState, useRef, useCallback } from "react";
 import { useNavigate, useLocation } from 'react-router-dom';
 import '../Styles/LiveAPI.css';
 const Ongoing = () => {
-  const API_KEY = "4399a3821d4ce5eb1a989436dc4e5303cf5e7176";
+    const BACKEND_URL = "https://prime-backend.azurewebsites.net";
+  // const BACKEND_URL = "http://localhost:3000";
   
   // const selected_league = "Epl"; 
    const location = useLocation();
@@ -38,7 +39,7 @@ const Ongoing = () => {
       // console.log(selected_league2);
       
       const league_id = LEAGUE_IDS[selected_league_2] || LEAGUE_IDS.Epl;
-      const apiUrl = `https://api.soccerdataapi.com/matches/?league_id=${league_id}&season=2025-2026&auth_token=${API_KEY}`;
+      const apiUrl = `${BACKEND_URL}/api/soccer/matches/?league_id=${league_id}&season=2025-2026`;
       const response = await fetch(apiUrl, {
         method: "GET",
         headers: { "Content-Type": "application/json", "Accept-Encoding": "gzip" },
@@ -86,7 +87,7 @@ const Ongoing = () => {
     } finally {
       setLoading(false);
     }
-  }, [selected_league_2, API_KEY]);
+  }, [selected_league_2]);
 
   useEffect(() => {
     if (hasFetched.current) return;
