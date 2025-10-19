@@ -97,9 +97,9 @@ function WelcomePage() {
             <li>
               <a href="#news" onClick={closeMobileMenu}>News</a>
             </li>
-            <li>
+            {/* <li>
               <a href="#contact" onClick={closeMobileMenu}>Contact</a>
-            </li>
+            </li> */}
           </ul>
 
           <div className="auth-buttons">
@@ -167,7 +167,7 @@ function WelcomePage() {
             <h4>Connect</h4>
             <a href="#">Social Media</a>
             <a href="#">Newsletter</a>
-            <a href="#">Contact Us</a>
+            {/* <a href="#">Contact Us</a> */}
             <a href="#">Support</a>
           </div>
         </div>

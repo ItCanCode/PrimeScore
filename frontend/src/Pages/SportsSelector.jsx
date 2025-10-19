@@ -123,8 +123,16 @@ const _footballLeagues = getFootballLeagues();
             )}
 
             <li>
-              <a href="#contact" >Contact</a>
+                      <a 
+              href="#matchOdds"
+                onClick={(e) => {
+                e.preventDefault();
+                handleNavigation("/matchOdds");
+              }}
+            
+            >Match odds</a>
             </li>
+            
             {/* Manage Team for managers */}
             {isManager && (
               <li>
