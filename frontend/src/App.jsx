@@ -1,9 +1,9 @@
-import WelcomePage from "./Pages/WelcomePage"
+import WelcomePage from "./Pages/WelcomePage";
 import HomePage from "./Pages/HomePage";
 import AdminHome from "./Pages/adminHomepage";
-import { Routes, Route, Link } from 'react-router-dom';
+import { Routes, Route } from "react-router-dom";
 import Dashboard from "./Pages/DashBoard";
-import UserProfile from "./Pages/UserProfile"
+import UserProfile from "./Pages/UserProfile";
 import UserHomepage from "./Pages/UserHomepage";
 import ManageMatchPage from "./Pages/ManageMatchPage";
 import OnGoing from "./Pages/LiveeMatches";
@@ -20,35 +20,171 @@ import PastMatches from "./Pages/PastMatches.jsx";
 import { RugbyLocal } from "./Pages/RugbyLocal.jsx";
 import YouTubeShorts from "./Components/YouTubeShorts.jsx";
 import MatchOdds from "./Pages/MattchOdds.jsx";
+import ProtectedRoute from "./Pages/ProtectedRoute.jsx";
+
 function App() {
   return (
-    <>
-      <AuthProvider>
+    <AuthProvider>
       <Routes>
+        {/* Public */}
         <Route path="/" element={<WelcomePage />} />
-        <Route path="/home" element={<HomePage />} />
-        <Route path="/admin" element={<AdminHome/>}></Route>
-        <Route path="/admin/match" element={<ManageMatchPage/>}></Route>
-        <Route path="/dashboard" element={<Dashboard/>} />
-        <Route path="/profile" element={<UserProfile/>} />
-        <Route path="/user" element={<UserHomepage />} />
-        <Route path="/sports" element={<SportsSelector/>}/>
-        <Route path="/management" element={<TeamManagement />}/>
-        <Route path="/match-admin" element={<MatchAdminInterface/>}/>
-        <Route path="/live/upcoming" element={<Upcoming/>}/>
-        <Route path='/live/past' element={<LiveApi/>}/>
-        <Route path="/live/ongoing" element={<OnGoing/>}/>
-        <Route path="/ongoing" element={<OngoingMatches/>}/>
-        <Route path="/upcoming" element={<UpcomingMatches/>}/>
-        <Route path="/past" element={<PastMatches/>}/>
-        <Route path="/rugby/super-rugby" element={<FixRug/>}/>
-        <Route path="/rugby/local-leagues" element={<RugbyLocal/>}/>
-        <Route path="/primeshots" element={<YouTubeShorts/>}/>
-        <Route path="/matchOdds" element={<MatchOdds/>}/>
+
+        {/* Protected */}
+        <Route
+          path="/home"
+          element={
+            <ProtectedRoute>
+              <HomePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute>
+              <AdminHome />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/match"
+          element={
+            <ProtectedRoute>
+              <ManageMatchPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <UserProfile />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/user"
+          element={
+            <ProtectedRoute>
+              <UserHomepage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/sports"
+          element={
+            <ProtectedRoute>
+              <SportsSelector />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/management"
+          element={
+            <ProtectedRoute>
+              <TeamManagement />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/match-admin"
+          element={
+            <ProtectedRoute>
+              <MatchAdminInterface />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/live/upcoming"
+          element={
+            <ProtectedRoute>
+              <Upcoming />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/live/past"
+          element={
+            <ProtectedRoute>
+              <LiveApi />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/live/ongoing"
+          element={
+            <ProtectedRoute>
+              <OnGoing />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/ongoing"
+          element={
+            <ProtectedRoute>
+              <OngoingMatches />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/upcoming"
+          element={
+            <ProtectedRoute>
+              <UpcomingMatches />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/past"
+          element={
+            <ProtectedRoute>
+              <PastMatches />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/rugby/super-rugby"
+          element={
+            <ProtectedRoute>
+              <FixRug />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/rugby/local-leagues"
+          element={
+            <ProtectedRoute>
+              <RugbyLocal />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/primeshots"
+          element={
+            <ProtectedRoute>
+              <YouTubeShorts />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/matchOdds"
+          element={
+            <ProtectedRoute>
+              <MatchOdds />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
-      </AuthProvider>
-    </>
-  )
+    </AuthProvider>
+  );
 }
 
-export default App
+export default App;
