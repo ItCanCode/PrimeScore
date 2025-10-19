@@ -5,41 +5,46 @@ import { auth, provider } from "../firebase";
 import { signInWithPopup } from "firebase/auth";
 import { useNavigate } from 'react-router-dom';
 
-function SignupModal  ({closeModal,setModalType}) {
+function SignupModal({ closeModal, setModalType }) {
   const navigate = useNavigate();
 
-async function handleGoogleSignup() {
-  try {
-   
-    const result = await signInWithPopup(auth, provider);
-    const idToken = await result.user.getIdToken();
+  async function handleGoogleSignup() {
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const idToken = await result.user.getIdToken();
 
-    const res = await fetch("https://prime-backend.azurewebsites.net/auth/google", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        idToken,
-        action: "signup"
-      }),
-    });
-
-    const data = await res.json();
-    console.log(data);
-    if(data.message=="Signup successful"){
-      navigate("/home",{
-        state:{role : "viewer"}
+      const res = await fetch("https://prime-backend.azurewebsites.net/auth/google", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          idToken,
+          action: "signup"
+        }),
       });
+
+      const data = await res.json();
+
+      if (data.message === "Signup successful") {
+        const proceed = window.confirm("✅ Signup successful! Click OK to go to your dashboard.");
+        if (proceed) {
+          navigate("/home", { state: { role: "viewer" } });
+        }
+      } else if (data.message === "User already exists") {
+        const goLogin = window.confirm("⚠️ You already have an account. Do you want to log in instead?");
+        if (goLogin) setModalType('login');
+      } else {
+        window.alert("❌ Signup failed. Please try again.");
+      }
+    } catch (err) {
+      console.error(err);
+      window.alert("❌ Signup failed due to a network or server error. Please try again.");
     }
-    else{
-      alert("Sign up failed.");
-    }
-  } catch (err) {
-    console.error(err);
   }
-}
-  const handleFacebookSignup = () => alert('Facebook sign up');
-  return(
-  <div className="modal" role="dialog" aria-modal="true" aria-labelledby="signupTitle">
+
+  const handleFacebookSignup = () => alert('Facebook sign up not implemented yet.');
+
+  return (
+    <div className="modal" role="dialog" aria-modal="true" aria-labelledby="signupTitle">
       <div className="modal-content">
         <button
           className="close"
@@ -55,41 +60,8 @@ async function handleGoogleSignup() {
           <p className="modal-subtitle">Create your account to get started</p>
         </div>
 
-        <form
-          id="signupForm"
-          onSubmit={(e) => {
-            e.preventDefault();
-            alert('Sign up submitted!');
-          }}
-        >
-          <div className="form-group">
-            <label htmlFor="signupEmail">Email</label>
-            <input
-              type="email"
-              id="signupEmail"
-              name="email"
-              placeholder="Enter your Email"
-              required
-              autoComplete="email"
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor="signupPassword">Password</label>
-            <input
-              type="password"
-              id="signupPassword"
-              name="password"
-              placeholder="Create a Password"
-              required
-              autoComplete="new-password"
-            />
-          </div>
-
-          <button type="submit" className="submit-btn">Sign Up</button>
-        </form>
-
         <div className="divider">
-          <span>or continue with</span>
+          <span>Sign up with</span>
         </div>
 
         <div className="social-login">
@@ -118,9 +90,7 @@ async function handleGoogleSignup() {
         </div>
       </div>
     </div>
-  )
+  );
 }
-  
-
 
 export default SignupModal;

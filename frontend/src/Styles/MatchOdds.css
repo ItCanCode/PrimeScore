@@ -1,0 +1,99 @@
+.match-odds-container {
+  padding: 2rem;
+  background-color: #f9fafb;
+  min-height: 100vh;
+}
+
+.match-odds-header {
+  text-align: center;
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin-bottom: 2rem;
+  color: #111827;
+}
+
+.matches-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.match-card {
+  background-color: #ffffff;
+  border-radius: 1rem;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  padding: 1rem;
+  transition: all 0.3s ease-in-out;
+}
+
+.match-card:hover {
+  box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+}
+
+.match-teams {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.team {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.team img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+}
+
+.vs-text {
+  font-weight: 600;
+  color: #6b7280; /* gray-500 */
+}
+
+.scores {
+  background: #f5f6fa;
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.scores .score-dark {
+  color: #23223b !important;
+  font-weight: bold;
+}
+
+.scores div p:first-child {
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.scores div p:last-child {
+  font-weight: 600;
+  font-size: 1rem;
+  color: #111827;
+}
+
+.match-details {
+  font-size: 0.875rem;
+  color: #4b5563; /* gray-600 */
+}
+
+.match-details p {
+  margin-bottom: 0.25rem;
+}
+
+.dark-card {
+  background-color: #23223b;
+  color: #f5f6fa;
+}
+
+.light-text {
+  color: #f5f6fa !important;
+}

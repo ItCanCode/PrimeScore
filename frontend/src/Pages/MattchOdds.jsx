@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import '../Styles/MatchOdds.css';
 
 const MatchOdds = () => {
   const [matches, setMatches] = useState([]);
@@ -18,77 +19,60 @@ const MatchOdds = () => {
         setLoading(false);
       }
     };
-
     fetchMatches();
   }, []);
 
   if (loading) {
-    return <p className="text-center text-gray-500">Loading match odds...</p>;
+    return (
+      <div className="home loading-container">
+        <div className="loading-text">Loading match odds...</div>
+      </div>
+    );
   }
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
-      <h1 className="text-3xl font-bold text-center mb-6">Match Odds</h1>
-
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {matches.map((match, index) => (
-          <div
-            key={`${match.matchId}-${index}`}
-            className="bg-white rounded-2xl shadow-md p-4 hover:shadow-lg transition duration-300"
-          >
-            <div className="flex justify-between items-center mb-3">
-              <div className="flex items-center space-x-2">
-                <img
-                  src={match.homeLogo}
-                  alt={match.homeTeam}
-                  className="w-10 h-10"
-                />
-                <span className="font-semibold">{match.homeTeam}</span>
+    <div className="home match-odds-container">
+      <section className="hero" id="match-odds">
+        <div className="hero-content">
+          <h2 className="news-dashboard-title" style={{marginBottom: '1.5rem'}}>Match Odds</h2>
+          <div className="matches-grid">
+            {matches.map((match, index) => (
+              <div
+                key={`${match.matchId}-${index}`}
+                className="match-card dark-card"
+              >
+                <div className="match-teams">
+                  <div className="team">
+                    <img src={match.homeLogo} alt={match.homeTeam} className="team-logo" />
+                    <span className="team-name light-text">{match.homeTeam}</span>
+                  </div>
+                  <span className="vs light-text">vs</span>
+                  <div className="team">
+                    <span className="team-name light-text">{match.awayTeam}</span>
+                    <img src={match.awayLogo} alt={match.awayTeam} className="team-logo" />
+                  </div>
+                </div>
+                <div className="scores">
+                  <div>
+                    <p className="score-dark">Predicted</p>
+                    <p className="score-dark">{match.predHomeScore} - {match.predAwayScore}</p>
+                  </div>
+                  <div>
+                    <p className="score-dark">Actual</p>
+                    <p className="score-dark">{match.homeScore ?? "-"} - {match.awayScore ?? "-"}</p>
+                  </div>
+                </div>
+                <div className="match-details">
+                  <p className="light-text"><strong>Status:</strong> {match.matchStatus}</p>
+                  <p className="light-text"><strong>League Round:</strong> {match.leagueRound}</p>
+                  <p className="light-text"><strong>Venue:</strong> {match.venue}</p>
+                  <p className="light-text"><strong>Date:</strong> {new Date(match.datetime).toLocaleString()}</p>
+                </div>
               </div>
-              <span className="text-gray-500 font-medium">vs</span>
-              <div className="flex items-center space-x-2">
-                <span className="font-semibold">{match.awayTeam}</span>
-                <img
-                  src={match.awayLogo}
-                  alt={match.awayTeam}
-                  className="w-10 h-10"
-                />
-              </div>
-            </div>
-
-            <div className="flex justify-between items-center bg-gray-100 p-2 rounded-lg mb-2">
-              <div>
-                <p className="text-sm text-gray-600">Predicted Score</p>
-                <p className="font-semibold">
-                  {match.predHomeScore} - {match.predAwayScore}
-                </p>
-              </div>
-              <div>
-                <p className="text-sm text-gray-600">Actual Score</p>
-                <p className="font-semibold">
-                  {match.homeScore ?? "-"} - {match.awayScore ?? "-"}
-                </p>
-              </div>
-            </div>
-
-            <div className="text-sm text-gray-600">
-              <p>
-                <strong>Status:</strong> {match.matchStatus}
-              </p>
-              <p>
-                <strong>League Round:</strong> {match.leagueRound}
-              </p>
-              <p>
-                <strong>Venue:</strong> {match.venue}
-              </p>
-              <p>
-                <strong>Date:</strong>{" "}
-                {new Date(match.datetime).toLocaleString()}
-              </p>
-            </div>
+            ))}
           </div>
-        ))}
-      </div>
+        </div>
+      </section>
     </div>
   );
 };
