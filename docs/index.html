@@ -207,6 +207,42 @@
     <li>Challenges: Nested JSON, league ID mapping, date/time parsing.</li>
   </ul>
 
+  <h4>NewsData API Integration</h4>
+  <ul>
+    <li>Purpose: To provide users with up-to-date sports news content from around the world.</li>
+    <li>Features: Categorizes articles by sport type (e.g., football, basketball, cricket) and region.</li>
+    <li>Customizable: Uses query parameters for keywords, languages, and countries to ensure content diversity and relevance.</li>
+  </ul>
+  <p><strong>Implementation Summary:</strong></p>
+  <ul>
+    <li>Axios is used to send GET requests to the NewsData API endpoint.</li>
+    <li>API key is stored securely in environment variables (<code>process.env.NEWSDATA_API_KEY</code>).</li>
+    <li>Backend fetches data based on selected sport and passes it to the frontend for rendering.</li>
+    <li>Results are filtered to only include sports-related news for performance and relevance.</li>
+  </ul>
+  <p><strong>Example Endpoint:</strong><br>
+    <code>https://newsdata.io/api/1/news?apikey=YOUR_API_KEY&q=sports&language=en</code>
+  </p>
+  <p>More Info: <a href="https://newsdata.io/documentation" target="_blank">NewsData API Documentation</a></p>
+
+  <h4>YouTube API Integration</h4>
+  <ul>
+    <li>Purpose: To display engaging sports video content alongside news articles.</li>
+    <li>Features: Fetches short-form sports videos (YouTube Shorts) relevant to trending sports content.</li>
+    <li>Dynamic filtering by sport type (e.g., football, basketball).</li>
+  </ul>
+  <p><strong>Implementation Summary:</strong></p>
+  <ul>
+    <li>Backend communicates with YouTube’s API using Axios requests.</li>
+    <li>API credentials managed securely via environment variables (<code>process.env.YOUTUBE_API_KEY</code>).</li>
+    <li>Query parameter <code>q</code> determines which sport’s shorts are fetched (default is “football”).</li>
+    <li>Only short videos (YouTube Shorts) are displayed using the custom "PrimeShots" section.</li>
+  </ul>
+  <p><strong>Example Endpoint:</strong><br>
+    <code>https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&q=football+shorts&key=YOUR_API_KEY</code>
+  </p>
+  <p>More Info: <a href="https://developers.google.com/youtube/v3/getting-started" target="_blank">YouTube Data API Documentation</a></p>
+
   <h4>ScoreDataAPI (Rugby)</h4>
   <ul>
     <li>Purpose: Real-time rugby match data.</li>
