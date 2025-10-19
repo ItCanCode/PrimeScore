@@ -58,9 +58,16 @@ function HomePage() {
   }, [dropdownOpen]);
 
   const handleLogout = () => {
-    localStorage.removeItem("authToken");
-    navigate("/");
-    setDropdownOpen(false);
+    const confirmLogout = window.confirm("⚠️ Are you sure you want to log out?");
+    if (confirmLogout) {
+      localStorage.removeItem("authToken");
+      navigate("/");
+      setDropdownOpen(false);
+      window.alert("✅ You have been logged out successfully.");
+    } else {
+      // User canceled logout
+      setDropdownOpen(false);
+    }
   };
 
   const handleNavigation = (path) => {
@@ -69,7 +76,7 @@ function HomePage() {
   };
 
   if (loading) {
-    // return <Loading />;
+    return <Loading />;
   }
 
   return (
@@ -79,10 +86,8 @@ function HomePage() {
           <div className="logo">PrimeScore</div>
 
           <ul className="nav-links">
-                        <li>
-              <a onClick={()=>{navigate("/home",{
-                state:{role : role}
-              });}} >News</a>
+            <li>
+              <a onClick={()=>{navigate("/home",{ state:{role : role} });}} >News</a>
             </li>
             {/* View Matches for all roles */}
             {(isManager || isAdmin || isViewer) && (
@@ -114,14 +119,15 @@ function HomePage() {
             </li>
 
             <li>
-                <a 
-              href="#matchOdds"
+              <a 
+                href="#matchOdds"
                 onClick={(e) => {
-                e.preventDefault();
-                handleNavigation("/matchOdds");
-              }}
-            
-            >Match odds</a>
+                  e.preventDefault();
+                  handleNavigation("/matchOdds");
+                }}
+              >
+                Match odds
+              </a>
             </li>
             {/* Manage Team for managers */}
             {isManager && (
@@ -148,7 +154,7 @@ function HomePage() {
                     handleNavigation("/match-admin");
                   }}
                 >
-                  {"Manage Matches"}
+                  Manage Matches
                 </a>
               </li>
             )}
@@ -195,7 +201,6 @@ function HomePage() {
 
       <section className="hero" id="home">
         <div className="hero-content">
-          {/* News Section moved up in the main content area */}
           <div className="news-dashboard">
             <h2 className="news-dashboard-title">Latest Sports News</h2>
             <News />
