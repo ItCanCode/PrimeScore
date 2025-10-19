@@ -65,39 +65,35 @@ const _footballLeagues = getFootballLeagues();
     setShowFootballModal(true); 
   };
 
- const handleLeagueSelection = (leagueId) => {
+function handleLeagueSelection(leagueId) {
   setSelectedLeague(leagueId);
-
   if (leagueId === "super-rugby") {
-    
     navigate(`/rugby/${leagueId}`);
   } else {
     setShowFootballModal(false);
     setShowLeaguesChoice(true);
   }
-};
-;
+}
 
-    const handleMatchTypeSelection = (matchType) => {
-      setShowLeaguesChoice(false);
+function handleMatchTypeSelection(matchType) {
+  setShowLeaguesChoice(false);
+  const { path, state } = getMatchTypeNavigation(selectedLeague, matchType, selectedSport);
+  navigate(path, { state });
+}
 
-      const { path, state } = getMatchTypeNavigation(selectedLeague, matchType, selectedSport);
-      navigate(path, { state });
-    };
+function closeModal() {
+  setShowFootballModal(false);
+}
 
-  const closeModal = () => {
-    setShowFootballModal(false);
-  };
+function closeLeaguesChoice() {
+  setShowLeaguesChoice(false);
+  setSelectedLeague(null);
+}
 
-  const closeLeaguesChoice = () => {
-    setShowLeaguesChoice(false);
-    setSelectedLeague(null);
-  };
-
-  const renderHomePage = () => (
+function renderHomePage() {
+  return (
     <div className="home-bg">
-   
-        <nav className="navbar">
+      <nav className="navbar">
         <div className="nav-container">
           <div className="logo">PrimeScore</div>
 
@@ -174,65 +170,40 @@ const _footballLeagues = getFootballLeagues();
             >
               {isMobile ? "☰" : "Menu"} {!isMobile && "▼"}
             </button>
-
             {dropdownOpen && (
               <div 
                 className="dropdown-content"
                 role="menu"
                 aria-label="User menu"
               >
-                <button 
-                  className="dropdown-item" 
-                  title="Notifications"
-                  onClick={() => {
-                    console.log("Notifications clicked");
-                    setDropdownOpen(false);
-                  }}
-                  role="menuitem"
-                >
-                  🔔 Notifications
-                </button>
-
                 <button
                   className="dropdown-item"
                   title="Profile"
                   onClick={() => handleNavigation("/profile")}
                   role="menuitem"
                 >
-                  👤 Profile
+                   Profile
                 </button>
-
-                <button 
-                  className="dropdown-item" 
-                  title="Settings"
-                  onClick={() => handleNavigation("/settings")}
-                  role="menuitem"
-                >
-                  ⚙️ Settings
-                </button>
-
+                {/* Settings button removed */}
                 <button 
                   className="dropdown-item" 
                   title="Logout" 
                   onClick={handleLogout}
                   role="menuitem"
                 >
-                  🚪 Logout
+                   Logout
                 </button>
               </div>
             )}
           </div>
         </div>
       </nav>
-
       <div className="container-wrapper">
+        {/* ...existing code for sports grid and modals... */}
         <div className="home-header">
           <h1 className="home-title">Choose Your Sport</h1>
-          <p className="home-subtitle">
-         
-          </p>
+          <p className="home-subtitle"></p>
         </div>
-
         <div className="sports-grid">
           {sports.map((sport) => (
             <div
@@ -257,8 +228,6 @@ const _footballLeagues = getFootballLeagues();
           ))}
         </div>
       </div>
-
-     
       {showFootballModal && (
         <LeagueModal
           isOpen={showFootballModal}
@@ -270,19 +239,17 @@ const _footballLeagues = getFootballLeagues();
       )}
     </div>
   );
-  // const rugby = sports.find(sport => sport.id === "rugby");
-  // Render the Match Type selection for all leagues
-if (showLeaguesChoice && selectedLeague !="super-rugby") {
-
-
-  return (
-    <MatchTypeModal 
-      isOpen={showLeaguesChoice} 
-      onClose={closeLeaguesChoice} 
-      onSelect={handleMatchTypeSelection}
-    />
-  );
 }
+
+  if (showLeaguesChoice && selectedLeague !== "super-rugby") {
+    return (
+      <MatchTypeModal 
+        isOpen={showLeaguesChoice} 
+        onClose={closeLeaguesChoice} 
+        onSelect={handleMatchTypeSelection}
+      />
+    );
+  }
 
   return renderHomePage();
 };
