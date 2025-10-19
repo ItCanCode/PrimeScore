@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PrimeScore NPM Supply Chain Security Audit – Sprint 3</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      margin: 20px;
+      background-color: #f9f9f9;
+      color: #333;
+    }
+    h1, h2, h3, h4 {
+      color: #1a1a1a;
+    }
+    pre {
+      background-color: #eee;
+      padding: 10px;
+      border-radius: 5px;
+      overflow-x: auto;
+    }
+    code {
+      background-color: #eee;
+      padding: 2px 4px;
+      border-radius: 4px;
+    }
+    .check {
+      color: green;
+      font-weight: bold;
+    }
+    .warning {
+      color: orange;
+      font-weight: bold;
+    }
+    ul {
+      margin: 0 0 10px 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>PrimeScore NPM Supply Chain Security Audit – Sprint 3</h1>
+
+  <p><strong>Date:</strong> 29 September 2025</p>
+  <p><strong>Scope:</strong> Check for presence of compromised NPM packages from the September 2025 “debug & chalk” attack.</p>
+
+  <h2>Compromised Packages (Baseline, from Aikido)</h2>
+  <p>
+    backslash, chalk-template, supports-hyperlinks, has-ansi, simple-swizzle, color-string,
+    error-ex, color-name, is-arrayish, slice-ansi, color-convert, wrap-ansi, ansi-regex,
+    supports-color, strip-ansi, chalk, debug, ansi-styles
+  </p>
+
+  <h2>4.1 Manual / Quick Checklist</h2>
+  <h3>Objective</h3>
+  <p>Quickly inspect PrimeScore’s dependencies for compromised packages using manual commands and npm audit tools.</p>
+
+  <h3>Steps & Commands</h3>
+  <p>List all direct dependencies in <code>package.json</code>:</p>
+  <pre><code>jq -r '.dependencies + .devDependencies | keys[]' package.json</code></pre>
+
+  <p>Result:</p>
+  <pre><code>firebase
+lucide-react</code></pre>
+  <p class="check">✅ No direct references to compromised packages found.</p>
+
+  <p>Inspect transitive dependencies in <code>package-lock.json</code>:</p>
+  <pre><code>jq -r '.dependencies | keys[]' package-lock.json</code></pre>
+  <p class="warning">⚠️ Encountered error at line 1078: null has no keys</p>
+  <p>Reason: Some dependencies may be optional or malformed. Proceed to node_modules scan.</p>
+
+  <p>Check if compromised packages exist in <code>node_modules</code>:</p>
+  <pre><code>for p in backslash chalk-template supports-hyperlinks has-ansi simple-swizzle color-string error-ex color-name is-arrayish slice-ansi color-convert wrap-ansi ansi-regex supports-color strip-ansi chalk debug ansi-styles; do
+  if [ -d "node_modules/$p" ]; then echo "FOUND: $p in node_modules"; fi
+done</code></pre>
+
+  <p class="check">✅ No direct matches detected.</p>
+
+  <p>Trace key compromised packages with <code>npm ls</code>:</p>
+  <pre><code>npm ls debug chalk ansi-regex supports-color --all</code></pre>
+  <pre><code>PrimeScore@ C:\...\PrimeScore
+└── (empty)</code></pre>
+  <p class="check">✅ No direct installation of these packages.</p>
+
+  <p>Run <code>npm audit</code> to detect known vulnerabilities:</p>
+  <pre><code>npm audit --json > audit.json</code></pre>
+  <p>audit.json Metadata:</p>
+  <pre><code>{
+  "vulnerabilities": {},
+  "metadata": {
+    "dependencies": { "prod": 88, "dev": 0, "peer": 1, "total": 88 }
+  }
+}</code></pre>
+  <p class="check">✅ No known vulnerabilities detected by npm audit.</p>
+
+  <p>Check package publish times for suspicious versions:</p>
+  <pre><code>npm view debug time
+npm view chalk time</code></pre>
+  <p>Detected malicious versions published around 2025-09-08</p>
+  <p class="check">✅ PrimeScore does not reference these recent versions.</p>
+
+  <h3>Interpretation (4.1)</h3>
+  <p>PrimeScore has no direct compromised packages.</p>
+  <p>Manual inspection shows potential risk only in transitive dependencies, which requires deeper automated scanning.</p>
+
+  <h2>4.2 Automated Scan – Python</h2>
+  <h3>Objective</h3>
+  <p>Use <code>scan_compromised.py</code> to recursively check both direct and transitive dependencies and installed node_modules.</p>
+
+  <p>Command:</p>
+  <pre><code>python3 scan_compromised.py</code></pre>
+
+  <h3>Results</h3>
+  <pre><code>Package            Location in Project
+ansi-regex          node_modules/ansi-regex
+ansi-styles         node_modules/ansi-styles
+color-convert       node_modules/color-convert
+color-name          node_modules/color-name
+strip-ansi          node_modules/strip-ansi
+wrap-ansi           node_modules/wrap-ansi
+
+Direct dependencies: None
+Transitive dependencies: Present → included via other packages (likely chalk or similar)
+Installed node_modules: Confirmed</code></pre>
+
+  <h3>Interpretation</h3>
+  <p>Direct findings: <span class="check">✅ No immediate compromise.</span></p>
+  <p>Transitive findings: <span class="warning">⚠️ Compromised packages exist deeper in dependency tree.</span></p>
+  <p>Installed packages: <span class="warning">⚠️ Remediation needed to remove malicious versions if present.</span></p>
+
+  <h3>Recommended Actions</h3>
+  <ul>
+    <li>Identify which top-level packages pull in the transitive compromised packages:
+      <pre><code>npm ls ansi-regex wrap-ansi color-convert color-name strip-ansi</code></pre>
+    </li>
+    <li>Update or replace top-level packages if safe versions exist.</li>
+    <li>Regenerate lockfile and reinstall dependencies:
+      <pre><code>rm -rf node_modules package-lock.json
+npm install</code></pre>
+    </li>
+    <li>Continue running <code>scan_compromised.py</code> after every dependency update.</li>
+    <li>Use SCA tools (Snyk, GitHub Dependabot, GitHub code scanning) for continuous monitoring.</li>
+    <li>Educate developers to avoid phishing attacks targeting maintainers.</li>
+  </ul>
+
+  <h2>Conclusion</h2>
+  <p>PrimeScore is not directly compromised by the recent NPM supply chain attacks.</p>
+  <p>Transitive dependencies contain compromised packages. Immediate remediation recommended:</p>
+  <ul>
+    <li>Trace top-level packages</li>
+    <li>Update or lock safe versions</li>
+    <li>Regenerate node_modules and lockfile</li>
+  </ul>
+  <p>This audit ensures PrimeScore’s supply chain remains safe against the September 2025 NPM malware.</p>
+
+</body>
+</html>
