@@ -1,8 +1,6 @@
-// tests/adminController.test.js
 import adminController from "../src/controllers/adminController.js";
 import admin from "../src/config/firebaseAdmin.js";
 
-// 🔹 Mock Firebase Admin
 jest.mock("../src/config/firebaseAdmin.js", () => {
   const addMock = jest.fn();
   const updateMock = jest.fn();
@@ -59,7 +57,6 @@ describe("adminController", () => {
     jest.clearAllMocks();
   });
 
-  // ---------------- CREATE MATCH ----------------
   it("createMatch: should create a match successfully", async () => {
     req.body = {
       matchName: "Final",
@@ -96,7 +93,6 @@ describe("adminController", () => {
     expect(res.json).toHaveBeenCalledWith({ error: "Firestore error" });
   });
 
-  // ---------------- UPDATE MATCH STATUS ----------------
   it("updateMatchStatus: should update match status if match exists", async () => {
     req.params.id = "match1";
     req.body = { status: "ongoing" };
@@ -123,7 +119,6 @@ describe("adminController", () => {
     expect(res.json).toHaveBeenCalledWith({ error: "Match not found in matches collection" });
   });
 
-  // ---------------- UPDATE SCORE ----------------
   it("updateScore: should update score in matches and ongoingMatches", async () => {
     req.params.id = "match1";
     req.body = { homeScore: 2, awayScore: 1 };
@@ -160,7 +155,6 @@ describe("adminController", () => {
     expect(res.json).toHaveBeenCalledWith({ message: "Score updated" });
   });
 
-  // ---------------- ADD MATCH EVENT ----------------
   it("addMatchEvent: should add a match event successfully", async () => {
     req.params.id = "match1";
     req.body = { eventType: "Yellow Card", team: "Team B", player: "Player X", time: "60'" };
@@ -182,7 +176,6 @@ describe("adminController", () => {
     expect(res.json).toHaveBeenCalledWith({ message: "Event added" });
   });
 
-  // ---------------- ALL TEAMS ----------------
   describe("adminController - allTeams", () => {
     let req, res;
 
@@ -255,5 +248,163 @@ describe("adminController", () => {
       expect(res.json).toHaveBeenCalledWith({ error: "Firestore error" });
     });
   });
+
+it("updateMatchStatus: should set end_time when status is 'finished'", async () => {
+  req.params.id = "match1";
+  req.body = { status: "finished" };
+
+  getMock.mockResolvedValue({ exists: true });
+  updateMock.mockResolvedValue();
+
+  const mockFieldValue = { serverTimestamp: jest.fn(() => "MOCK_TIMESTAMP") };
+  admin.firestore.FieldValue = mockFieldValue;
+
+  await adminController.updateMatchStatus(req, res);
+
+  expect(updateMock).toHaveBeenCalledWith({
+    status: "finished",
+    end_time: "MOCK_TIMESTAMP",
+  });
+  expect(res.status).toHaveBeenCalledWith(200);
+  expect(res.json).toHaveBeenCalledWith({ message: "Match status updated to finished" });
+});
+
+it("updateMatchStatus: should handle Firestore error", async () => {
+  req.params.id = "match1";
+  req.body = { status: "ongoing" };
+
+  getMock.mockRejectedValue(new Error("Firestore error"));
+  await adminController.updateMatchStatus(req, res);
+
+  expect(res.status).toHaveBeenCalledWith(500);
+  expect(res.json).toHaveBeenCalledWith({ error: "Firestore error" });
+});
+
+it("updateScore: should handle no existing match or ongoing docs", async () => {
+  req.params.id = "match1";
+  req.body = { homeScore: 1, awayScore: 0 };
+  getMock.mockResolvedValue({ exists: false }); // no doc
+  updateMock.mockResolvedValue();
+
+  await adminController.updateScore(req, res);
+
+  expect(res.status).toHaveBeenCalledWith(200);
+  expect(res.json).toHaveBeenCalledWith({ message: "Score updated" });
+});
+
+it("updateScore: should handle Firestore error gracefully", async () => {
+  req.params.id = "match1";
+  req.body = { homeScore: 3, awayScore: 2 };
+  getMock.mockRejectedValue(new Error("Firestore error"));
+
+  await adminController.updateScore(req, res);
+
+  expect(res.status).toHaveBeenCalledWith(500);
+  expect(res.json).toHaveBeenCalledWith({ error: "Firestore error" });
+});
+
+describe("getPlayersByTeamName", () => {
+  it("should return 404 when team not found", async () => {
+    req.params.teamName = "Unknown";
+    admin.__whereGetMock.mockResolvedValue({ empty: true });
+
+    await adminController.getPlayersByTeamName(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(404);
+    expect(res.json).toHaveBeenCalledWith({ error: "Team not found" });
+  });
+
+  it("should return players for existing team", async () => {
+    req.params.teamName = "Team A";
+
+    const mockTeamSnapshot = {
+      empty: false,
+      docs: [{ id: "team123", data: () => ({ teamName: "Team A" }) }],
+    };
+
+    const mockPlayersSnapshot = {
+      docs: [
+        { id: "p1", data: () => ({ playerName: "Player 1" }) },
+        { id: "p2", data: () => ({ playerName: "Player 2" }) },
+      ],
+    };
+
+    admin.__whereMock
+      .mockReturnValueOnce({ limit: () => ({ get: jest.fn().mockResolvedValue(mockTeamSnapshot) }) }) // teams.where(...)
+      .mockReturnValueOnce({ get: jest.fn().mockResolvedValue(mockPlayersSnapshot) }); // players.where(...)
+
+    await adminController.getPlayersByTeamName(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith({
+      teamId: "team123",
+      players: [
+        { id: "p1", playerName: "Player 1" },
+        { id: "p2", playerName: "Player 2" },
+      ],
+    });
+  });
+
+  it("should handle Firestore errors", async () => {
+    req.params.teamName = "Team A";
+    admin.__whereMock.mockImplementation(() => ({
+      limit: () => ({ get: jest.fn().mockRejectedValue(new Error("Firestore error")) }),
+    }));
+
+    await adminController.getPlayersByTeamName(req, res);
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.json).toHaveBeenCalledWith({ error: "Firestore error" });
+  });
+});
+
+describe("deleteMatch", () => {
+  it("should delete match and related events", async () => {
+    req.params.id = "match1";
+
+    const mockBatch = {
+      delete: jest.fn(),
+      commit: jest.fn().mockResolvedValue(),
+    };
+
+    admin.__firestoreMock.batch = jest.fn(() => mockBatch);
+    getMock
+      .mockResolvedValueOnce({ exists: true }) 
+      .mockResolvedValueOnce({
+        forEach: jest.fn(fn => {
+          fn({ ref: "eventRef1" });
+          fn({ ref: "eventRef2" });
+        }),
+      }); 
+
+    await adminController.deleteMatch(req, res);
+
+    expect(mockBatch.delete).toHaveBeenCalledTimes(2);
+    expect(mockBatch.commit).toHaveBeenCalled();
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith({
+      message: "Match deleted successfully",
+      matchId: "match1",
+    });
+  });
+
+  it("should return 404 when match not found", async () => {
+    req.params.id = "match1";
+    getMock.mockResolvedValueOnce({ exists: false });
+
+    await adminController.deleteMatch(req, res);
+    expect(res.status).toHaveBeenCalledWith(404);
+    expect(res.json).toHaveBeenCalledWith({ error: "Match not found" });
+  });
+
+  it("should handle Firestore errors", async () => {
+    req.params.id = "match1";
+    getMock.mockRejectedValueOnce(new Error("Firestore error"));
+
+    await adminController.deleteMatch(req, res);
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.json).toHaveBeenCalledWith({ error: "Firestore error" });
+  });
+});
+
 
 });
