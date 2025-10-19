@@ -171,18 +171,6 @@ function HomePage() {
                 role="menu"
                 aria-label="User menu"
               >
-                <button 
-                  className="dropdown-item" 
-                  title="Notifications"
-                  onClick={() => {
-                    console.log("Notifications clicked");
-                    setDropdownOpen(false);
-                  }}
-                  role="menuitem"
-                >
-                   Notifications
-                </button>
-
                 <button
                   className="dropdown-item"
                   title="Profile"
@@ -191,16 +179,6 @@ function HomePage() {
                 >
                    Profile
                 </button>
-
-                <button 
-                  className="dropdown-item" 
-                  title="Settings"
-                  onClick={() => handleNavigation("/settings")}
-                  role="menuitem"
-                >
-                   Settings
-                </button>
-
                 <button 
                   className="dropdown-item" 
                   title="Logout" 
