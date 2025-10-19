@@ -82,3 +82,12 @@
 .match-details p {
   margin-bottom: 0.25rem;
 }
+
+.dark-card {
+  background-color: #23223b;
+  color: #f5f6fa;
+}
+
+.light-text {
+  color: #f5f6fa !important;
+}

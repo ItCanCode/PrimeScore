@@ -40,34 +40,34 @@ const MatchOdds = () => {
             {matches.map((match, index) => (
               <div
                 key={`${match.matchId}-${index}`}
-                className="match-card"
+                className="match-card dark-card"
               >
                 <div className="match-teams">
                   <div className="team">
                     <img src={match.homeLogo} alt={match.homeTeam} className="team-logo" />
-                    <span className="team-name">{match.homeTeam}</span>
+                    <span className="team-name light-text">{match.homeTeam}</span>
                   </div>
-                  <span className="vs">vs</span>
+                  <span className="vs light-text">vs</span>
                   <div className="team">
-                    <span className="team-name">{match.awayTeam}</span>
+                    <span className="team-name light-text">{match.awayTeam}</span>
                     <img src={match.awayLogo} alt={match.awayTeam} className="team-logo" />
                   </div>
                 </div>
                 <div className="scores">
                   <div>
-                    <p>Predicted</p>
-                    <p>{match.predHomeScore} - {match.predAwayScore}</p>
+                    <p className="light-text">Predicted</p>
+                    <p className="light-text">{match.predHomeScore} - {match.predAwayScore}</p>
                   </div>
                   <div>
-                    <p>Actual</p>
-                    <p>{match.homeScore ?? "-"} - {match.awayScore ?? "-"}</p>
+                    <p className="light-text">Actual</p>
+                    <p className="light-text">{match.homeScore ?? "-"} - {match.awayScore ?? "-"}</p>
                   </div>
                 </div>
                 <div className="match-details">
-                  <p><strong>Status:</strong> {match.matchStatus}</p>
-                  <p><strong>League Round:</strong> {match.leagueRound}</p>
-                  <p><strong>Venue:</strong> {match.venue}</p>
-                  <p><strong>Date:</strong> {new Date(match.datetime).toLocaleString()}</p>
+                  <p className="light-text"><strong>Status:</strong> {match.matchStatus}</p>
+                  <p className="light-text"><strong>League Round:</strong> {match.leagueRound}</p>
+                  <p className="light-text"><strong>Venue:</strong> {match.venue}</p>
+                  <p className="light-text"><strong>Date:</strong> {new Date(match.datetime).toLocaleString()}</p>
                 </div>
               </div>
             ))}
