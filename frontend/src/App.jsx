@@ -19,7 +19,7 @@ import FixRug from "./Pages/RugbyFixture.jsx";
 import PastMatches from "./Pages/PastMatches.jsx";
 import { RugbyLocal } from "./Pages/RugbyLocal.jsx";
 import YouTubeShorts from "./Components/YouTubeShorts.jsx";
-import MatchOdds from "./Pages/matchOdds.jsx";
+import MatchOdds from "./Pages/MatchOdds.jsx";
 function App() {
   return (
     <>
