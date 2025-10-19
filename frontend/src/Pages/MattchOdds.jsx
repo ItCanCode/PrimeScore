@@ -56,11 +56,11 @@ const MatchOdds = () => {
                 <div className="scores">
                   <div>
                     <p className="light-text">Predicted</p>
-                    <p className="light-text">{match.predHomeScore} - {match.predAwayScore}</p>
+                    <p className="score-dark">{match.predHomeScore} - {match.predAwayScore}</p>
                   </div>
                   <div>
                     <p className="light-text">Actual</p>
-                    <p className="light-text">{match.homeScore ?? "-"} - {match.awayScore ?? "-"}</p>
+                    <p className="score-dark">{match.homeScore ?? "-"} - {match.awayScore ?? "-"}</p>
                   </div>
                 </div>
                 <div className="match-details">
