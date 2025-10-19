@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import '../Styles/MatchOdds.css';
 
@@ -55,11 +54,11 @@ const MatchOdds = () => {
                 </div>
                 <div className="scores">
                   <div>
-                    <p className="light-text">Predicted</p>
+                    <p className="score-dark">Predicted</p>
                     <p className="score-dark">{match.predHomeScore} - {match.predAwayScore}</p>
                   </div>
                   <div>
-                    <p className="light-text">Actual</p>
+                    <p className="score-dark">Actual</p>
                     <p className="score-dark">{match.homeScore ?? "-"} - {match.awayScore ?? "-"}</p>
                   </div>
                 </div>
