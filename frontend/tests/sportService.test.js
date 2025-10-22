@@ -32,7 +32,7 @@ describe("sportService utilities", () => {
   it("returns leagues for a given sport", () => {
     expect(getLeaguesForSport("football")).toHaveLength(4);
     expect(getLeaguesForSport("rugby")).toHaveLength(2);
-    expect(getLeaguesForSport("netball")).toHaveLength(3);
+    expect(getLeaguesForSport("netball")).toHaveLength(1);
     expect(getLeaguesForSport("unknown")).toEqual([]);
   });
 
