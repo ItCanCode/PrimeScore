@@ -64,9 +64,9 @@ function WelcomePage() {
     setMobileMenuOpen(!mobileMenuOpen);
   };
 
-    const closeMobileMenu = () => {
-    setMobileMenuOpen(false);
-  };
+  //   const closeMobileMenu = () => {
+  //   setMobileMenuOpen(false);
+  // };
 
 
   if (user) {
