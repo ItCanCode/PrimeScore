@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { FcGoogle } from 'react-icons/fc';
-import { FaFacebookF } from 'react-icons/fa';
 import { auth, provider } from "../firebase";
 import { signInWithPopup } from "firebase/auth";
 import { useNavigate } from 'react-router-dom';
@@ -28,6 +27,7 @@ function SignupModal({ closeModal, setModalType }) {
 
       if (data.message === "Signup successful") {
         const proceed = window.confirm("✅ Signup successful! Click OK to go to your dashboard.");
+        localStorage.setItem("token", idToken);
         if (proceed) {
           navigate("/home", { state: { role: "viewer" } });
         }
@@ -45,7 +45,6 @@ function SignupModal({ closeModal, setModalType }) {
     }
   }
 
-  const handleFacebookSignup = () => alert('Facebook sign up not implemented yet.');
 
   return (
     <div className="modal" role="dialog" aria-modal="true" aria-labelledby="signupTitle">
@@ -79,14 +78,6 @@ function SignupModal({ closeModal, setModalType }) {
                 <FcGoogle size={20} style={{ marginRight: 8 }} /> Continue with Google
               </>
             )}
-          </button>
-          <button
-            className="social-btn"
-            type="button"
-            onClick={handleFacebookSignup}
-            style={{ color: '#1877F2' }}
-          >
-            <FaFacebookF size={20} style={{ marginRight: 8 }} /> Continue with Facebook
           </button>
         </div>
 
