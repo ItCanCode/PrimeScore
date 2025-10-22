@@ -21,6 +21,7 @@ import { RugbyLocal } from "./Pages/RugbyLocal.jsx";
 import YouTubeShorts from "./Components/YouTubeShorts.jsx";
 import MatchOdds from "./Pages/MattchOdds.jsx";
 import ProtectedLayout from "./context/ProtectedRoute";
+
 function App() {
   return (
     <>
@@ -28,7 +29,7 @@ function App() {
   <Routes>
     {/* Public Route */}
     <Route path="/" element={<WelcomePage />} />
-
+    
     {/* Protected Routes */}
     <Route element={<ProtectedLayout />}>
       <Route path="/home" element={<HomePage />} />
@@ -49,6 +50,8 @@ function App() {
       <Route path="/primeshots" element={<YouTubeShorts />} />
       <Route path="/matchOdds" element={<MatchOdds />} />
       <Route path="/admin/match" element={<ManageMatchPage />} />
+      
+     
     </Route>
   </Routes>
 </AuthProvider>

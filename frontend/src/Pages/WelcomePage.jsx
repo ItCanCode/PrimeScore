@@ -4,6 +4,9 @@ import LoginModal from '../Components/LoginModal.jsx';
 import SignupModal from '../Components/SignupModal.jsx';
 import Loading from '../Components/Loading.jsx';
 
+
+
+
 function WelcomePage() {
   const [modalType, setModalType] = useState('none');
   const [user, _setUser] = useState(null);
@@ -61,6 +64,10 @@ function WelcomePage() {
     setMobileMenuOpen(!mobileMenuOpen);
   };
 
+    const closeMobileMenu = () => {
+    setMobileMenuOpen(false);
+  };
+
 
   if (user) {
     return (
@@ -87,7 +94,22 @@ function WelcomePage() {
             </button>
           </div>
 
-          <ul className={`nav-links ${mobileMenuOpen ? 'mobile-nav-open' : ''}`}></ul>
+          <ul className={`nav-links ${mobileMenuOpen ? 'mobile-nav-open' : ''}`}>
+
+
+            {/* <li>
+              <Link to="/sports" onClick={closeMobileMenu}>Sports</Link>
+            </li> */}
+            {/* <li>
+              <Link to="/news" onClick={closeMobileMenu}>News</Link>
+            </li> */}
+            {/* <li>
+              <a href="#contact" onClick={closeMobileMenu}>Contact</a>
+            </li> */}
+
+
+
+          </ul>
 
           <div className="auth-buttons">
             <button
