@@ -61,9 +61,6 @@ function WelcomePage() {
     setMobileMenuOpen(!mobileMenuOpen);
   };
 
-  const closeMobileMenu = () => {
-    setMobileMenuOpen(false);
-  };
 
   if (user) {
     return (
@@ -90,17 +87,7 @@ function WelcomePage() {
             </button>
           </div>
 
-          <ul className={`nav-links ${mobileMenuOpen ? 'mobile-nav-open' : ''}`}>
-            <li>
-              <a href="#sports" onClick={closeMobileMenu}>Sports</a>
-            </li>
-            <li>
-              <a href="#news" onClick={closeMobileMenu}>News</a>
-            </li>
-            {/* <li>
-              <a href="#contact" onClick={closeMobileMenu}>Contact</a>
-            </li> */}
-          </ul>
+          <ul className={`nav-links ${mobileMenuOpen ? 'mobile-nav-open' : ''}`}></ul>
 
           <div className="auth-buttons">
             <button
@@ -124,53 +111,20 @@ function WelcomePage() {
       {/* Hero Section */}
       <section className="hero" id="home">
         <div className="hero-bg"></div>
-        <div className="floating-icon icon-1">⚽</div>
-        <div className="floating-icon icon-2">🏀</div>
-        <div className="floating-icon icon-3">🏈</div>
-        <div className="floating-icon icon-4">🎾</div>
-
         <div className="hero-content">
           <h1>PRIME SCORE</h1>
           <p>Where Champions rise and Legends Are Born</p>
-          <a href="#sports" className="cta-button">
-            Enjoy Sports
-          </a>
         </div>
       </section>
 
       {/* Footer */}
       <footer>
-        <div className="footer-content">
           <div className="footer-section">
-            <h4>Quick Links</h4>
-            <a href="#home">Home</a>
-            <a href="#sports">Sports</a>
-            <a href="#news">Latest News</a>
-            <a href="#events">Upcoming Events</a>
+            <h4>Contact Us</h4>
+            <a>WhatsApp us at 0123456780</a>
+            <a>Send us an email at:</a>
+            <a>sportfacility3@gmail.com</a>
           </div>
-          <div className="footer-section">
-            <h4>Popular Sports</h4>
-            <a href="#">Basketball</a>
-            <a href="#">Football</a>
-            <a href='#'>Rugby</a>
-            <a href="#">Tennis</a>
-            <a href='#'>Volleyball</a>
-          </div>
-          <div className="footer-section">
-            <h4>Community</h4>
-            <a href="#">Join Our Team</a>
-            <a href="#">Become a Coach</a>
-            <a href="#">Fan Community</a>
-            <a href="#">Sponsorship</a>
-          </div>
-          <div className="footer-section">
-            <h4>Connect</h4>
-            <a href="#">Social Media</a>
-            <a href="#">Newsletter</a>
-            {/* <a href="#">Contact Us</a> */}
-            <a href="#">Support</a>
-          </div>
-        </div>
         <p>&copy; PrimeScore. All rights reserved. Where passion meets performance.</p>
       </footer>
 
