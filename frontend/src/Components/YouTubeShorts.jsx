@@ -8,7 +8,7 @@ const YouTubeShorts = () => {
   const location = useLocation();
   const [videos, setVideos] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedSport, _setErrorsetSelectedSport] = useState("football");
+  const [selectedSport, setSelectedSport] = useState("football");
   const [error, setError] = useState(null);
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
   const [blockedVideos, setBlockedVideos] = useState(new Set());
@@ -188,6 +188,7 @@ const YouTubeShorts = () => {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [currentVideoIndex, availableVideos.length]);
 
+  // Fetch videos by sport
   useEffect(() => {
     const fetchVideos = async () => {
       setLoading(true);
@@ -217,10 +218,31 @@ const YouTubeShorts = () => {
 
   return (
     <div className="primeshots-app">
+      {/* ✅ Sport selector restored */}
+      <div className="nav-right">
+        <div className="sport-selector">
+          <select
+            value={selectedSport}
+            onChange={(e) => setSelectedSport(e.target.value)}
+            className="sport-dropdown"
+            title="Select Sport"
+          >
+            <option value="football">Football</option>
+            <option value="basketball">Basketball</option>
+            <option value="cricket">Cricket</option>
+            <option value="rugby">Rugby</option>
+            <option value="tennis">Tennis</option>
+            <option value="baseball">Baseball</option>
+            <option value="golf">Golf</option>
+            <option value="hockey">Hockey</option>
+          </select>
+        </div>
+      </div>
+
+      {/* Loading, error, and content sections */}
       {loading && (
         <div className="video-container">
-          <div className="loading-content">
-          </div>
+          <div className="loading-content"></div>
         </div>
       )}
 
