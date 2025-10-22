@@ -8,65 +8,7 @@
   padding-top: 40px;
 }
 
-/* Navigation Header */
-.news-nav {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 80px;
-  background: rgba(15, 15, 35, 0.95);
-  backdrop-filter: blur(15px);
-  border-bottom: 1px solid rgba(255, 107, 53, 0.2);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 20px;
-  z-index: 1000;
-}
 
-.news-nav-left .back-btn {
-  background: linear-gradient(45deg, #ff6b35, #f7931e);
-  border: none;
-  color: white;
-  font-size: 14px;
-  font-weight: 600;
-  padding: 10px 20px;
-  border-radius: 25px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  /* Touch-friendly improvements */
-  min-height: 40px;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.news-nav-left .back-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(255, 107, 53, 0.3);
-}
-
-/* Touch device specific styles for back button */
-@media (hover: none) and (pointer: coarse) {
-  .news-nav-left .back-btn:hover {
-    transform: none;
-  }
-  
-  .news-nav-left .back-btn:active {
-    transform: scale(0.95);
-    background: linear-gradient(45deg, #e55a2b, #e0841a);
-  }
-}
-
-.news-nav-center h1 {
-  font-size: 28px;
-  font-weight: 800;
-  margin-top: 8px;
-  margin-bottom: 16px;
-  background: linear-gradient(45deg, #ff6b35, #f7931e, #ffbd69);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
 
 /* Filters Section */
 .news-filters {

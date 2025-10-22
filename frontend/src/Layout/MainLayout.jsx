@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
-import '../Styles/Home.css';
+import '../Styles/NavBar.css';
 function MainLayout() {
   const navigate = useNavigate();
   const location = useLocation();
