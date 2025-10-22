@@ -300,14 +300,14 @@ const YouTubeShorts = () => {
               className="sport-dropdown"
               title="Select Sport"
             >
-              <option value="football">⚽ Football</option>
-              <option value="basketball">🏀 Basketball</option>
-              <option value="cricket">🏏 Cricket</option>
-              <option value="rugby">🏉 Rugby</option>
-              <option value="tennis">🎾 Tennis</option>
-              <option value="baseball">⚾ Baseball</option>
-              <option value="golf">⛳ Golf</option>
-              <option value="hockey">🏒 Hockey</option>
+              <option value="football"> Football</option>
+              <option value="basketball"> Basketball</option>
+              <option value="cricket"> Cricket</option>
+              <option value="rugby"> Rugby</option>
+              <option value="tennis"> Tennis</option>
+              <option value="baseball"> Baseball</option>
+              <option value="golf"> Golf</option>
+              <option value="hockey"> Hockey</option>
             </select>
           </div>
           
@@ -322,13 +322,13 @@ const YouTubeShorts = () => {
             {dropdownOpen && (
               <div className="dropdown-menu">
                 <button onClick={() => handleNavigation('/profile')} className="dropdown-item">
-                  👤 Profile
+                   Profile
                 </button>
                 <button onClick={() => handleNavigation('/home')} className="dropdown-item">
-                  🏠 Home
+                   Home
                 </button>
                 <button onClick={handleLogout} className="dropdown-item">
-                  🚪 Logout
+                   Logout
                 </button>
               </div>
             )}

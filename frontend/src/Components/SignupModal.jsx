@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { FcGoogle } from 'react-icons/fc';
 import { FaFacebookF } from 'react-icons/fa';
 import { auth, provider } from "../firebase";
@@ -6,9 +6,11 @@ import { signInWithPopup } from "firebase/auth";
 import { useNavigate } from 'react-router-dom';
 
 function SignupModal({ closeModal, setModalType }) {
+  const [googleLoading, setGoogleLoading] = useState(false);
   const navigate = useNavigate();
 
   async function handleGoogleSignup() {
+    setGoogleLoading(true);
     try {
       const result = await signInWithPopup(auth, provider);
       const idToken = await result.user.getIdToken();
@@ -38,6 +40,8 @@ function SignupModal({ closeModal, setModalType }) {
     } catch (err) {
       console.error(err);
       window.alert("❌ Signup failed due to a network or server error. Please try again.");
+    } finally {
+      setGoogleLoading(false);
     }
   }
 
@@ -65,8 +69,16 @@ function SignupModal({ closeModal, setModalType }) {
         </div>
 
         <div className="social-login">
-          <button className="social-btn" type="button" onClick={handleGoogleSignup}>
-            <FcGoogle size={20} style={{ marginRight: 8 }} /> Continue with Google
+          <button className="social-btn" type="button" onClick={handleGoogleSignup} disabled={googleLoading}>
+            {googleLoading ? (
+              <>
+                <span className="google-spinner" /> Signing up...
+              </>
+            ) : (
+              <>
+                <FcGoogle size={20} style={{ marginRight: 8 }} /> Continue with Google
+              </>
+            )}
           </button>
           <button
             className="social-btn"

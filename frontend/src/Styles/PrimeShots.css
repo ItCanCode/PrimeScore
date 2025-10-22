@@ -949,48 +949,68 @@
     padding: 6px 12px;
   }
   
+  .videos-container {
+    height: 100vh;
+    width: 100vw;
+    padding-bottom: 0;
+  }
+  .video-slide {
+    height: 100vh;
+    width: 100vw;
+    padding: 0;
+    margin: 0;
+  }
+  .video-container {
+    width: 100vw;
+    height: 100vh;
+    max-width: 100vw;
+    max-height: 100vh;
+    border-radius: 0;
+  }
+  .video-iframe {
+    width: 100vw;
+    height: 60vh;
+    min-height: 220px;
+    border-radius: 0;
+  }
   .video-overlay {
-    padding: 15px;
-    bottom: 80px;
+    padding: 10px 8px;
+    bottom: 60px;
+    border-radius: 0 0 12px 12px;
   }
-  
   .video-info {
-    margin-bottom: 10px;
+    margin-bottom: 8px;
   }
-  
   .video-title {
-    font-size: 16px;
-    line-height: 1.3;
+    font-size: 15px;
+    line-height: 1.2;
+    max-height: 3.2em;
   }
-  
   .video-channel {
-    font-size: 14px;
-  }
-  
-  .video-actions {
-    gap: 12px;
-  }
-  
-  .action-btn {
-    width: 40px;
-    height: 40px;
-    font-size: 16px;
-  }
-  
-  .video-dots {
-    bottom: 100px;
-    right: 15px;
-  }
-  
-  .dot {
-    width: 8px;
-    height: 8px;
-    margin: 3px 0;
-  }
-  
-  .nav-instructions {
     font-size: 12px;
-    padding: 8px;
+  }
+  .video-actions {
+    gap: 10px;
+  }
+  .action-btn {
+    width: 36px;
+    height: 36px;
+    font-size: 15px;
+    min-width: 36px;
+    min-height: 36px;
+  }
+  .video-dots {
+    bottom: 80px;
+    right: 10px;
+  }
+  .dot {
+    width: 7px;
+    height: 7px;
+    margin: 2px 0;
+  }
+  .nav-instructions {
+    font-size: 11px;
+    padding: 6px;
   }
 }
 
@@ -1010,37 +1030,65 @@
     padding: 4px 8px;
   }
   
+  .videos-container {
+    height: 100vh;
+    width: 100vw;
+    padding-bottom: 0;
+  }
+  .video-slide {
+    height: 100vh;
+    width: 100vw;
+    padding: 0;
+    margin: 0;
+  }
+  .video-container {
+    width: 100vw;
+    height: 100vh;
+    max-width: 100vw;
+    max-height: 100vh;
+    border-radius: 0;
+  }
+  .video-iframe {
+    width: 100vw;
+    height: 55vh;
+    min-height: 180px;
+    border-radius: 0;
+  }
   .video-overlay {
-    padding: 12px;
-    bottom: 70px;
+    padding: 8px 4px;
+    bottom: 50px;
+    border-radius: 0 0 8px 8px;
   }
-  
   .video-title {
-    font-size: 14px;
+    font-size: 13px;
+    line-height: 1.1;
+    max-height: 2.7em;
   }
-  
   .video-channel {
-    font-size: 12px;
-  }
-  
-  .video-actions {
-    gap: 8px;
-  }
-  
-  .action-btn {
-    width: 35px;
-    height: 35px;
-    font-size: 14px;
-  }
-  
-  .video-dots {
-    bottom: 80px;
-    right: 10px;
-  }
-  
-  .nav-instructions {
     font-size: 11px;
-    padding: 6px;
+  }
+  .video-actions {
+    gap: 6px;
+  }
+  .action-btn {
+    width: 30px;
+    height: 30px;
+    font-size: 12px;
+    min-width: 30px;
+    min-height: 30px;
+  }
+  .video-dots {
+    bottom: 60px;
+    right: 6px;
+  }
+  .dot {
+    width: 6px;
+    height: 6px;
+    margin: 1px 0;
+  }
+  .nav-instructions {
+    font-size: 10px;
+    padding: 4px;
   }
 }
 

@@ -9,7 +9,7 @@ const News = () => {
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
   // Removed searchTerm state
-  const [selectedCountry, setSelectedCountry] = useState("us");
+  const [selectedCountry, setSelectedCountry] = useState("za");
   const [selectedSport, setSelectedSport] = useState("all");
   const [displayCount, setDisplayCount] = useState(12);
   const [error, setError] = useState(null);
@@ -25,8 +25,8 @@ const News = () => {
   };
 
   const countries = [
-    { code: "us", name: "United States"},
     { code: "za", name: "South Africa"},
+    { code: "us", name: "United States"},
     { code: "in", name: "India"},
     { code: "au", name: "Australia"}
   ];
@@ -129,15 +129,12 @@ const News = () => {
     const fetchNews = async () => {
       setLoading(true);
       setError(null);
-      
       try {
         const searchQuery = selectedSport === "all" ? "sports" : selectedSport;
         const response = await axios.get(`https://prime-backend.azurewebsites.net/api/news?q=${searchQuery}&country=${selectedCountry}`);
-        
         if (response.data && response.data.results) {
           setArticles(response.data.results);
         } else {
-          // Use fallback news if no results
           setArticles(fallbackNews);
         }
       } catch (error) {
@@ -148,7 +145,6 @@ const News = () => {
         setLoading(false);
       }
     };
-
     fetchNews();
   }, [selectedCountry, selectedSport]);
 
@@ -246,7 +242,7 @@ const News = () => {
       </div>
 
       {loading && (
-        <div className="loading-spinner">
+        <div>
           <p>Loading latest sports news...</p>
         </div>
       )}

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import ConfirmModal from '../Components/ConfirmModal.jsx';
 import '../Styles/Home.css';
 import Loading from '../Components/Loading.jsx';
 import News from '../Components/News.jsx';
@@ -14,6 +15,7 @@ function HomePage() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [_isTablet, setIsTablet] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
   const navigate = useNavigate();
 
   // Role-based booleans
@@ -58,16 +60,20 @@ function HomePage() {
   }, [dropdownOpen]);
 
   const handleLogout = () => {
-    const confirmLogout = window.confirm("⚠️ Are you sure you want to log out?");
-    if (confirmLogout) {
-      localStorage.removeItem("authToken");
-      navigate("/");
-      setDropdownOpen(false);
-      window.alert("✅ You have been logged out successfully.");
-    } else {
-      // User canceled logout
-      setDropdownOpen(false);
-    }
+    setShowLogoutModal(true);
+  };
+
+  const confirmLogout = () => {
+    localStorage.removeItem("authToken");
+    setShowLogoutModal(false);
+    setDropdownOpen(false);
+    navigate("/");
+    // Optionally, show a toast or notification here
+  };
+
+  const cancelLogout = () => {
+    setShowLogoutModal(false);
+    setDropdownOpen(false);
   };
 
   const handleNavigation = (path) => {
@@ -81,6 +87,14 @@ function HomePage() {
 
   return (
     <div className="home">
+      <ConfirmModal
+        show={showLogoutModal}
+        onClose={cancelLogout}
+        confirmAction={confirmLogout}
+        confirmData={{}}
+        title="Log Out"
+        message="Are you sure you want to log out?"
+      />
       <nav className="navbar">
         <div className="nav-container">
           <div className="logo">PrimeScore</div>

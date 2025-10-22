@@ -1,15 +1,18 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { FcGoogle } from 'react-icons/fc';
 import { auth, provider } from "../firebase";
 import { signInWithPopup } from "firebase/auth";
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from "../context/useAuth.js";
 
+
 function LoginModal({ closeModal, setModalType }) {
   const navigate = useNavigate();
   const { login } = useAuth();
+  const [googleLoading, setGoogleLoading] = useState(false);
 
   async function handleGoogleLogin() {
+    setGoogleLoading(true);
     try {
       const result = await signInWithPopup(auth, provider);
       const idToken = await result.user.getIdToken();
@@ -31,22 +34,24 @@ function LoginModal({ closeModal, setModalType }) {
         login(data.user, idToken);
 
         // Confirmation after successful login
-        const proceed = window.confirm("✅ Login successful! Click OK to continue to your dashboard.");
+        const proceed = window.confirm(" Login successful! Click OK to continue to your dashboard.");
         if (proceed) {
           navigate("/home", { state: { role } });
         }
       } else if (data.message === "User not found") {
-        const signUp = window.confirm("⚠️ You don’t have an account. Do you want to sign up?");
+        const signUp = window.confirm("You don’t have an account. Do you want to sign up?");
         if (signUp) {
           setModalType('signup');
         }
       } else {
-        window.alert("❌ Login failed. Please try again.");
+        window.alert(" Login failed. Please try again.");
       }
 
     } catch (err) {
       console.error(err);
-      window.alert("❌ Login failed due to a network or server error. Please try again.");
+      window.alert(" Login failed due to a network or server error. Please try again.");
+    } finally {
+      setGoogleLoading(false);
     }
   }
 
@@ -72,8 +77,16 @@ function LoginModal({ closeModal, setModalType }) {
         </div>
 
         <div className="social-login">
-          <button className="social-btn" type="button" onClick={handleGoogleLogin}>
-            <FcGoogle size={20} style={{ marginRight: 8 }} /> Continue with Google
+          <button className="social-btn" type="button" onClick={handleGoogleLogin} disabled={googleLoading}>
+            {googleLoading ? (
+              <>
+                <span className="google-spinner" /> Signing in...
+              </>
+            ) : (
+              <>
+                <FcGoogle size={20} style={{ marginRight: 8 }} /> Continue with Google
+              </>
+            )}
           </button>
         </div>
 
