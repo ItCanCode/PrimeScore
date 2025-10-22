@@ -3,7 +3,7 @@ import axios from "axios";
 export const getSportsNews = async (req, res) => {
   try {
     const { q = "sports", country = "us" } = req.query;
-    const apiKey = process.env.NEWSDATA_API_KEY;
+    const apiKey = process.env.NEWS_API_KEY;
 
     if (!apiKey) {
       return res.status(500).json({ 
