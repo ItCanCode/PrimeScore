@@ -20,24 +20,33 @@ import PastMatches from "./Pages/PastMatches.jsx";
 import { RugbyLocal } from "./Pages/RugbyLocal.jsx";
 import YouTubeShorts from "./Components/YouTubeShorts.jsx";
 import MatchOdds from "./Pages/MattchOdds.jsx";
-import ProtectedLayout from "./context/ProtectedRoute";
+//import ProtectedRoute from "./Pages/ProtectedRoute.jsx";
+import MainLayout from "./Layout/MainLayout.jsx";
 
+
+// =======
+ import ProtectedLayout from "./context/ProtectedRoute";
 function App() {
   return (
     <>
 <AuthProvider>
   <Routes>
-    {/* Public Route */}
-    <Route path="/" element={<WelcomePage />} />
-    
+
+
     {/* Protected Routes */}
-    <Route element={<ProtectedLayout />}>
-      <Route path="/home" element={<HomePage />} />
+      <Route element={<ProtectedLayout />}>
+        <Route element={<MainLayout />}>
+        <Route path="/home" element={<HomePage />} />
+        <Route path="/sports" element={<SportsSelector />} />
+        <Route path="/primeshots" element={<YouTubeShorts />} />
+        <Route path="/matchOdds" element={<MatchOdds />} />
+        <Route path="/management" element={<TeamManagement />} />
+      </Route>
+    
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/profile" element={<UserProfile />} />
       <Route path="/user" element={<UserHomepage />} />
-      <Route path="/sports" element={<SportsSelector />} />
-      <Route path="/management" element={<TeamManagement />} />
+
       <Route path="/match-admin" element={<MatchAdminInterface />} />
       <Route path="/live/upcoming" element={<Upcoming />} />
       <Route path="/live/past" element={<LiveApi />} />
@@ -47,12 +56,12 @@ function App() {
       <Route path="/past" element={<PastMatches />} />
       <Route path="/rugby/super-rugby" element={<FixRug />} />
       <Route path="/rugby/local-leagues" element={<RugbyLocal />} />
-      <Route path="/primeshots" element={<YouTubeShorts />} />
-      <Route path="/matchOdds" element={<MatchOdds />} />
       <Route path="/admin/match" element={<ManageMatchPage />} />
       
      
     </Route>
+        {/* Public Route */}
+    <Route path="/" element={<WelcomePage />} />
   </Routes>
 </AuthProvider>
     </>

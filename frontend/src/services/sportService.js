@@ -32,8 +32,8 @@ const leaguesBySport = {
     { id: "local-leagues", name: "Local Leagues", flag: "" }, 
   ],
   netball: [
-    { id: "super-netball", name: "Super Netball", flag: "" },
-    { id: "africa-netball", name: "Africa Netball Championship", flag: "" },
+    // { id: "super-netball", name: "Super Netball", flag: "" },
+    // { id: "africa-netball", name: "Africa Netball Championship", flag: "" },
     { id: "local-leagues", name: "Local Leagues", flag: "" },
   ],
 };

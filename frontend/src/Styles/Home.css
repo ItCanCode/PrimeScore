@@ -83,7 +83,7 @@
   background: rgba(15, 15, 35, 0.95);
   backdrop-filter: blur(10px);
   z-index: 1000;
-  padding: 1rem 2rem;
+  padding: 100rem 2rem;
   transition: all 0.3s ease;
   border-bottom: 1px solid rgba(255, 107, 53, 0.1);
 }

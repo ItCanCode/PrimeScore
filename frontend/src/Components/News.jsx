@@ -17,7 +17,7 @@ const News = () => {
   // Get role from location state or default to viewer
   const userRole = location.state?.role || "viewer";
 
-  const handleNavigation = (path) => {
+  const _handleNavigation = (path) => {
     navigate(path, { 
       state: { role: userRole },
       replace: false 
@@ -184,25 +184,7 @@ const News = () => {
   return (
     <div className="news-app">
       {/* Navigation Header */}
-      <div className="news-nav">
-        <div className="news-nav-left">
-          <button 
-            onClick={() => handleNavigation('/home')} 
-            className="back-btn"
-            title="Back to Home"
-          >
-            ← Back to Home
-          </button>
-        </div>
-        
-        <div className="news-nav-center">
-          <h1>Sports News</h1>
-        </div>
-        
-        <div className="news-nav-right">
-          {/* Could add additional nav items here */}
-        </div>
-      </div>
+
 
       {/* Filters Section */}
       <div className="news-filters">
