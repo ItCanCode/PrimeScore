@@ -21,23 +21,53 @@ import { RugbyLocal } from "./Pages/RugbyLocal.jsx";
 import YouTubeShorts from "./Components/YouTubeShorts.jsx";
 import MatchOdds from "./Pages/MattchOdds.jsx";
 import ProtectedRoute from "./Pages/ProtectedRoute.jsx";
+import MainLayout from "./Layout/MainLayout.jsx";
 
 function App() {
   return (
     <AuthProvider>
       <Routes>
-        {/* Public */}
+        {/* 🌐 Public route */}
         <Route path="/" element={<WelcomePage />} />
 
-        {/* Protected */}
-        <Route
-          path="/home"
+        {/* ✅ Routes with Navigation */}
+        <Route element={<MainLayout />}>
+          <Route
+            path="/home"
+            element={
+              <ProtectedRoute>
+                <HomePage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/sports"
+            element={
+              <ProtectedRoute>
+                <SportsSelector />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/primeshots"
+            element={
+              <ProtectedRoute>
+                <YouTubeShorts />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+          path="/matchOdds"
           element={
             <ProtectedRoute>
-              <HomePage />
+              <MatchOdds />
             </ProtectedRoute>
           }
         />
+        </Route>
+
+
+        {/*  Routes without Navigation */}
         <Route
           path="/admin"
           element={
@@ -75,14 +105,6 @@ function App() {
           element={
             <ProtectedRoute>
               <UserHomepage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/sports"
-          element={
-            <ProtectedRoute>
-              <SportsSelector />
             </ProtectedRoute>
           }
         />
@@ -166,22 +188,7 @@ function App() {
             </ProtectedRoute>
           }
         />
-        <Route
-          path="/primeshots"
-          element={
-            <ProtectedRoute>
-              <YouTubeShorts />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/matchOdds"
-          element={
-            <ProtectedRoute>
-              <MatchOdds />
-            </ProtectedRoute>
-          }
-        />
+
       </Routes>
     </AuthProvider>
   );
