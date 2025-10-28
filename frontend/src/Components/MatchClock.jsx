@@ -274,7 +274,7 @@ export default function MatchClock({ matchId, status, showControls = true, sport
           {running ? (
             <button onClick={pauseClock}>Pause</button>
           ) : (
-            <button onClick={startOrResume}>Resume</button>
+            <button onClick={startOrResume}>Start\Resume</button>
           )}
           <button onClick={finishClock}>Stop</button>
           <button onClick={resetClock} style={{ background: '#e74c3c', color: 'white', marginLeft: 8 }}>Reset Clock</button>
