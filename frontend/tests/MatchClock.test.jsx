@@ -125,7 +125,7 @@ describe('MatchClock Component', () => {
     render(<MatchClock matchId={mockMatchId} status="ongoing" />);
     
     await waitFor(() => {
-      expect(screen.getByText('Resume')).toBeInTheDocument();
+        expect(screen.getByText('Start\\Resume')).toBeInTheDocument();
       expect(screen.getByText('Stop')).toBeInTheDocument();
     });
   });
@@ -179,10 +179,12 @@ describe('MatchClock Component', () => {
     render(<MatchClock matchId={mockMatchId} status="ongoing" />);
     
     await waitFor(() => {
-      expect(screen.getByText('Resume')).toBeInTheDocument();
+        expect(screen.getByText('Start\\Resume')).toBeInTheDocument();
     });
 
-    fireEvent.click(screen.getByText('Resume'));
+    await act(async () => {
+      fireEvent.click(screen.getByText('Start\\Resume'));
+    });
 
     await waitFor(() => {
       expect(fetch).toHaveBeenCalledWith(
@@ -447,10 +449,12 @@ describe('MatchClock Component', () => {
     render(<MatchClock matchId={mockMatchId} status="ongoing" />);
     
     await waitFor(() => {
-      expect(screen.getByText('Resume')).toBeInTheDocument();
+      expect(screen.getByText('Start\\Resume')).toBeInTheDocument();
     });
 
-    fireEvent.click(screen.getByText('Resume'));
+    await act(async () => {
+      fireEvent.click(screen.getByText('Start\\Resume'));
+    });
 
     await waitFor(() => {
       expect(consoleSpy).toHaveBeenCalledWith('Error starting/resuming clock:', expect.any(Error));
