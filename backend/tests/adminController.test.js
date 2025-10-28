@@ -8,10 +8,12 @@ jest.mock("../src/config/firebaseAdmin.js", () => {
   const updateMock = jest.fn();
   const getMock = jest.fn();
   const whereGetMock = jest.fn();
+  const deleteMock = jest.fn();
 
   const docMock = {
     get: getMock,
     update: updateMock,
+    delete: deleteMock,
   };
 
   const whereMock = jest.fn(() => ({
@@ -56,6 +58,11 @@ describe("adminController", () => {
     updateMock = admin.__updateMock;
     getMock = admin.__getMock;
 
+  // Ensure all collection().doc() calls return docMock with updateMock
+  admin.__collectionMock.doc.mockImplementation(() => admin.__docMock);
+  // If there are multiple collections, ensure their doc() also returns docMock
+  admin.__firestoreMock.collection.mockImplementation(() => admin.__collectionMock);
+
     jest.clearAllMocks();
   });
 
@@ -98,17 +105,18 @@ describe("adminController", () => {
 
   // ---------------- UPDATE MATCH STATUS ----------------
   it("updateMatchStatus: should update match status if match exists", async () => {
-    req.params.id = "match1";
-    req.body = { status: "ongoing" };
+  req.params.id = "match1";
+  req.body = { status: "ongoing" };
 
-    getMock.mockResolvedValue({ exists: true });
-    updateMock.mockResolvedValue();
+  // Mock get to return exists: true and a data() method with status 'scheduled'
+  getMock.mockResolvedValue({ exists: true, data: () => ({ status: "scheduled" }) });
+  updateMock.mockResolvedValue();
 
-    await adminController.updateMatchStatus(req, res);
+  await adminController.updateMatchStatus(req, res);
 
-    expect(updateMock).toHaveBeenCalledWith({ status: "ongoing" });
-    expect(res.status).toHaveBeenCalledWith(200);
-    expect(res.json).toHaveBeenCalledWith({ message: "Match status updated to ongoing" });
+  expect(updateMock).toHaveBeenCalledWith({ status: "ongoing" });
+  expect(res.status).toHaveBeenCalledWith(200);
+  expect(res.json).toHaveBeenCalledWith({ message: "Match status updated to ongoing" });
   });
 
   it("updateMatchStatus: should return 404 if match does not exist", async () => {
