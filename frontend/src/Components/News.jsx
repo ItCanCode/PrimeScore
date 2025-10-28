@@ -7,6 +7,8 @@ const News = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [articles, setArticles] = useState([]);
+  // Add cache for news articles by country and sport
+  const newsCacheRef = React.useRef({});
   const [loading, setLoading] = useState(true);
   // Removed searchTerm state
   const [selectedCountry, setSelectedCountry] = useState("za");
@@ -129,18 +131,28 @@ const News = () => {
     const fetchNews = async () => {
       setLoading(true);
       setError(null);
+      const cacheKey = `${selectedCountry}_${selectedSport}`;
+      // Check cache first
+      if (newsCacheRef.current[cacheKey]) {
+        setArticles(newsCacheRef.current[cacheKey]);
+        setLoading(false);
+        return;
+      }
       try {
         const searchQuery = selectedSport === "all" ? "sports" : selectedSport;
         const response = await axios.get(`https://prime-backend.azurewebsites.net/api/news?q=${searchQuery}&country=${selectedCountry}`);
         if (response.data && response.data.results) {
           setArticles(response.data.results);
+          newsCacheRef.current[cacheKey] = response.data.results;
         } else {
           setArticles(fallbackNews);
+          newsCacheRef.current[cacheKey] = fallbackNews;
         }
       } catch (error) {
         console.error('Error fetching news:', error);
-        setError('Failed to load news. Showing sample articles.');
+        setError(' Showing sample articles.');
         setArticles(fallbackNews);
+        newsCacheRef.current[cacheKey] = fallbackNews;
       } finally {
         setLoading(false);
       }

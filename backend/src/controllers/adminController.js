@@ -32,14 +32,25 @@ const updateMatchStatus = async (req, res) => {
       return res.status(404).json({ error: 'Match not found in matches collection' });
     }
 
-    // Prepare update data
+    // Get previous status
+    const prevStatus = matchDoc.data().status;
     const updateData = { status };
-    
+
     // If status is being set to 'finished', also set end_time
     if (status && status.toLowerCase() === 'finished') {
       updateData.end_time = admin.firestore.FieldValue.serverTimestamp();
     }
-    
+
+    // If status is being set to 'ongoing' from 'scheduled', reset the match clock
+    if (
+      prevStatus && prevStatus.toLowerCase() === 'scheduled' &&
+      status && status.toLowerCase() === 'ongoing'
+    ) {
+      // Delete/reset the match clock
+      const clockRef = db.collection('matchClocks').doc(matchId);
+      await clockRef.delete();
+    }
+
     // Update the status (and end_time if applicable) in 'matches'
     await matchRef.update(updateData);
 

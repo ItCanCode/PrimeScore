@@ -252,6 +252,19 @@ export default function MatchClock({ matchId, status, showControls = true, sport
     return `${m}:${s}`;
   };
 
+  // Admin function: Reset match clock (delete and refresh)
+  const resetClock = async () => {
+    if (!window.confirm("Are you sure you want to reset the clock to zero? This cannot be undone.")) return;
+    try {
+      await fetch(`https://prime-backend.azurewebsites.net/api/match-clock/${matchId}`, {
+        method: 'DELETE',
+      });
+      fetchClock(); // Refresh local state from server
+    } catch (error) {
+      console.error('Error resetting clock:', error);
+    }
+  };
+
   return (
     <div className="match-clock-widget">
       <p className="time">{format(seconds)}</p>
@@ -264,6 +277,7 @@ export default function MatchClock({ matchId, status, showControls = true, sport
             <button onClick={startOrResume}>Resume</button>
           )}
           <button onClick={finishClock}>Stop</button>
+          <button onClick={resetClock} style={{ background: '#e74c3c', color: 'white', marginLeft: 8 }}>Reset Clock</button>
         </div>
       )}
     </div>
